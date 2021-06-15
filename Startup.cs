@@ -17,6 +17,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Buffers;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using TicketingApi.DBContexts;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace TicketingApi
 {
@@ -28,19 +32,20 @@ namespace TicketingApi
             Configuration = configuration;
         }
 
-   
-        
-        public static readonly SymmetricSecurityKey SIGN_KEY = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JwtSettings:SignKey"))
-        );
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
            // Encoding.RegisterProvider(CodePagesProvider.Instance);
             Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            services.AddControllers()
-                    .AddNewtonsoftJson();
+            services.AddControllers() .AddNewtonsoftJson(o => 
+            {
+                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+
+
+            string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");  
+            services.AddDbContextPool<AppDBContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr))); 
+
             services.AddApiVersioning(options => {
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = ApiVersion.Default;
@@ -49,9 +54,6 @@ namespace TicketingApi
             });
 
 
-            //connnection\\
-            
-
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,17 +61,29 @@ namespace TicketingApi
             })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwtOption => {
                 jwtOption.TokenValidationParameters = new TokenValidationParameters (){
-                    IssuerSigningKey = SIGN_KEY,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidIssuer = "https://localhost:5001",
-                    ValidAudience = "https://localhost:5001",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("JwtSettings:SecretKey").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                 //   ValidIssuer = "https://localhost:5001",
+                   // ValidAudience = "https://localhost:5001",
                     ValidateLifetime = true
-
                 };
-            })
-            
-            ;
+                jwtOption.Events = new JwtBearerEvents{
+                   OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                        {
+                            context.Response.Headers.Add("Token-Expired", "true");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+            services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
+             {
+                 //WithOrigins("https://www.bariskisir.com").
+                    builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+              }));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });
@@ -90,8 +104,10 @@ namespace TicketingApi
 
             app.UseRouting();
 
-            
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors("ApiCorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
