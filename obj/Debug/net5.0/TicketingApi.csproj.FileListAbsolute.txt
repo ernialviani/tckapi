@@ -145,3 +145,12 @@ C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\obj\Debug\net5.0\Ti
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\obj\Debug\net5.0\ref\TicketingApi.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\obj\Debug\net5.0\TicketingApi.pdb
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\obj\Debug\net5.0\TicketingApi.genruntimeconfig.cache
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\Humanizer.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Design.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\MySqlConnector.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\Pomelo.EntityFrameworkCore.MySql.dll
+C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll
