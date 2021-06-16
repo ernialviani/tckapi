@@ -1,25 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\TicketingApi\\TicketingApi.csproj": {}
+    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\TicketingApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\TicketingApi\\TicketingApi.csproj": {
+    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\TicketingApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\TicketingApi\\TicketingApi.csproj",
+        "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\TicketingApi.csproj",
         "projectName": "TicketingApi",
-        "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\TicketingApi\\TicketingApi.csproj",
-        "packagesPath": "C:\\Users\\Ihsan_pc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\TicketingApi\\obj\\",
+        "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\TicketingApi.csproj",
+        "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Ihsan_pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\programmer3\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
