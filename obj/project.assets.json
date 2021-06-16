@@ -1564,11 +1564,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\ticketing\\ticketing-app\\dotnetapi\\ticketing-api\\TicketingApi.csproj",
+      "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\TicketingApi.csproj",
       "projectName": "TicketingApi",
-      "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\ticketing\\ticketing-app\\dotnetapi\\ticketing-api\\TicketingApi.csproj",
+      "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\TicketingApi.csproj",
       "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\ticketing\\ticketing-app\\dotnetapi\\ticketing-api\\obj\\",
+      "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\api\\TicketingApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

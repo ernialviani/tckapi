@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using TicketingApi.DBContexts;
 using Microsoft.EntityFrameworkCore;
 using TicketingApi.Models.v1.Users;
+using System.IdentityModel.Tokens.Jwt;
+using TicketingApi.Entities;
 
 namespace TicketingApi.Controllers.v1.Users
 {
@@ -16,7 +18,7 @@ namespace TicketingApi.Controllers.v1.Users
     [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
-         private readonly IConfiguration _configuration;
+       //  private readonly IConfiguration _configuration;
          private readonly AppDBContext  _context;
         public UserController(AppDBContext context)
         {
@@ -24,17 +26,21 @@ namespace TicketingApi.Controllers.v1.Users
         }
 
         [HttpGet]
-        [Authorize]
-        public IActionResult GetUsers()
+        [Authorize(Roles = RoleType.Admin)]
+        public IActionResult GetUsers([FromHeader] string Authorization)
         {
-              var allUser = _context.Users.AsNoTracking()
-                             .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
-                             .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments);
-            return Ok(allUser);
+           
+          var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+      //    var Role = token.Claims.First(c => c.Type == "Role").Value;
+          var allUser = _context.Users.AsNoTracking()
+                        .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
+                        .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments);
+           return Ok(allUser);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetUserById(int id)
+
+        [HttpGet("{email}")]
+        public IActionResult GetUserById(string email)
         {
             return null;
         }

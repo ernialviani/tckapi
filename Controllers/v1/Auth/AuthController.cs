@@ -16,7 +16,7 @@ using TicketingApi.Utils;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-
+using System.Diagnostics;
 
 namespace TicketingApi.Controllers.v1.Authentication
 {
@@ -46,12 +46,14 @@ namespace TicketingApi.Controllers.v1.Authentication
                              
             if (existingUser != null)
             {
-                  var isPasswordVerified = CryptoUtil.VerifyPassword(user.Password, existingUser.Salt, existingUser.Password);
+                var isPasswordVerified = CryptoUtil.VerifyPassword(user.Password, existingUser.Salt, existingUser.Password);
+                var firstRole = existingUser.UserRoles.FirstOrDefault();
+                
                 if (isPasswordVerified)
                 {
                     var claimList = new List<Claim>();
                     claimList.Add(new Claim(ClaimTypes.Name, existingUser.Email));
-                    claimList.Add(new Claim(ClaimTypes.Role, "role"));
+                    claimList.Add(new Claim(ClaimTypes.Role, firstRole.Roles.Name ));
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                     var expireDate = DateTime.UtcNow.AddDays(1);

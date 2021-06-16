@@ -43,7 +43,6 @@
           "Swashbuckle.AspNetCore": "5.6.3",
           "System.IdentityModel.Tokens.Jwt": "6.11.1",
           "System.Text.Encoding.CodePages": "5.0.0",
-          "Advantage.Data.Provider": "11.10.1.30",
           "Microsoft.AspNetCore.Antiforgery": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "5.0.0.0",
@@ -729,17 +728,6 @@
       "System.Text.Encoding.CodePages/5.0.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0"
-        }
-      },
-      "Advantage.Data.Provider/11.10.1.30": {
-        "runtime": {
-          "Advantage.Data.Provider.dll": {
-            "assemblyVersion": "11.10.1.30",
-            "fileVersion": "11.10.1.30"
-          }
-        },
-        "compile": {
-          "Advantage.Data.Provider.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/5.0.0.0": {
@@ -2736,11 +2724,6 @@
       "sha512": "sha512-NyscU59xX6Uo91qvhOs2Ccho3AR2TnZPomo1Z0K6YpyztBPM/A5VbkzOO19sy3A3i1TtEnTxA7bCe3Us+r5MWg==",
       "path": "system.text.encoding.codepages/5.0.0",
       "hashPath": "system.text.encoding.codepages.5.0.0.nupkg.sha512"
-    },
-    "Advantage.Data.Provider/11.10.1.30": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
     },
     "Microsoft.AspNetCore.Antiforgery/5.0.0.0": {
       "type": "referenceassembly",
