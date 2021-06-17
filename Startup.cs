@@ -81,7 +81,7 @@ namespace TicketingApi
             });
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
              {
-                 //WithOrigins("https://www.bariskisir.com").
+                    builder.WithOrigins("http://localhost:3000");
                     builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials();
               }));
             services.AddSwaggerGen(c =>
