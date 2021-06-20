@@ -9,7 +9,9 @@ namespace TicketingApi.Models.v1.Misc
 
         public int TeamId {get; set;}
 
-        public int UserId {get; set;}
+        public Team Team { get; set;}
+
+        public int? UserId {get; set;}
 
         public User User {get;set;}
 

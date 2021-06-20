@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using TicketingApi.DBContexts;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using TicketingApi.Utils;
 
 namespace TicketingApi
 {
@@ -79,6 +80,7 @@ namespace TicketingApi
                     }
                 };
             });
+            services.AddScoped<IFileUtil, FileUtil>();
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
              {
                  //WithOrigins("https://www.bariskisir.com").

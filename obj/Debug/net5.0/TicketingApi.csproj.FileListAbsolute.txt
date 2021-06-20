@@ -128,7 +128,6 @@ C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\bin\Debug\net5.0\Sw
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\bin\Debug\net5.0\System.IdentityModel.Tokens.Jwt.dll
-C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\bin\Debug\net5.0\Advantage.Data.Provider.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\obj\Debug\net5.0\TicketingApi.csproj.AssemblyReference.cache
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\obj\Debug\net5.0\TicketingApi.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\obj\Debug\net5.0\TicketingApi.AssemblyInfoInputs.cache
@@ -205,3 +204,4 @@ C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\api\TicketingApi\ob
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\api\TicketingApi\obj\Debug\net5.0\TicketingApi.RazorTargetAssemblyInfo.cache
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\api\TicketingApi\obj\Debug\net5.0\TicketingApi.csproj.CopyComplete
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\api\TicketingApi\obj\Debug\net5.0\TicketingApi.genruntimeconfig.cache
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\TicketingApi\bin\Debug\net5.0\SixLabors.ImageSharp.dll

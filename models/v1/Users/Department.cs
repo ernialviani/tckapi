@@ -11,5 +11,6 @@ namespace TicketingApi.Models.v1.Users
         public int Id { get; set;}  
         public string Name { get; set;}  
         public string Desc { get; set;} 
+        public ICollection<UserDept> UserDepts {get; set;}
     }
 }

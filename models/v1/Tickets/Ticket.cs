@@ -13,6 +13,8 @@ namespace TicketingApi.Models.v1.Tickets
         public string SenderMail {get; set;}
         public int StatId {get;set;}
         public string SolvedBy {get; set;}
+
+        public DateTime? SolvedAt {get; set;}
         public string RejectedBy {get; set;}
         public string RejectedReason {get;set;}
         public DateTime? CreatedAt {get;set;}

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using TicketingApi.Models.v1.Users;
 using System.IdentityModel.Tokens.Jwt;
 using TicketingApi.Entities;
+using TicketingApi.Utils;
 
 namespace TicketingApi.Controllers.v1.Users
 {
@@ -20,9 +21,11 @@ namespace TicketingApi.Controllers.v1.Users
     {
        //  private readonly IConfiguration _configuration;
          private readonly AppDBContext  _context;
-        public UserController(AppDBContext context)
+        private readonly IFileUtil _fileUtil;
+        public UserController(AppDBContext context, IFileUtil fileUtil )
         {
             _context = context; 
+            _fileUtil = fileUtil;
         }
 
         [HttpGet]
@@ -45,10 +48,28 @@ namespace TicketingApi.Controllers.v1.Users
             return null;
         }
 
-        [HttpPost("")]
-        public ActionResult<User> PostUser(User model)
+        [HttpPost]
+        [Authorize]
+        public IActionResult Create([FromForm]User model)
         {
-            return null;
+                  var salt =  CryptoUtil.GenerateSalt();
+                User user = new User()
+                {   
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Password =  CryptoUtil.HashMultiple(model.Password, salt),
+                    Salt = salt,
+                    CreatedAt = DateTime.Now
+                };
+            if (model.File != null)
+            {
+                var uploadedImage = _fileUtil.Upload(model.File, "Medias/Users");
+                user.Image = uploadedImage;
+            }
+            _context.Add(user);
+            _context.SaveChanges();
+            return Ok();
         }
 
         [HttpPut("{id}")]

@@ -13,8 +13,8 @@ namespace TicketingApi.Models.v1.Users
         public string Salt { get; set; }
         public string Image {get; set;}
         public string LoginStatus {get; set;}
-        public DateTime CreationDateTime { get; set;}  
-        public DateTime? LastUpdateDateTime { get; set;}  
+        public DateTime? CreatedAt { get; set;}  
+        public DateTime? UpdatedAt { get; set;}  
         
     }
 }
