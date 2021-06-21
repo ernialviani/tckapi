@@ -75,7 +75,22 @@ namespace TicketingApi.Controllers.v1.Users
         [HttpPut("{id}")]
         public IActionResult PutUser(int id, User model)
         {
+
             return NoContent();
+        }
+
+        //avatar update
+        [HttpPut("{id}")]
+        [Route("admin/avatar-update/{id}")]
+        public IActionResult PutAvatar(int id,[FromForm] User model)
+        {
+            var rec = _context.Users.FirstOrDefault(x => x.Id == id);
+            if(model.File != null){
+                var uploadedImage = _fileUtil.Upload(model.File, "Medias/Users");
+                rec.Image = uploadedImage;
+            }
+            _context.SaveChanges();
+            return Ok(rec);
         }
 
         [HttpDelete("{id}")]
