@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+<<<<<<< HEAD
     "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj": {}
   },
   "projects": {
@@ -12,14 +13,32 @@
         "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
         "packagesPath": "C:\\Users\\Ihsan_pc\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\obj\\",
+=======
+    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj",
+        "projectName": "TicketingApi",
+        "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj",
+        "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\obj\\",
+>>>>>>> 28c1e047742c1014d52670a3287b5f54fd392ebd
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Ihsan_pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\programmer3\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
