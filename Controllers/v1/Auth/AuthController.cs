@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Mime;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                 if (isPasswordVerified)
                 {
                     var claimList = new List<Claim>();
-                    claimList.Add(new Claim(ClaimTypes.Name, existingUser.Email));
+                    claimList.Add(new Claim(ClaimTypes.Email, existingUser.Email));
                     claimList.Add(new Claim(ClaimTypes.Role, firstRole.Roles.Name ));
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -66,7 +67,7 @@ namespace TicketingApi.Controllers.v1.Authentication
 
                     return Ok(new {
                         token          = new JwtSecurityTokenHandler().WriteToken(token),
-                        expireDat      = timeStamp,
+                        expireDate      = timeStamp,
                         Id             = existingUser.Id,
                         FirstName      = existingUser.FirstName,
                         LastName       = existingUser.LastName,
@@ -154,6 +155,33 @@ namespace TicketingApi.Controllers.v1.Authentication
             {
                 return BadRequest("Email is already in use");
             }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("admin/authcheck")]
+        public IActionResult AuthorizationCheck([FromHeader] string Authorization){
+            var bearer = Authorization.Replace("Bearer ", "");
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(bearer);
+            var email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+              var existingUser = _context.Users.Where(v => v.Email.Equals(email))
+                                .AsNoTracking()
+                                .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
+                                .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
+                                .FirstOrDefault();
+
+            if(existingUser != null){
+                  return Ok(new {
+                        Id             = existingUser.Id,
+                        FirstName      = existingUser.FirstName,
+                        LastName       = existingUser.LastName,
+                        Email          = existingUser.Email,
+                        role           = existingUser.UserRoles,
+                        dept           = existingUser.UserDepts,
+                        Image          = existingUser.Image,
+                    });
+            }
+            return NotFound();
         }
 
 

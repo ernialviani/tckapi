@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "VVa+HkkP3Lnsx3ctyVR9exCi9Tg6WxZcew4hFFhGSU6X9JoUY+rUiekyTHlZUvJBd0drzkDMSACe3rUyQLQvBA==",
+  "dgSpecHash": "QQ9R+CVKWR4dJj8gIsaazlCz9+oBU60Q98IeQObGkIn0Pn4J3BTPVDnlEzVnWraKtEm94qur3mc/deqkTBjG4A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\TicketingApi\\TicketingApi.csproj",
+  "projectFilePath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ihsan_pc\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Ihsan_pc\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.6\\microsoft.aspnetcore.authentication.jwtbearer.5.0.6.nupkg.sha512",
