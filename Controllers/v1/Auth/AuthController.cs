@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Mime;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using TicketingApi.DBContexts;
 using TicketingApi.Models.v1.Users;
-
+using Microsoft.AspNetCore.Hosting;
 using TicketingApi.Utils;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
@@ -28,10 +29,12 @@ namespace TicketingApi.Controllers.v1.Authentication
     {
          private readonly IConfiguration _configuration;
          private readonly AppDBContext  _context;
+                 private readonly IWebHostEnvironment _env;
 
-        public AuthController(IConfiguration configuration, AppDBContext context){
+        public AuthController(IConfiguration configuration, AppDBContext context, IWebHostEnvironment env){
             _configuration = configuration;
             _context = context;
+            _env = env;
         }    
 
         [AllowAnonymous]
@@ -44,6 +47,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                              .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
                              .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
                              .FirstOrDefault();
+            var userImage = "";
                              
             if (existingUser != null)
             {
@@ -65,6 +69,13 @@ namespace TicketingApi.Controllers.v1.Authentication
                         expires: expireDate,
                         signingCredentials: creds);
 
+                    if(existingUser.Image != null || existingUser.Image != ""){
+                           var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+                           var filePath = Path.Combine(uploadPath, existingUser.Image);
+                           byte[] b = System.IO.File.ReadAllBytes(filePath);
+                            userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+                    }
+
                     return Ok(new {
                         token          = new JwtSecurityTokenHandler().WriteToken(token),
                         expireDate      = timeStamp,
@@ -74,7 +85,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                         Email          = existingUser.Email,
                         role           = existingUser.UserRoles,
                         dept           = existingUser.UserDepts,
-                        Image          = existingUser.Image,
+                        Image          = userImage,
                     });
                 }
                 else {
@@ -161,14 +172,22 @@ namespace TicketingApi.Controllers.v1.Authentication
         [HttpGet]
         [Route("admin/authcheck")]
         public IActionResult AuthorizationCheck([FromHeader] string Authorization){
+            var userImage = "";
             var bearer = Authorization.Replace("Bearer ", "");
             var token = new JwtSecurityTokenHandler().ReadJwtToken(bearer);
             var email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
-              var existingUser = _context.Users.Where(v => v.Email.Equals(email))
+            var existingUser = _context.Users.Where(v => v.Email.Equals(email))
                                 .AsNoTracking()
                                 .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
                                 .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
                                 .FirstOrDefault();
+
+            if(existingUser.Image != null || existingUser.Image != ""){
+                    var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+                    var filePath = Path.Combine(uploadPath, existingUser.Image);
+                    byte[] b = System.IO.File.ReadAllBytes(filePath);
+                    userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+            }
 
             if(existingUser != null){
                   return Ok(new {
@@ -178,7 +197,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                         Email          = existingUser.Email,
                         role           = existingUser.UserRoles,
                         dept           = existingUser.UserDepts,
-                        Image          = existingUser.Image,
+                        Image          = userImage,
                     });
             }
             return NotFound();

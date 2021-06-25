@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+<<<<<<< HEAD
     "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj": {}
   },
   "projects": {
@@ -12,6 +13,19 @@
         "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
         "packagesPath": "C:\\Users\\Ihsan_pc\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\obj\\",
+=======
+    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj",
+        "projectName": "TicketingApi",
+        "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj",
+        "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\obj\\",
+>>>>>>> ef2dadf0155b9b8b38d26c904828f7bd50d8781e
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ihsan_pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -65,6 +79,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[5.0.7, )"
+            },
+            "MimeKit": {
+              "target": "Package",
+              "version": "[2.13.0, )"
             },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",

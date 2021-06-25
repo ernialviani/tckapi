@@ -22,6 +22,7 @@ using TicketingApi.DBContexts;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using TicketingApi.Utils;
+using TicketingApi.Entities;
 
 namespace TicketingApi
 {
@@ -81,6 +82,10 @@ namespace TicketingApi
                 };
             });
             services.AddScoped<IFileUtil, FileUtil>();
+            
+            services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
+            services.AddTransient<IMailUtil, MailUtil>();
+
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
              {
                     builder.WithOrigins("http://localhost:3000");
