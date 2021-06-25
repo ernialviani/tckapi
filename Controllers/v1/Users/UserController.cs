@@ -52,7 +52,15 @@ namespace TicketingApi.Controllers.v1.Users
         [Authorize]
         public IActionResult Create([FromForm]User model)
         {
-                  var salt =  CryptoUtil.GenerateSalt();
+            var exitingsUser = _context.User.where(e => e.Email == model.Email)
+                               .FirstOrDefault()
+                               .AsNoTracking();
+            
+            if(exitingsUser != null ) {
+                return BadRequest("Email already in use");
+            }
+                        
+            var salt =  CryptoUtil.GenerateSalt();
                 User user = new User()
                 {   
                     FirstName = model.FirstName,
