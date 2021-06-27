@@ -9,5 +9,7 @@ namespace TicketingApi.Models.v1.Tickets
          public DateTime? TeamAt {get; set;}
          public int? UserId {get; set;}
          public DateTime? UserAt {get; set;}
+
+         public string AssignType {get; set;} //M MANAGER //T TEAM //U USER
     }
 }

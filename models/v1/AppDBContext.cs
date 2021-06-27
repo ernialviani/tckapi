@@ -17,14 +17,15 @@ namespace TicketingApi.DBContexts
         public DbSet<Role> Roles { get; set; } 
         public DbSet<UserRole> UserRoles { get; set; } 
         public DbSet<Department> Departments { get; set; }    
-        public DbSet<UserDept> UserDeprts { get; set; } 
+        public DbSet<UserDept> UserDepts { get; set; } 
   
         //misc
-        public virtual DbSet<App> Apps {get; set;}
-        public virtual DbSet<Module> Modules {get; set;}
-        public virtual DbSet<Team> Teams {get; set;}
-        public virtual DbSet<TeamDetail> TeamDetails {get; set;}
-        public virtual DbSet<Media> Medias {get; set;}
+        public  DbSet<App> Apps {get; set;}
+        public  DbSet<Module> Modules {get; set;}
+        public  DbSet<Team> Teams {get; set;}
+        public  DbSet<TeamDetail> TeamDetails {get; set;}
+        public  DbSet<Media> Medias {get; set;}
+        public DbSet<KBase> KBases {get; set;} 
         
         //ticketing
 
@@ -65,18 +66,18 @@ namespace TicketingApi.DBContexts
            // modelBuilder.Entity<User>().Ignore(u => u.UpdateAt); //.HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
 
             modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);  
-            modelBuilder.Entity<User>().Property(u => u.UpdateAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
+            modelBuilder.Entity<User>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
   
-            var salt =  CryptoUtil.GenerateSalt();;
+            var salt =  CryptoUtil.GenerateSalt();
             modelBuilder.Entity<User>().HasData(
                 new { 
-                    Id = 1,
-                    FirstName = "vicky", 
-                    LastName = "Epsylon", 
-                    Email = "vicky.indiarto@epsylonhome.com", 
-                    Password = CryptoUtil.HashMultiple("programmer3", salt), 
-                    Salt=salt,
-                    CreatedAt = DateTime.Now
+                        Id = 1,
+                        FirstName = "vicky", 
+                        LastName = "Epsylon", 
+                        Email = "vicky.indiarto@epsylonhome.com", 
+                        Password = CryptoUtil.HashMultiple("programmer3", salt), 
+                        Salt=salt,
+                        CreatedAt = DateTime.Now
                     }
             );
 
@@ -145,6 +146,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Sender>().Property(u => u.Email).HasColumnName("email").HasColumnType("nvarchar(100)").IsRequired();  
             modelBuilder.Entity<Sender>().Property(u => u.Password).HasColumnName("password").HasColumnType("nvarchar(255)").IsRequired();  
             modelBuilder.Entity<Sender>().Property(u => u.Salt).HasColumnName("salt").HasColumnType("nvarchar(36)").IsRequired();  
+            modelBuilder.Entity<Sender>().Ignore(u => u.File);
+            modelBuilder.Entity<Sender>().Property(u => u.LoginStatus).HasColumnName("login_status").HasColumnType("tinyint(1)").IsRequired();
             modelBuilder.Entity<Sender>().Property(u => u.Image).HasColumnName("image").HasColumnType("nvarchar(50)").IsRequired(false);  
             modelBuilder.Entity<Sender>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);  
             modelBuilder.Entity<Sender>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
@@ -153,7 +156,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<App>().HasKey(u => u.Id).HasName("PK_Apps");  
             modelBuilder.Entity<App>().HasIndex(u => u.Name).HasDatabaseName("idx_name");     
             modelBuilder.Entity<App>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
-            modelBuilder.Entity<App>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();  
+            modelBuilder.Entity<App>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired(); 
+            modelBuilder.Entity<App>().Ignore(u => u.File);
             modelBuilder.Entity<App>().Property(u => u.Logo).HasColumnName("logo").HasColumnType("nvarchar(50)").IsRequired(false);  
             modelBuilder.Entity<App>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("nvarchar(50)").IsRequired(false);
 
@@ -185,17 +189,17 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Team>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<Team>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();   
             modelBuilder.Entity<Team>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("nvarchar(150)").IsRequired(false);  
-            modelBuilder.Entity<Team>().Property(u => u.ManagerId).HasColumnName("manager_id").HasColumnType("int").IsRequired();   
+            modelBuilder.Entity<Team>().Property(u => u.LeaderId).HasColumnName("leader_id").HasColumnType("int").IsRequired();   
 
             modelBuilder.Entity<Team>().HasData(
-                new { Id = 1, Name = "TEAM CAP", ManagerId=1, Desc = "" }
+                new { Id = 1, Name = "TEAM CAP", LeaderId=1, Desc = "" }
             );
 
             modelBuilder.Entity<TeamDetail>().ToTable("team_details");   
             modelBuilder.Entity<TeamDetail>().HasKey(u => u.Id).HasName("PK_Teams_details");    
             modelBuilder.Entity<TeamDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<TeamDetail>().Property(u => u.TeamId).HasColumnName("team_id").HasColumnType("int").IsRequired().HasDefaultValue(0);  
-            modelBuilder.Entity<TeamDetail>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired().HasDefaultValue(0);  
+            modelBuilder.Entity<TeamDetail>().Property(u => u.MemberId).HasColumnName("member_id").HasColumnType("int").IsRequired().HasDefaultValue(0);  
            
             // modelBuilder.Entity<TeamDetail>().HasData(
             //     new { Id = 1, TeamId = 1, UserId=2}
@@ -226,7 +230,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Ticket>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("text").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.AppId).HasColumnName("app_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.ModuleId).HasColumnName("module_id").HasColumnType("int").IsRequired();
-            modelBuilder.Entity<Ticket>().Property(u => u.SenderMail).HasColumnName("sender_mail").HasColumnType("nvarchar(50)").IsRequired();
+            modelBuilder.Entity<Ticket>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.StatId).HasColumnName("stat_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.SolvedBy).HasColumnName("solved_by").HasColumnType("nvarchar(50)").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.RejectedBy).HasColumnName("rejected_by").HasColumnType("nvarchar(50)").IsRequired(false);
@@ -245,9 +249,9 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TicketDetail>().HasKey(u => u.Id).HasName("PK_Ticket_details");  
             modelBuilder.Entity<TicketDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<TicketDetail>().Property(u => u.TicketId).HasColumnName("ticket_id").HasColumnType("int").IsRequired();   
-            modelBuilder.Entity<TicketDetail>().Property(u => u.UserMail).HasColumnName("user_mail").HasColumnType("nvarchar(50)").IsRequired(false);   
+            modelBuilder.Entity<TicketDetail>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);   
             modelBuilder.Entity<TicketDetail>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("text").IsRequired();
-            modelBuilder.Entity<TicketDetail>().Property(u => u.Flag).HasColumnName("flag").HasColumnType("nvarchar(10)").IsRequired();
+            modelBuilder.Entity<TicketDetail>().Property(u => u.Flag).HasColumnName("flag").HasColumnType("tinyint(1)").IsRequired();
             modelBuilder.Entity<TicketDetail>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<TicketDetail>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
 
@@ -270,7 +274,16 @@ namespace TicketingApi.DBContexts
                 new { Id = 1, TicketId = 1, TeamId = 1, TeamAt = DateTime.Now }
             );
 
-
+            modelBuilder.Entity<KBase>().ToTable("kbase");
+            modelBuilder.Entity<KBase>().HasKey(u => u.Id).HasName("PK_KBase");  
+            modelBuilder.Entity<KBase>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<KBase>().Property(u => u.Title).HasColumnName("title").HasColumnType("text").IsRequired();   
+            modelBuilder.Entity<KBase>().Property(u => u.Body).HasColumnName("body").HasColumnType("text").IsRequired();   
+            modelBuilder.Entity<KBase>().Property(u => u.AppId).HasColumnName("app_id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<KBase>().Property(u => u.ModuleId).HasColumnName("module_id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<KBase>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<KBase>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
+            modelBuilder.Entity<KBase>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
 
        
         }  

@@ -1,31 +1,17 @@
 {
   "format": 1,
   "restore": {
-<<<<<<< HEAD
-    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj": {}
+    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj": {
+    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
+        "projectUniqueName": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj",
         "projectName": "TicketingApi",
-        "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
+        "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj",
         "packagesPath": "C:\\Users\\Ihsan_pc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\obj\\",
-=======
-    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj": {}
-  },
-  "projects": {
-    "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj",
-        "projectName": "TicketingApi",
-        "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj",
-        "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\obj\\",
->>>>>>> ef2dadf0155b9b8b38d26c904828f7bd50d8781e
+        "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ihsan_pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -52,6 +38,10 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "MailKit": {
+              "target": "Package",
+              "version": "[2.13.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[5.0.6, )"

@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace TicketingApi.Models.v1.Users
 {
@@ -11,8 +12,9 @@ namespace TicketingApi.Models.v1.Users
         public string Email { get; set;}  
         public string Password { get; set;}  
         public string Salt { get; set; }
+        public IFormFile File {get; set;}
         public string Image {get; set;}
-        public string LoginStatus {get; set;}
+        public int LoginStatus {get; set;}
         public DateTime? CreatedAt { get; set;}  
         public DateTime? UpdatedAt { get; set;}  
         

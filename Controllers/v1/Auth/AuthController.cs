@@ -69,7 +69,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                         expires: expireDate,
                         signingCredentials: creds);
 
-                    if(existingUser.Image != null || existingUser.Image != ""){
+                    if(String.IsNullOrEmpty(existingUser.Image) == false){
                            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
                            var filePath = Path.Combine(uploadPath, existingUser.Image);
                            byte[] b = System.IO.File.ReadAllBytes(filePath);
@@ -182,7 +182,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                                 .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
                                 .FirstOrDefault();
 
-            if(existingUser.Image != null || existingUser.Image != ""){
+            if(String.IsNullOrEmpty(existingUser.Image) == false ){
                     var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
                     var filePath = Path.Combine(uploadPath, existingUser.Image);
                     byte[] b = System.IO.File.ReadAllBytes(filePath);

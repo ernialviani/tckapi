@@ -4,6 +4,8 @@ namespace TicketingApi.Utils
 {
     public interface IFileUtil
     {
-        string Upload(IFormFile file, string uploadDirectory);
+        string AvatarUpload(IFormFile file, string Dir);
+
+        bool Remove(string uploadDirectory);
     }
 }

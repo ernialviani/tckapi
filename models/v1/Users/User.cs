@@ -18,9 +18,13 @@ namespace TicketingApi.Models.v1.Users
         public IFormFile File {get; set;}
         public string Image {get;set;}
         public DateTime? CreatedAt { get; set;}  
-        public DateTime? UpdateAt { get; set;}  
+        public DateTime? UpdatedAt { get; set;}  
 
         public ICollection<UserRole> UserRoles {get; set;}
         public ICollection<UserDept> UserDepts {get; set;}
+
+
+        public ICollection<Team> Teams {get;set;}
+        public ICollection<TeamDetail> TeamDetails {get;set;}
     }  
 } 

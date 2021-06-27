@@ -361,3 +361,6 @@ C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\obj\Debug\net5.0\TicketingAp
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\obj\Debug\net5.0\ref\TicketingApi.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\obj\Debug\net5.0\TicketingApi.pdb
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\obj\Debug\net5.0\TicketingApi.genruntimeconfig.cache
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\MailKit.dll
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\MimeKit.dll
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\BouncyCastle.Crypto.dll

@@ -1,3 +1,4 @@
+using System.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +56,11 @@ namespace TicketingApi
                 options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
             });
 
+       services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
+             {
+                    builder.WithOrigins("http://localhost:3000");
+                    builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithExposedHeaders("Token-Expired");;
+              }));
 
             services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -68,7 +74,8 @@ namespace TicketingApi
                     ValidateAudience = false,
                  //   ValidIssuer = "https://localhost:5001",
                    // ValidAudience = "https://localhost:5001",
-                    ValidateLifetime = true
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
                 jwtOption.Events = new JwtBearerEvents{
                    OnAuthenticationFailed = context =>
@@ -76,8 +83,16 @@ namespace TicketingApi
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                         {
                             context.Response.Headers.Add("Token-Expired", "true");
+                       //     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                             //context.Response.ContentType = "application/json; charset=utf-8";
+                            //var message = context.Exception.ToString();
+                           // var result = JsonConvert.SerializeObject(new { message });
+                           // return context.Response.Body.Write(result);
+                           // return context.Response;
+                        
                         }
                         return Task.CompletedTask;
+                        //return Bad
                     }
                 };
             });
@@ -86,11 +101,7 @@ namespace TicketingApi
             services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailUtil, MailUtil>();
 
-            services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
-             {
-                    builder.WithOrigins("http://localhost:3000");
-                    builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials();
-              }));
+       
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });
@@ -110,11 +121,13 @@ namespace TicketingApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            app.UseCors("ApiCorsPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors("ApiCorsPolicy");
+           
 
             app.UseEndpoints(endpoints =>
             {
