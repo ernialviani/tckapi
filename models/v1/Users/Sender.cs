@@ -14,7 +14,7 @@ namespace TicketingApi.Models.v1.Users
         public string Salt { get; set; }
         public IFormFile File {get; set;}
         public string Image {get; set;}
-        public int LoginStatus {get; set;}
+        public bool? LoginStatus {get; set;}
         public DateTime? CreatedAt { get; set;}  
         public DateTime? UpdatedAt { get; set;}  
         

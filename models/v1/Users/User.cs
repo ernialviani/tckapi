@@ -22,9 +22,5 @@ namespace TicketingApi.Models.v1.Users
 
         public ICollection<UserRole> UserRoles {get; set;}
         public ICollection<UserDept> UserDepts {get; set;}
-
-
-        public ICollection<Team> Teams {get;set;}
-        public ICollection<TeamDetail> TeamDetails {get;set;}
     }  
 } 

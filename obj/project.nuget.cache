@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+7GqtPJv1VnCJhs1isL+/IcJnH0cB9Rs9V9KkcxODQzjuAhrTGPP3qXgsjGFwwSOHYsu0AVaV90WHrEERVBqHg==",
+  "dgSpecHash": "z4AE44KQ50bG7mGdeByUbkyOGzbk/++s+GAbJ4kilffv2KVMJyoj8/6SBg8k1kJ7MbOKzoD8DqmU1C73MfxvYw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj",
+  "projectFilePath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ihsan_pc\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Ihsan_pc\\.nuget\\packages\\mailkit\\2.13.0\\mailkit.2.13.0.nupkg.sha512",

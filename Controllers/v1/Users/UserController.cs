@@ -41,8 +41,7 @@ namespace TicketingApi.Controllers.v1.Users
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
           var allUser = _context.Users.AsNoTracking()
                         .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
-                        .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
-                        .Include(tm => tm.Teams);
+                        .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments);
            return Ok(allUser);
         }
 

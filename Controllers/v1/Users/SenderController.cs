@@ -83,7 +83,7 @@ namespace TicketingApi.Controllers.v1.Users
                     var salt =  CryptoUtil.GenerateSalt();
                     senderEntity.Password =  CryptoUtil.HashMultiple(request.Password, salt);
                     senderEntity.Salt = salt;
-                    senderEntity.LoginStatus = 1;
+                    senderEntity.LoginStatus = false;
                 }
 
                 if (request.File != null)

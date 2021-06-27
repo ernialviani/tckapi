@@ -15,10 +15,10 @@ namespace TicketingApi.Models.v1.Misc
         public int RelId {get;set;}
         public string RelType {get; set;}
 
-        [ForeignKey("RelId")]
-        public Ticket Tickets {get; set;} 
+        // [ForeignKey("RelId")]
+        // public Ticket Tickets {get; set;} 
 
-        [ForeignKey("RelId")]
-        public TicketDetail TicketDetails {get; set;}
+        // [ForeignKey("RelId")]
+        // public TicketDetail TicketDetails {get; set;}
     }
 }

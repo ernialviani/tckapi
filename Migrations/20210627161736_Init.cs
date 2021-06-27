@@ -43,22 +43,24 @@ namespace TicketingApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Medias",
+                name: "kbases",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    FileType = table.Column<string>(type: "longtext", nullable: true)
+                    title = table.Column<string>(type: "text", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FileName = table.Column<string>(type: "longtext", nullable: true)
+                    body = table.Column<string>(type: "text", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RelId = table.Column<int>(type: "int", nullable: false),
-                    RelType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    user_id = table.Column<int>(type: "int", nullable: false),
+                    app_id = table.Column<int>(type: "int", nullable: false),
+                    module_id = table.Column<int>(type: "int", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Medias", x => x.Id);
+                    table.PrimaryKey("PK_KBase", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -89,8 +91,7 @@ namespace TicketingApi.Migrations
                     password = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     salt = table.Column<string>(type: "nvarchar(36)", nullable: false),
                     image = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    LoginStatus = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    login_status = table.Column<bool>(type: "tinyint(1)", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
@@ -113,89 +114,6 @@ namespace TicketingApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Stat", x => x.id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "teams",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    name = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    desc = table.Column<string>(type: "nvarchar(150)", nullable: true),
-                    manager_id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teams", x => x.id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "ticket_assign",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ticket_id = table.Column<int>(type: "int", nullable: false),
-                    team_id = table.Column<int>(type: "int", nullable: true),
-                    team_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    user_id = table.Column<int>(type: "int", nullable: true),
-                    user_at = table.Column<DateTime>(type: "datetime", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ticket_assign", x => x.id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "ticket_details",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ticket_id = table.Column<int>(type: "int", nullable: false),
-                    user_mail = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    comment = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    flag = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ticket_details", x => x.id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "tickets",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ticket_number = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    supject = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    comment = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    app_id = table.Column<int>(type: "int", nullable: false),
-                    module_id = table.Column<int>(type: "int", nullable: false),
-                    sender_mail = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    stat_id = table.Column<int>(type: "int", nullable: false),
-                    solved_by = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    SolvedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    rejected_by = table.Column<string>(type: "nvarchar(50)", nullable: true),
-                    rejected_reason = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ticket", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -243,26 +161,23 @@ namespace TicketingApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "team_details",
+                name: "teams",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    team_id = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    user_id = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
+                    name = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    desc = table.Column<string>(type: "nvarchar(150)", nullable: true),
+                    leader_id = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams_details", x => x.id);
+                    table.PrimaryKey("PK_Teams", x => x.id);
                     table.ForeignKey(
-                        name: "FK_team_details_teams_team_id",
-                        column: x => x.team_id,
-                        principalTable: "teams",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_team_details_users_user_id",
-                        column: x => x.user_id,
+                        name: "FK_teams_users_leader_id",
+                        column: x => x.leader_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -323,6 +238,163 @@ namespace TicketingApi.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "tickets",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ticket_number = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    supject = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    comment = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    app_id = table.Column<int>(type: "int", nullable: false),
+                    module_id = table.Column<int>(type: "int", nullable: false),
+                    sender_id = table.Column<int>(type: "int", nullable: false),
+                    stat_id = table.Column<int>(type: "int", nullable: false),
+                    solved_by = table.Column<string>(type: "nvarchar(50)", nullable: true),
+                    SolvedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    rejected_by = table.Column<string>(type: "nvarchar(50)", nullable: true),
+                    rejected_reason = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RejectedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ticket", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_tickets_apps_app_id",
+                        column: x => x.app_id,
+                        principalTable: "apps",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tickets_modules_module_id",
+                        column: x => x.module_id,
+                        principalTable: "modules",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tickets_senders_sender_id",
+                        column: x => x.sender_id,
+                        principalTable: "senders",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tickets_stats_stat_id",
+                        column: x => x.stat_id,
+                        principalTable: "stats",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "team_details",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    team_id = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    member_id = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams_details", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_team_details_teams_team_id",
+                        column: x => x.team_id,
+                        principalTable: "teams",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_team_details_users_member_id",
+                        column: x => x.member_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "medias",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    file_type = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    file_name = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    rel_id = table.Column<int>(type: "int", nullable: false),
+                    rel_type = table.Column<string>(type: "nvarchar(5)", nullable: false),
+                    TicketId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Media", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_medias_tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "tickets",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ticket_assigns",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ticket_id = table.Column<int>(type: "int", nullable: false),
+                    team_id = table.Column<int>(type: "int", nullable: true),
+                    team_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    user_id = table.Column<int>(type: "int", nullable: true),
+                    user_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    AssignType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ticket_assign", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_ticket_assigns_tickets_ticket_id",
+                        column: x => x.ticket_id,
+                        principalTable: "tickets",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ticket_details",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ticket_id = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<int>(type: "int", nullable: true),
+                    comment = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    flag = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ticket_details", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_ticket_details_tickets_ticket_id",
+                        column: x => x.ticket_id,
+                        principalTable: "tickets",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.InsertData(
                 table: "apps",
                 columns: new[] { "id", "desc", "logo", "name" },
@@ -339,10 +411,10 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "desc", "name" },
                 values: new object[,]
                 {
-                    { 3, "", "Programmer" },
-                    { 2, "", "CS" },
+                    { 4, "", "Other" },
                     { 1, "", "Management" },
-                    { 4, "", "Other" }
+                    { 2, "", "CS" },
+                    { 3, "", "Programmer" }
                 });
 
             migrationBuilder.InsertData(
@@ -350,10 +422,10 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "desc", "name" },
                 values: new object[,]
                 {
+                    { 3, "", "Manager" },
                     { 2, "", "Leader" },
-                    { 4, "", "User" },
                     { 1, "", "SuperAdmin" },
-                    { 3, "", "Manager" }
+                    { 4, "", "User" }
                 });
 
             migrationBuilder.InsertData(
@@ -361,37 +433,17 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "color", "desc", "name" },
                 values: new object[,]
                 {
-                    { 4, "Blue", "", "Resolved" },
+                    { 5, "Grey", "", "Rejected" },
                     { 3, "Red", "", "In Progress" },
                     { 2, "Orange", "", "Open" },
                     { 1, "Green", "", "New" },
-                    { 5, "Grey", "", "Rejected" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "teams",
-                columns: new[] { "id", "desc", "manager_id", "name" },
-                values: new object[] { 1, "", 1, "TEAM CAP" });
-
-            migrationBuilder.InsertData(
-                table: "ticket_assign",
-                columns: new[] { "id", "team_at", "team_id", "ticket_id", "user_at", "user_id" },
-                values: new object[] { 1, new DateTime(2021, 6, 20, 23, 33, 20, 625, DateTimeKind.Local).AddTicks(1805), 1, 1, null, null });
-
-            migrationBuilder.InsertData(
-                table: "tickets",
-                columns: new[] { "id", "app_id", "comment", "created_at", "module_id", "rejected_by", "rejected_reason", "sender_mail", "SolvedAt", "solved_by", "stat_id", "supject", "ticket_number", "updated_at" },
-                values: new object[,]
-                {
-                    { 2, 1, "asdhjkahsdjas jasshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4162), 1, "", "", "vickynewonline@gmail.com", null, "", 1, "Subject 2", "180620212", new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4172) },
-                    { 1, 1, "lorem ipsum dolor shit nyolibay knoper low", new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(1877), 1, "", "", "vickynewonline@gmail.com", null, "", 1, "Subject 1", "180620211", new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(1909) },
-                    { 3, 1, "ksknnina  lasklk  klsnklna ksaiopoells;mlauw klnskoiskel aksnkadia; mkaskks ", new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4176), 1, "", "", "vickynewonline@gmail.com", null, "", 1, "Subject 3", "180620213", new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4177) }
+                    { 4, "Blue", "", "Resolved" }
                 });
 
             migrationBuilder.InsertData(
                 table: "users",
                 columns: new[] { "id", "created_at", "email", "first_name", "image", "last_name", "password", "salt", "updated_at" },
-                values: new object[] { 1, new DateTime(2021, 6, 20, 23, 33, 20, 604, DateTimeKind.Local).AddTicks(5297), "vicky.indiarto@epsylonhome.com", "vicky", null, "Epsylon", "80BC7180F8EDE0243EE65878F04692A5CC992AD4B3FB84C368E5BFBBF6B574EAC7880B925ACFB6BADB42A409BD110EA0DFA6036EC27B838CB31CC9711A09E4F3", "3ecdf1ac-c818-44fc-b1dd-5600defdc2a4", null });
+                values: new object[] { 1, new DateTime(2021, 6, 27, 23, 17, 35, 447, DateTimeKind.Local).AddTicks(5952), "vicky.indiarto@epsylonhome.com", "vicky", null, "Epsylon", "85C39E98FDF8E6249DCB1A062309D3BDF6AA3A3325664052C53DF628F69B9D6EBDF9BA059254E4F447795BCA03378B5052B59552C27E366EC2F2BCA48AE5D14D", "197ceef4-8b82-4e88-a06c-fb38317dfc77", null });
 
             migrationBuilder.InsertData(
                 table: "modules",
@@ -403,6 +455,11 @@ namespace TicketingApi.Migrations
                     { 3, 1, "", "Finance" },
                     { 4, 1, "", "Others" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "teams",
+                columns: new[] { "id", "CreatedAt", "desc", "leader_id", "name", "UpdatedAt" },
+                values: new object[] { 1, null, "", 1, "TEAM CAP", null });
 
             migrationBuilder.InsertData(
                 table: "user_depatments",
@@ -433,6 +490,11 @@ namespace TicketingApi.Migrations
                 column: "name");
 
             migrationBuilder.CreateIndex(
+                name: "IX_medias_TicketId",
+                table: "medias",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
                 name: "idx_name",
                 table: "modules",
                 column: "name");
@@ -458,14 +520,14 @@ namespace TicketingApi.Migrations
                 column: "name");
 
             migrationBuilder.CreateIndex(
+                name: "IX_team_details_member_id",
+                table: "team_details",
+                column: "member_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_team_details_team_id",
                 table: "team_details",
                 column: "team_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_team_details_user_id",
-                table: "team_details",
-                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "idx_name",
@@ -473,9 +535,44 @@ namespace TicketingApi.Migrations
                 column: "name");
 
             migrationBuilder.CreateIndex(
+                name: "IX_teams_leader_id",
+                table: "teams",
+                column: "leader_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ticket_assigns_ticket_id",
+                table: "ticket_assigns",
+                column: "ticket_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ticket_details_ticket_id",
+                table: "ticket_details",
+                column: "ticket_id");
+
+            migrationBuilder.CreateIndex(
                 name: "idx_TicketNumber",
                 table: "tickets",
                 column: "ticket_number");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tickets_app_id",
+                table: "tickets",
+                column: "app_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tickets_module_id",
+                table: "tickets",
+                column: "module_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tickets_sender_id",
+                table: "tickets",
+                column: "sender_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tickets_stat_id",
+                table: "tickets",
+                column: "stat_id");
 
             migrationBuilder.CreateIndex(
                 name: "idx_userid",
@@ -506,7 +603,40 @@ namespace TicketingApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Medias");
+                name: "kbases");
+
+            migrationBuilder.DropTable(
+                name: "medias");
+
+            migrationBuilder.DropTable(
+                name: "team_details");
+
+            migrationBuilder.DropTable(
+                name: "ticket_assigns");
+
+            migrationBuilder.DropTable(
+                name: "ticket_details");
+
+            migrationBuilder.DropTable(
+                name: "user_depatments");
+
+            migrationBuilder.DropTable(
+                name: "user_roles");
+
+            migrationBuilder.DropTable(
+                name: "teams");
+
+            migrationBuilder.DropTable(
+                name: "tickets");
+
+            migrationBuilder.DropTable(
+                name: "departments");
+
+            migrationBuilder.DropTable(
+                name: "roles");
+
+            migrationBuilder.DropTable(
+                name: "users");
 
             migrationBuilder.DropTable(
                 name: "modules");
@@ -518,37 +648,7 @@ namespace TicketingApi.Migrations
                 name: "stats");
 
             migrationBuilder.DropTable(
-                name: "team_details");
-
-            migrationBuilder.DropTable(
-                name: "ticket_assign");
-
-            migrationBuilder.DropTable(
-                name: "ticket_details");
-
-            migrationBuilder.DropTable(
-                name: "tickets");
-
-            migrationBuilder.DropTable(
-                name: "user_depatments");
-
-            migrationBuilder.DropTable(
-                name: "user_roles");
-
-            migrationBuilder.DropTable(
                 name: "apps");
-
-            migrationBuilder.DropTable(
-                name: "teams");
-
-            migrationBuilder.DropTable(
-                name: "departments");
-
-            migrationBuilder.DropTable(
-                name: "roles");
-
-            migrationBuilder.DropTable(
-                name: "users");
         }
     }
 }

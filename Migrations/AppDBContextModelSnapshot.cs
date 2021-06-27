@@ -74,27 +74,86 @@ namespace TicketingApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.KBase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AppId")
+                        .HasColumnType("int")
+                        .HasColumnName("app_id");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("body");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int")
+                        .HasColumnName("module_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("PK_KBase");
+
+                    b.ToTable("kbases");
+                });
+
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.Media", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FileName")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("file_name");
 
                     b.Property<string>("FileType")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("file_type");
 
                     b.Property<int>("RelId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("rel_id");
 
                     b.Property<string>("RelType")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(5)")
+                        .HasColumnName("rel_type");
 
-                    b.HasKey("Id");
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("int");
 
-                    b.ToTable("Medias");
+                    b.HasKey("Id")
+                        .HasName("PK_Media");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("medias");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.Module", b =>
@@ -157,76 +216,6 @@ namespace TicketingApi.Migrations
                             Desc = "",
                             Name = "Others"
                         });
-                });
-
-            modelBuilder.Entity("TicketingApi.Models.v1.Misc.Team", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id")
-                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Desc")
-                        .HasColumnType("nvarchar(150)")
-                        .HasColumnName("desc");
-
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int")
-                        .HasColumnName("manager_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("PK_Teams");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("idx_name");
-
-                    b.ToTable("teams");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Desc = "",
-                            ManagerId = 1,
-                            Name = "TEAM CAP"
-                        });
-                });
-
-            modelBuilder.Entity("TicketingApi.Models.v1.Misc.TeamDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id")
-                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("TeamId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("team_id");
-
-                    b.Property<int?>("UserId")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("PK_Teams_details");
-
-                    b.HasIndex("TeamId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("team_details");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Stat", b =>
@@ -321,6 +310,9 @@ namespace TicketingApi.Migrations
                         .HasColumnType("int")
                         .HasColumnName("module_id");
 
+                    b.Property<DateTime?>("RejectedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("RejectedBy")
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("rejected_by");
@@ -329,10 +321,9 @@ namespace TicketingApi.Migrations
                         .HasColumnType("text")
                         .HasColumnName("rejected_reason");
 
-                    b.Property<string>("SenderMail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("sender_mail");
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int")
+                        .HasColumnName("sender_id");
 
                     b.Property<DateTime?>("SolvedAt")
                         .HasColumnType("datetime(6)");
@@ -362,60 +353,18 @@ namespace TicketingApi.Migrations
                     b.HasKey("Id")
                         .HasName("PK_Ticket");
 
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("ModuleId");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("StatId");
+
                     b.HasIndex("TicketNumber")
                         .HasDatabaseName("idx_TicketNumber");
 
                     b.ToTable("tickets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AppId = 1,
-                            Comment = "lorem ipsum dolor shit nyolibay knoper low",
-                            CreatedAt = new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(1877),
-                            ModuleId = 1,
-                            RejectedBy = "",
-                            RejectedReason = "",
-                            SenderMail = "vickynewonline@gmail.com",
-                            SolvedBy = "",
-                            StatId = 1,
-                            Subject = "Subject 1",
-                            TicketNumber = "180620211",
-                            UpdatedAt = new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(1909)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AppId = 1,
-                            Comment = "asdhjkahsdjas jasshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk",
-                            CreatedAt = new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4162),
-                            ModuleId = 1,
-                            RejectedBy = "",
-                            RejectedReason = "",
-                            SenderMail = "vickynewonline@gmail.com",
-                            SolvedBy = "",
-                            StatId = 1,
-                            Subject = "Subject 2",
-                            TicketNumber = "180620212",
-                            UpdatedAt = new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4172)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AppId = 1,
-                            Comment = "ksknnina  lasklk  klsnklna ksaiopoells;mlauw klnskoiskel aksnkadia; mkaskks ",
-                            CreatedAt = new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4176),
-                            ModuleId = 1,
-                            RejectedBy = "",
-                            RejectedReason = "",
-                            SenderMail = "vickynewonline@gmail.com",
-                            SolvedBy = "",
-                            StatId = 1,
-                            Subject = "Subject 3",
-                            TicketNumber = "180620213",
-                            UpdatedAt = new DateTime(2021, 6, 20, 23, 33, 20, 623, DateTimeKind.Local).AddTicks(4177)
-                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketAssign", b =>
@@ -425,6 +374,9 @@ namespace TicketingApi.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AssignType")
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("TeamAt")
                         .HasColumnType("datetime")
@@ -449,16 +401,9 @@ namespace TicketingApi.Migrations
                     b.HasKey("Id")
                         .HasName("PK_Ticket_assign");
 
-                    b.ToTable("ticket_assign");
+                    b.HasIndex("TicketId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            TeamAt = new DateTime(2021, 6, 20, 23, 33, 20, 625, DateTimeKind.Local).AddTicks(1805),
-                            TeamId = 1,
-                            TicketId = 1
-                        });
+                    b.ToTable("ticket_assigns");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketDetail", b =>
@@ -478,9 +423,8 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Flag")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)")
+                    b.Property<bool>("Flag")
+                        .HasColumnType("tinyint(1)")
                         .HasColumnName("flag");
 
                     b.Property<int>("TicketId")
@@ -491,12 +435,14 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<string>("UserMail")
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("user_mail");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("PK_Ticket_details");
+
+                    b.HasIndex("TicketId");
 
                     b.ToTable("ticket_details");
                 });
@@ -636,8 +582,9 @@ namespace TicketingApi.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("last_name");
 
-                    b.Property<string>("LoginStatus")
-                        .HasColumnType("longtext");
+                    b.Property<bool?>("LoginStatus")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("login_status");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -660,6 +607,84 @@ namespace TicketingApi.Migrations
                         .HasDatabaseName("idx_sender");
 
                     b.ToTable("senders");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Users.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Desc")
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("desc");
+
+                    b.Property<int>("LeaderId")
+                        .HasColumnType("int")
+                        .HasColumnName("leader_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Teams");
+
+                    b.HasIndex("LeaderId");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("idx_name");
+
+                    b.ToTable("teams");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Desc = "",
+                            LeaderId = 1,
+                            Name = "TEAM CAP"
+                        });
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Users.TeamDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("MemberId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("member_id");
+
+                    b.Property<int>("TeamId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("team_id");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Teams_details");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("team_details");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.User", b =>
@@ -703,7 +728,7 @@ namespace TicketingApi.Migrations
                         .HasColumnType("nvarchar(36)")
                         .HasColumnName("salt");
 
-                    b.Property<DateTime?>("UpdateAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
@@ -719,12 +744,12 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 6, 20, 23, 33, 20, 604, DateTimeKind.Local).AddTicks(5297),
+                            CreatedAt = new DateTime(2021, 6, 27, 23, 17, 35, 447, DateTimeKind.Local).AddTicks(5952),
                             Email = "vicky.indiarto@epsylonhome.com",
                             FirstName = "vicky",
                             LastName = "Epsylon",
-                            Password = "80BC7180F8EDE0243EE65878F04692A5CC992AD4B3FB84C368E5BFBBF6B574EAC7880B925ACFB6BADB42A409BD110EA0DFA6036EC27B838CB31CC9711A09E4F3",
-                            Salt = "3ecdf1ac-c818-44fc-b1dd-5600defdc2a4"
+                            Password = "85C39E98FDF8E6249DCB1A062309D3BDF6AA3A3325664052C53DF628F69B9D6EBDF9BA059254E4F447795BCA03378B5052B59552C27E366EC2F2BCA48AE5D14D",
+                            Salt = "197ceef4-8b82-4e88-a06c-fb38317dfc77"
                         });
                 });
 
@@ -810,6 +835,13 @@ namespace TicketingApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.Media", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Tickets.Ticket", null)
+                        .WithMany("Medias")
+                        .HasForeignKey("TicketId");
+                });
+
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.Module", b =>
                 {
                     b.HasOne("TicketingApi.Models.v1.Misc.App", null)
@@ -819,23 +851,87 @@ namespace TicketingApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TicketingApi.Models.v1.Misc.TeamDetail", b =>
+            modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Ticket", b =>
                 {
-                    b.HasOne("TicketingApi.Models.v1.Misc.Team", "Team")
+                    b.HasOne("TicketingApi.Models.v1.Misc.App", "Apps")
+                        .WithMany()
+                        .HasForeignKey("AppId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketingApi.Models.v1.Misc.Module", "Modules")
+                        .WithMany()
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketingApi.Models.v1.Users.Sender", "Senders")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketingApi.Models.v1.Tickets.Stat", "Status")
+                        .WithMany("Tickets")
+                        .HasForeignKey("StatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Apps");
+
+                    b.Navigation("Modules");
+
+                    b.Navigation("Senders");
+
+                    b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketAssign", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Tickets.Ticket", null)
+                        .WithMany("TicketAssigns")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketDetail", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Tickets.Ticket", null)
+                        .WithMany("TicketDetails")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Users.Team", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Users.User", "Leader")
+                        .WithMany()
+                        .HasForeignKey("LeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Leader");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Users.TeamDetail", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Users.User", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketingApi.Models.v1.Users.Team", "Team")
                         .WithMany("TeamDetails")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketingApi.Models.v1.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Member");
 
                     b.Navigation("Team");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.UserDept", b =>
@@ -881,9 +977,18 @@ namespace TicketingApi.Migrations
                     b.Navigation("Modules");
                 });
 
-            modelBuilder.Entity("TicketingApi.Models.v1.Misc.Team", b =>
+            modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Stat", b =>
                 {
-                    b.Navigation("TeamDetails");
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Ticket", b =>
+                {
+                    b.Navigation("Medias");
+
+                    b.Navigation("TicketAssigns");
+
+                    b.Navigation("TicketDetails");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.Department", b =>
@@ -894,6 +999,11 @@ namespace TicketingApi.Migrations
             modelBuilder.Entity("TicketingApi.Models.v1.Users.Role", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Users.Team", b =>
+                {
+                    b.Navigation("TeamDetails");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.User", b =>
