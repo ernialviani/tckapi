@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "8dsXJ2FnUPti7StxwKbGc6RXTMQDn5YOejHlxEEy65ZSzbven3mIh+9TahCmzWewoI+O6Hs4SjyySDjWKHjQYQ==",
+  "dgSpecHash": "82HNwkGNJF9icu8t12laRhhWTLpaa/uurYGdt63LYCh5UdMaTOdZLFhAzt7G94CXiLOrDrtyifO7qo5GuOC/Aw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj",
+  "projectFilePath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\programmer3\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\programmer3\\.nuget\\packages\\mailkit\\2.13.0\\mailkit.2.13.0.nupkg.sha512",
     "C:\\Users\\programmer3\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.6\\microsoft.aspnetcore.authentication.jwtbearer.5.0.6.nupkg.sha512",
     "C:\\Users\\programmer3\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\5.0.6\\microsoft.aspnetcore.jsonpatch.5.0.6.nupkg.sha512",
     "C:\\Users\\programmer3\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\5.0.6\\microsoft.aspnetcore.mvc.newtonsoftjson.5.0.6.nupkg.sha512",
