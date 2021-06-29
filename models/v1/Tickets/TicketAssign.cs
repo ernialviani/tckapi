@@ -1,4 +1,6 @@
 using System;
+using TicketingApi.Models.v1.Users;
+
 namespace TicketingApi.Models.v1.Tickets
 {
     public class TicketAssign
@@ -10,6 +12,14 @@ namespace TicketingApi.Models.v1.Tickets
          public int? UserId {get; set;}
          public DateTime? UserAt {get; set;}
 
+         public User Users {get; set;}
+
+         public Team Teams {get; set;}
+
          public string AssignType {get; set;} //M MANAGER //T TEAM //U USER
+
+        public bool Viewed {get; set;}
+        public DateTime? ViewedAt {get; set;}
+
     }
 }

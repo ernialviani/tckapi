@@ -13,7 +13,7 @@ namespace TicketingApi.Models.v1.Misc
         public IFormFile File {get; set;}
         
         public int RelId {get;set;}
-        public string RelType {get; set;}
+        public string RelType {get; set;} //T ticket // TD ticket // F faq // C clog // K kbase
 
         // [ForeignKey("RelId")]
         // public Ticket Tickets {get; set;} 

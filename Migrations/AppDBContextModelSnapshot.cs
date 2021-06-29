@@ -52,6 +52,7 @@ namespace TicketingApi.Migrations
                         {
                             Id = 1,
                             Desc = "Integrated Advertising System",
+                            Logo = "Apps/Sysad.jpg",
                             Name = "SysAd"
                         },
                         new
@@ -154,6 +155,40 @@ namespace TicketingApi.Migrations
                     b.HasIndex("TicketId");
 
                     b.ToTable("medias");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FileName = "Tickets/atc1.jpg",
+                            FileType = "image",
+                            RelId = 1,
+                            RelType = "T"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FileName = "Tickets/atc2.pdf",
+                            FileType = "pdf",
+                            RelId = 1,
+                            RelType = "T"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FileName = "TicketDetails/atc3.jpeg",
+                            FileType = "image",
+                            RelId = 1,
+                            RelType = "TD"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FileName = "TicketsDetails/atc4.xls",
+                            FileType = "excel",
+                            RelId = 1,
+                            RelType = "TD"
+                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.Module", b =>
@@ -365,6 +400,47 @@ namespace TicketingApi.Migrations
                         .HasDatabaseName("idx_TicketNumber");
 
                     b.ToTable("tickets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AppId = 1,
+                            Comment = "lorem ipsu sdkskadn ksdnksin jdnskjdna jsandjkansdjkansd jndsajkdnajkd kasjndsndoqm dolor shit nyoasdasdaslibay knoper low",
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 397, DateTimeKind.Local).AddTicks(6655),
+                            ModuleId = 1,
+                            SenderId = 1,
+                            StatId = 3,
+                            Subject = "Ini Test Subject satu ",
+                            TicketNumber = "180620211",
+                            UpdatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 397, DateTimeKind.Local).AddTicks(6677)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AppId = 1,
+                            Comment = "asdhjkahsdjas jasdjj sjadnajk jasnd jas d asndjka  skjdnaksjdn sshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk",
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 397, DateTimeKind.Local).AddTicks(9249),
+                            ModuleId = 1,
+                            SenderId = 2,
+                            StatId = 1,
+                            Subject = "Subject for ticket number 2",
+                            TicketNumber = "180620212",
+                            UpdatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 397, DateTimeKind.Local).AddTicks(9258)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AppId = 1,
+                            Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq",
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 397, DateTimeKind.Local).AddTicks(9265),
+                            ModuleId = 1,
+                            SenderId = 3,
+                            StatId = 1,
+                            Subject = "Subjecsdskkks ksnkandkasndk t 3",
+                            TicketNumber = "180620213",
+                            UpdatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 397, DateTimeKind.Local).AddTicks(9266)
+                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketAssign", b =>
@@ -376,7 +452,8 @@ namespace TicketingApi.Migrations
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("AssignType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("nvarchar(5)")
+                        .HasColumnName("assign_type");
 
                     b.Property<DateTime?>("TeamAt")
                         .HasColumnType("datetime")
@@ -398,12 +475,57 @@ namespace TicketingApi.Migrations
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
+                    b.Property<bool>("Viewed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("viewed");
+
+                    b.Property<DateTime?>("ViewedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("viewed_at");
+
                     b.HasKey("Id")
                         .HasName("PK_Ticket_assign");
 
                     b.HasIndex("TicketId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("ticket_assigns");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AssignType = "M",
+                            TicketId = 1,
+                            UserAt = new DateTime(2021, 6, 29, 20, 16, 43, 407, DateTimeKind.Local).AddTicks(4566),
+                            UserId = 2,
+                            Viewed = true,
+                            ViewedAt = new DateTime(2021, 6, 29, 20, 16, 43, 407, DateTimeKind.Local).AddTicks(4578)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AssignType = "T",
+                            TeamAt = new DateTime(2021, 6, 29, 20, 16, 43, 407, DateTimeKind.Local).AddTicks(6190),
+                            TeamId = 1,
+                            TicketId = 1,
+                            UserId = 3,
+                            Viewed = true,
+                            ViewedAt = new DateTime(2021, 6, 29, 20, 16, 43, 407, DateTimeKind.Local).AddTicks(6199)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AssignType = "U",
+                            TicketId = 1,
+                            UserAt = new DateTime(2021, 6, 29, 20, 16, 43, 407, DateTimeKind.Local).AddTicks(7660),
+                            UserId = 4,
+                            Viewed = true,
+                            ViewedAt = new DateTime(2021, 6, 29, 20, 16, 43, 407, DateTimeKind.Local).AddTicks(7668)
+                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketDetail", b =>
@@ -424,7 +546,9 @@ namespace TicketingApi.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<bool>("Flag")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
                         .HasColumnName("flag");
 
                     b.Property<int>("TicketId")
@@ -444,7 +568,37 @@ namespace TicketingApi.Migrations
 
                     b.HasIndex("TicketId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("ticket_details");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Comment = "lorem ipsum dolor shit nyolibay kksdj nknop ksiola knoper low",
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 406, DateTimeKind.Local).AddTicks(3117),
+                            TicketId = 1,
+                            UpdatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 406, DateTimeKind.Local).AddTicks(3145),
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Comment = "asdhjkahsdjas jasshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk",
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 406, DateTimeKind.Local).AddTicks(4757),
+                            TicketId = 1,
+                            UpdatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 406, DateTimeKind.Local).AddTicks(4766)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Comment = "ksknnina  lasklk  klsnklna ksaiopoells;mlauw klnskoiskel aksnkadia mkaskks ",
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 406, DateTimeKind.Local).AddTicks(5984),
+                            TicketId = 1,
+                            UpdatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 406, DateTimeKind.Local).AddTicks(5992),
+                            UserId = 4
+                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.Department", b =>
@@ -535,13 +689,13 @@ namespace TicketingApi.Migrations
                         {
                             Id = 2,
                             Desc = "",
-                            Name = "Leader"
+                            Name = "Manager"
                         },
                         new
                         {
                             Id = 3,
                             Desc = "",
-                            Name = "Manager"
+                            Name = "Leader"
                         },
                         new
                         {
@@ -587,7 +741,6 @@ namespace TicketingApi.Migrations
                         .HasColumnName("login_status");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("password");
 
@@ -607,6 +760,39 @@ namespace TicketingApi.Migrations
                         .HasDatabaseName("idx_sender");
 
                     b.ToTable("senders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 392, DateTimeKind.Local).AddTicks(5519),
+                            Email = "daniel@epsylonhome.com",
+                            FirstName = "Daniel",
+                            LastName = "Radcliff",
+                            Password = "",
+                            Salt = ""
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 392, DateTimeKind.Local).AddTicks(5545),
+                            Email = "ruppert@gmail.com",
+                            FirstName = "Ruppert",
+                            LastName = "Grint",
+                            Password = "",
+                            Salt = ""
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 392, DateTimeKind.Local).AddTicks(6308),
+                            Email = "emma@gmail.com",
+                            FirstName = "Emma",
+                            LastName = "Watson",
+                            LoginStatus = true,
+                            Password = "6BEF44A1FE215486558A7888D2AF794E34271195AEBB0A89003C838F1F540421CA79D2DCB81253D68B21D370876A66EF40C56372E8BEA39A3BCA0E15E4E76940",
+                            Salt = "fc667132-bca1-4070-a90d-6f52313798b2"
+                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.Team", b =>
@@ -651,7 +837,7 @@ namespace TicketingApi.Migrations
                         {
                             Id = 1,
                             Desc = "",
-                            LeaderId = 1,
+                            LeaderId = 3,
                             Name = "TEAM CAP"
                         });
                 });
@@ -666,15 +852,11 @@ namespace TicketingApi.Migrations
 
                     b.Property<int?>("MemberId")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0)
                         .HasColumnName("member_id");
 
                     b.Property<int>("TeamId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0)
                         .HasColumnName("team_id");
 
                     b.HasKey("Id")
@@ -685,6 +867,14 @@ namespace TicketingApi.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("team_details");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            MemberId = 4,
+                            TeamId = 1
+                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.User", b =>
@@ -744,12 +934,42 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 6, 27, 23, 17, 35, 447, DateTimeKind.Local).AddTicks(5952),
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 381, DateTimeKind.Local).AddTicks(7114),
                             Email = "vicky.indiarto@epsylonhome.com",
-                            FirstName = "vicky",
+                            FirstName = "Vicky",
                             LastName = "Epsylon",
-                            Password = "85C39E98FDF8E6249DCB1A062309D3BDF6AA3A3325664052C53DF628F69B9D6EBDF9BA059254E4F447795BCA03378B5052B59552C27E366EC2F2BCA48AE5D14D",
-                            Salt = "197ceef4-8b82-4e88-a06c-fb38317dfc77"
+                            Password = "E963E1D3532A20EC6BF989B1BA65470745138E09201CB23A5E2B105A8D8DC9E5A81FA6ACA05D111B88708ADBF13335E2ABF97F7FD927A0BBD0E54EF0F5BC530F",
+                            Salt = "fc667132-bca1-4070-a90d-6f52313798b2"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 381, DateTimeKind.Local).AddTicks(9542),
+                            Email = "vickyindiarto@gmail.com",
+                            FirstName = "Crish",
+                            LastName = "Evans",
+                            Password = "14B7F471A0E39953848E76D8F3857038407EFF4E287186FF74098FE7184FB7672B86F2A603FD90BE9D5A7A7A3C2B10A54C1E48CB033F20372AC8514944D7682D",
+                            Salt = "fc667132-bca1-4070-a90d-6f52313798b2"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 382, DateTimeKind.Local).AddTicks(316),
+                            Email = "vickynewonline@gmail.com",
+                            FirstName = "Mark",
+                            LastName = "Ruffalo",
+                            Password = "613F99F5B1A2403ECB301A983C439D6CA27F03D9A6E836CDC4E17C2478280F419EE843A46ABE9A3BF322BD6D9565648CBE2A3D61F10A6F00995E53945504F169",
+                            Salt = "fc667132-bca1-4070-a90d-6f52313798b2"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2021, 6, 29, 20, 16, 43, 382, DateTimeKind.Local).AddTicks(1055),
+                            Email = "vickyindiar@yahoo.com",
+                            FirstName = "RobertDowny",
+                            LastName = "Downy",
+                            Password = "A2AAD0B57446BD8E2E11855B54C9F24F36363BE3A3C6DD590D148D1A6CE07E16A01F912BD012EED928725C4FE520147EDD15E5B4698752C39C630A7F8ADFAB35",
+                            Salt = "fc667132-bca1-4070-a90d-6f52313798b2"
                         });
                 });
 
@@ -791,6 +1011,24 @@ namespace TicketingApi.Migrations
                             Id = 2,
                             DepartmentId = 3,
                             UserId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DepartmentId = 2,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DepartmentId = 2,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DepartmentId = 2,
+                            UserId = 4
                         });
                 });
 
@@ -832,6 +1070,24 @@ namespace TicketingApi.Migrations
                             Id = 2,
                             RoleId = 4,
                             UserId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            RoleId = 2,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            RoleId = 3,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            RoleId = 2,
+                            UserId = 4
                         });
                 });
 
@@ -893,6 +1149,12 @@ namespace TicketingApi.Migrations
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TicketingApi.Models.v1.Users.User", "Users")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketDetail", b =>
@@ -902,6 +1164,12 @@ namespace TicketingApi.Migrations
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TicketingApi.Models.v1.Users.User", "Users")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.Team", b =>
@@ -942,15 +1210,13 @@ namespace TicketingApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketingApi.Models.v1.Users.User", "Users")
+                    b.HasOne("TicketingApi.Models.v1.Users.User", null)
                         .WithMany("UserDepts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Departments");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.UserRole", b =>
@@ -961,15 +1227,13 @@ namespace TicketingApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketingApi.Models.v1.Users.User", "Users")
+                    b.HasOne("TicketingApi.Models.v1.Users.User", null)
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Roles");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.App", b =>

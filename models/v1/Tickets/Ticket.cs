@@ -36,7 +36,9 @@ namespace TicketingApi.Models.v1.Tickets
         public App Apps {get; set;}
         public Module Modules {get; set;}
 
-        public ICollection<Media> Medias {get; set;}
+
+         [ForeignKey("RelId")]
+         public ICollection<Media> Medias {get; set;}
 
     }
 }
