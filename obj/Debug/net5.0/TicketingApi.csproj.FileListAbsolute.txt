@@ -364,3 +364,6 @@ C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\obj\Debug\net5.0\TicketingAp
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\MailKit.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\MimeKit.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\BouncyCastle.Crypto.dll
+C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\bin\Debug\net5.0\MailKit.dll
+C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\bin\Debug\net5.0\MimeKit.dll
+C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\bin\Debug\net5.0\BouncyCastle.Crypto.dll

@@ -1909,24 +1909,30 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Ihsan_pc\\.nuget\\packages\\": {}
+    "C:\\Users\\programmer3\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj",
+      "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj",
       "projectName": "TicketingApi",
-      "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj",
-      "packagesPath": "C:\\Users\\Ihsan_pc\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\obj\\",
+      "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj",
+      "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Ihsan_pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\programmer3\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net5.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2023,5 +2029,13 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.300\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }
