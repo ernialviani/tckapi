@@ -56,7 +56,7 @@ namespace TicketingApi
                 options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
             });
 
-       services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
+            services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
              {
                     builder.WithOrigins("http://localhost:3000");
                     builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithExposedHeaders("Token-Expired");;

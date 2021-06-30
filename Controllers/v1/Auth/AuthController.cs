@@ -29,7 +29,7 @@ namespace TicketingApi.Controllers.v1.Authentication
     {
          private readonly IConfiguration _configuration;
          private readonly AppDBContext  _context;
-                 private readonly IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
         public AuthController(IConfiguration configuration, AppDBContext context, IWebHostEnvironment env){
             _configuration = configuration;

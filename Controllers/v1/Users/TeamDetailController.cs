@@ -59,7 +59,7 @@ namespace TicketingApi.Controllers.v1.Users
         [Authorize]
         public IActionResult Create([FromForm]TeamDetail request)
         {
-            var exitingsTeam = _context.TeamDetails.FirstOrDefault(e => e.MemberId == request.MemberId);
+            var exitingsTeam = _context.TeamDetails.FirstOrDefault(e => e.UserId == request.UserId);
             if(exitingsTeam != null ) {
                 return BadRequest("User already in team");
             }
@@ -71,7 +71,7 @@ namespace TicketingApi.Controllers.v1.Users
                 TeamDetail teamDetailEntity = new TeamDetail()
                 {   
                     TeamId = request.TeamId,
-                    MemberId = request.MemberId,
+                    UserId = request.UserId,
                 };
 
                 _context.TeamDetails.Add(teamDetailEntity);
@@ -99,7 +99,7 @@ namespace TicketingApi.Controllers.v1.Users
                 var transaction =  _context.Database.BeginTransaction();
             
                 teamDetailExist.TeamId = request.TeamId;
-                teamDetailExist.MemberId = request.MemberId;
+                teamDetailExist.UserId = request.UserId;
           
                 _context.SaveChanges();
                 transaction.Commit();

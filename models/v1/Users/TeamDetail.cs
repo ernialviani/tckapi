@@ -10,12 +10,11 @@ namespace TicketingApi.Models.v1.Users
 
         public int TeamId {get; set;}
 
-        public Team Team { get; set;}
+        public Team Teams { get; set;}
 
-        public int? MemberId {get; set;}
+        public int UserId {get; set;}
 
-        [ForeignKey("MemberId")]
-        public User Member {get;set;}
+        public User Users {get;set;}
 
     }
 }

@@ -17,6 +17,7 @@ using TicketingApi.Models.v1.Misc;
 using System.IdentityModel.Tokens.Jwt;
 using TicketingApi.Entities;
 using TicketingApi.Utils;
+using Microsoft.AspNetCore.Hosting;
 
 namespace TicketingApi.Controllers.v1.Misc
 {
@@ -26,11 +27,42 @@ namespace TicketingApi.Controllers.v1.Misc
     public class MediaController: ControllerBase
     {
         private readonly AppDBContext  _context;
-        private readonly IFileUtil _fileUtil;   
+        private readonly IFileUtil _fileUtil;  
+        private readonly IWebHostEnvironment _env; 
         
-        public MediaController(AppDBContext context, IFileUtil fileUtil){
+        public MediaController(AppDBContext context, IFileUtil fileUtil, IWebHostEnvironment env){
             _context = context; 
-            _fileUtil = fileUtil;   
+            _fileUtil = fileUtil;
+            _env = env;   
+        }
+
+        [AllowAnonymous]
+        [HttpGet("user/{id}")]
+        public IActionResult GetUserImage(int id){
+          //  var userImage = "";
+            var existingUser = _context.Users.Where(e => e.Id == id).FirstOrDefault();
+            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+            var filePath = Path.Combine(uploadPath, existingUser.Image);
+            byte[] b = System.IO.File.ReadAllBytes(filePath);
+          // var type = b.GetType();
+           //userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+            return File(b, "image/jpeg");
+          //  return Ok(File(b, "text/plain", Path.GetFileName(filePath)));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("sender/{id}")]
+        public IActionResult GetSenderImage(int id){
+            //var userImage = "";
+            var existingUser = _context.Senders.Where(e => e.Id == id).FirstOrDefault();
+            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+            var filePath = Path.Combine(uploadPath, existingUser.Image);
+            byte[] b = System.IO.File.ReadAllBytes(filePath);   
+  //            return Ok(File(b, "Application/octet-stream", Path.GetFileName(filePath)));
+          //  var type = b.GetType();
+          // userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+            return File(b, "image/jpeg");
+        //    return Ok(userImage);
         }
 
         [HttpPost("/single-post")]

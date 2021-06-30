@@ -33,7 +33,7 @@ namespace TicketingApi.Controllers.v1.Users
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
           var allTeam = _context.Teams.AsNoTracking()
-                        .Include(ur => ur.TeamDetails);
+                        .Include(ur => ur.TeamDetails).ThenInclude(s => s.Users);
            return Ok(allTeam);
         }
 
@@ -117,7 +117,7 @@ namespace TicketingApi.Controllers.v1.Users
                 request.TeamDetails
                 .Where(mur => !teamExist.TeamDetails.Any(eur => eur.TeamId == mur.TeamId))
                 .ToList()
-                .ForEach(mur => teamExist.TeamDetails.Add(new TeamDetail { MemberId = mur.MemberId, TeamId = mur.TeamId}));
+                .ForEach(mur => teamExist.TeamDetails.Add(new TeamDetail { UserId = mur.UserId, TeamId = mur.TeamId}));
             
                 _context.SaveChanges();
                 transaction.Commit();

@@ -73,13 +73,13 @@ namespace TicketingApi.DBContexts
             var salt =  CryptoUtil.GenerateSalt();
             modelBuilder.Entity<User>().HasData(
                 // admin programmer user
-                new { Id = 1, FirstName = "Vicky", LastName = "Epsylon", Email = "vicky.indiarto@epsylonhome.com", Password = CryptoUtil.HashMultiple("programmer3", salt), Salt=salt, CreatedAt = DateTime.Now },
+                new { Id = 1, FirstName = "Vicky", LastName = "Epsylon", Email = "vicky.indiarto@epsylonhome.com", Password = CryptoUtil.HashMultiple("programmer3", salt), Salt=salt, Image="Users/vicky.jpg", CreatedAt = DateTime.Now },
                 // Manager CS
-                new { Id = 2, FirstName = "Crish", LastName = "Evans", Email = "vickyindiarto@gmail.com", Password = CryptoUtil.HashMultiple("captain", salt), Salt=salt, CreatedAt = DateTime.Now },
+                new { Id = 2, FirstName = "Crish", LastName = "Evans", Email = "vickyindiarto@gmail.com", Password = CryptoUtil.HashMultiple("captain", salt), Salt=salt, Image="Users/crish.jpg", CreatedAt = DateTime.Now },
                 // leader CS
-                new { Id = 3, FirstName = "Mark", LastName = "Ruffalo", Email = "vickynewonline@gmail.com", Password = CryptoUtil.HashMultiple("hulk", salt), Salt=salt, CreatedAt = DateTime.Now },
+                new { Id = 3, FirstName = "Mark", LastName = "Ruffalo", Email = "vickynewonline@gmail.com", Password = CryptoUtil.HashMultiple("hulk", salt), Salt=salt, Image="Users/mark.jpg", CreatedAt = DateTime.Now },
                 // User CS
-                new { Id = 4, FirstName = "RobertDowny", LastName = "Downy", Email = "vickyindiar@yahoo.com", Password = CryptoUtil.HashMultiple("iron", salt), Salt=salt, CreatedAt = DateTime.Now }
+                new { Id = 4, FirstName = "RobertDowny", LastName = "Downy", Email = "vickyindiar@yahoo.com", Password = CryptoUtil.HashMultiple("iron", salt), Salt=salt, Image="Users/robert.jpg", CreatedAt = DateTime.Now }
             );
 
             // Configure relationships  
@@ -161,10 +161,10 @@ namespace TicketingApi.DBContexts
 
         
             modelBuilder.Entity<Sender>().HasData(
-                new { Id = 1, FirstName = "Daniel", LastName = "Radcliff", Email = "daniel@epsylonhome.com", Password = "", Salt="", CreatedAt = DateTime.Now },
-                new { Id = 2, FirstName = "Ruppert", LastName = "Grint", Email = "ruppert@gmail.com", Password = "", Salt="", CreatedAt = DateTime.Now },
+                new { Id = 1, FirstName = "Daniel", LastName = "Radcliff", Email = "daniel@epsylonhome.com", Password = "", Salt="", Image="Users/daniel.jpg", CreatedAt = DateTime.Now },
+                new { Id = 2, FirstName = "Ruppert", LastName = "Grint", Email = "ruppert@gmail.com", Password = "", Salt="", Image="Users/ruppert.jpg", CreatedAt = DateTime.Now },
                 // logedin
-                new { Id = 3, FirstName = "Emma", LastName = "Watson", Email = "emma@gmail.com", Password = CryptoUtil.HashMultiple("emma", salt), Salt=salt, LoginStatus=true, CreatedAt = DateTime.Now }
+                new { Id = 3, FirstName = "Emma", LastName = "Watson", Email = "emma@gmail.com", Password = CryptoUtil.HashMultiple("emma", salt), Salt=salt, Image="Users/emma.jpg", LoginStatus=true, CreatedAt = DateTime.Now }
             );
 
 
@@ -215,10 +215,11 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TeamDetail>().HasKey(u => u.Id).HasName("PK_Teams_details");    
             modelBuilder.Entity<TeamDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<TeamDetail>().Property(u => u.TeamId).HasColumnName("team_id").HasColumnType("int").IsRequired();
-            modelBuilder.Entity<TeamDetail>().Property(u => u.MemberId).HasColumnName("member_id").HasColumnType("int").IsRequired();  
+            modelBuilder.Entity<TeamDetail>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
            
             modelBuilder.Entity<TeamDetail>().HasData(
-                new { Id = 1, TeamId = 1, MemberId=4}
+                new { Id = 1, TeamId = 1, UserId=4},
+                new { Id = 2, TeamId = 1, UserId=3}
             );
 
             modelBuilder.Entity<Stat>().ToTable("stats");

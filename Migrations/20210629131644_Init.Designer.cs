@@ -852,7 +852,7 @@ namespace TicketingApi.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MemberId")
+                    b.Property<int?>("UserId")
                         .IsRequired()
                         .HasColumnType("int")
                         .HasColumnName("member_id");
@@ -864,7 +864,7 @@ namespace TicketingApi.Migrations
                     b.HasKey("Id")
                         .HasName("PK_Teams_details");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("UserId");
 
                     b.HasIndex("TeamId");
 
@@ -874,7 +874,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            MemberId = 4,
+                            UserId = 4,
                             TeamId = 1
                         });
                 });
@@ -1189,7 +1189,7 @@ namespace TicketingApi.Migrations
                 {
                     b.HasOne("TicketingApi.Models.v1.Users.User", "Member")
                         .WithMany()
-                        .HasForeignKey("MemberId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

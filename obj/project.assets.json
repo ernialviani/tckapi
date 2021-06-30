@@ -1915,11 +1915,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj",
+      "projectUniqueName": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj",
       "projectName": "TicketingApi",
-      "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\TicketingApi.csproj",
+      "projectPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\TicketingApi.csproj",
       "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\obj\\",
+      "outputPath": "C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -2029,13 +2029,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.300\\RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\programmer3\\Documents\\Vicky\\TICKETING\\ticketing-app\\TicketingApp\\Api\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  }
 }
