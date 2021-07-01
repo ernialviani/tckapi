@@ -33,7 +33,7 @@ namespace TicketingApi.Controllers.v1.Users
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
           var allTeam = _context.Teams.AsNoTracking()
-                        .Include(ur => ur.TeamDetails).ThenInclude(s => s.Users);
+                        .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users);
            return Ok(allTeam);
         }
 
@@ -44,7 +44,7 @@ namespace TicketingApi.Controllers.v1.Users
         {
             var team = _context.Teams.AsNoTracking()
                         .Where(e => e.Id == id)
-                        .Include(ur => ur.TeamDetails)
+                        .Include(ur => ur.TeamMembers)
                         .FirstOrDefault();
                        
             if(team != null){
@@ -93,7 +93,7 @@ namespace TicketingApi.Controllers.v1.Users
             {
                  var teamExist =  _context.Teams
                         .Where(e => e.Id == id)
-                        .Include(ur => ur.TeamDetails)
+                        .Include(ur => ur.TeamMembers)
                         .FirstOrDefault();
                 
                 if (teamExist == null) { return NotFound("Team Not Found !"); }
@@ -107,17 +107,17 @@ namespace TicketingApi.Controllers.v1.Users
            
                 _context.SaveChanges();
                 
-                teamExist.TeamDetails
-                .Where(eur => !request.TeamDetails.Any(mur => mur.TeamId == eur.TeamId))
+                teamExist.TeamMembers
+                .Where(eur => !request.TeamMembers.Any(mur => mur.TeamId == eur.TeamId))
                 .ToList()
                 .ForEach(eur => 
-                    teamExist.TeamDetails.Remove(eur)
+                    teamExist.TeamMembers.Remove(eur)
                 );
 
-                request.TeamDetails
-                .Where(mur => !teamExist.TeamDetails.Any(eur => eur.TeamId == mur.TeamId))
+                request.TeamMembers
+                .Where(mur => !teamExist.TeamMembers.Any(eur => eur.TeamId == mur.TeamId))
                 .ToList()
-                .ForEach(mur => teamExist.TeamDetails.Add(new TeamDetail { UserId = mur.UserId, TeamId = mur.TeamId}));
+                .ForEach(mur => teamExist.TeamMembers.Add(new TeamMember { UserId = mur.UserId, TeamId = mur.TeamId}));
             
                 _context.SaveChanges();
                 transaction.Commit();
@@ -139,12 +139,12 @@ namespace TicketingApi.Controllers.v1.Users
                var transaction = _context.Database.BeginTransaction();
                var teamExist =  _context.Teams
                         .Where(e => e.Id == id)
-                        .Include(ur => ur.TeamDetails)
+                        .Include(ur => ur.TeamMembers)
                         .FirstOrDefault();
                
-                foreach (var itemRole in teamExist.TeamDetails)
+                foreach (var itemRole in teamExist.TeamMembers)
                 {
-                    _context.TeamDetails.Remove(itemRole);
+                    _context.TeamMembers.Remove(itemRole);
                 }
 
                 _context.Teams.Remove(teamExist);

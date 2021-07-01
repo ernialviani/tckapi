@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using TicketingApi.Models.v1.Users;
 
 namespace TicketingApi.Models.v1.Users
 {
-    public class TeamDetail
+    public class TeamMember
     {
 
         public int Id {get; set;}

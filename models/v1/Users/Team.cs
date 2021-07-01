@@ -19,7 +19,7 @@ namespace TicketingApi.Models.v1.Users
         public DateTime? CreatedAt {get;  set;}
         public DateTime? UpdatedAt {get; set;}
 
-        public ICollection<TeamDetail> TeamDetails {get; set;}
+        public ICollection<TeamMember> TeamMembers {get; set;}
         
     }
 }

@@ -23,7 +23,7 @@ namespace TicketingApi.DBContexts
         public  DbSet<App> Apps {get; set;}
         public  DbSet<Module> Modules {get; set;}
         public  DbSet<Team> Teams {get; set;}
-        public  DbSet<TeamDetail> TeamDetails {get; set;}
+        public  DbSet<TeamMember> TeamMembers {get; set;}
         public  DbSet<Media> Medias {get; set;}
         public DbSet<KBase> KBases {get; set;} 
         
@@ -211,13 +211,13 @@ namespace TicketingApi.DBContexts
                 new { Id = 1, Name = "TEAM CAP", LeaderId=3, Desc = "" }
             );
 
-            modelBuilder.Entity<TeamDetail>().ToTable("team_details");   
-            modelBuilder.Entity<TeamDetail>().HasKey(u => u.Id).HasName("PK_Teams_details");    
-            modelBuilder.Entity<TeamDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
-            modelBuilder.Entity<TeamDetail>().Property(u => u.TeamId).HasColumnName("team_id").HasColumnType("int").IsRequired();
-            modelBuilder.Entity<TeamDetail>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
+            modelBuilder.Entity<TeamMember>().ToTable("team_members");   
+            modelBuilder.Entity<TeamMember>().HasKey(u => u.Id).HasName("PK_Team_Members");    
+            modelBuilder.Entity<TeamMember>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<TeamMember>().Property(u => u.TeamId).HasColumnName("team_id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<TeamMember>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
            
-            modelBuilder.Entity<TeamDetail>().HasData(
+            modelBuilder.Entity<TeamMember>().HasData(
                 new { Id = 1, TeamId = 1, UserId=4},
                 new { Id = 2, TeamId = 1, UserId=3}
             );

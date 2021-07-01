@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;  
 using System.Threading.Tasks;  
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
   
 namespace TicketingApi.Models.v1.Users
 {  
@@ -12,7 +13,9 @@ namespace TicketingApi.Models.v1.Users
         public string FirstName { get; set;}  
         public string LastName { get; set;}  
         public string Email { get; set;}  
+        [JsonIgnore]
         public string Password { get; set;}  
+        [JsonIgnore]
         public string Salt { get; set; }
     
         public IFormFile File {get; set;}
@@ -22,5 +25,8 @@ namespace TicketingApi.Models.v1.Users
 
         public ICollection<UserRole> UserRoles {get; set;}
         public ICollection<UserDept> UserDepts {get; set;}
+
+        public ICollection<Team> Teams {get; set;}
+        public ICollection<TeamMember> TeamMembers {get; set;}
     }  
 } 

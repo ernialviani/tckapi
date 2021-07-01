@@ -37,7 +37,7 @@ namespace TicketingApi.Controllers.v1.Users
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
           var allTeam = _context.Teams.AsNoTracking()
-                        .Include(ur => ur.TeamDetails);
+                        .Include(ur => ur.TeamMembers);
            return Ok(allTeam);
         }
 
@@ -46,7 +46,7 @@ namespace TicketingApi.Controllers.v1.Users
          [Authorize]
         public IActionResult GetTeamById(int id)
         {
-            var teamDetail = _context.TeamDetails.AsNoTracking()
+            var teamDetail = _context.TeamMembers.AsNoTracking()
                         .Where(e => e.Id == id)
                         .FirstOrDefault();
             if(teamDetail != null){
@@ -57,9 +57,9 @@ namespace TicketingApi.Controllers.v1.Users
 
         [HttpPost]
         [Authorize]
-        public IActionResult Create([FromForm]TeamDetail request)
+        public IActionResult Create([FromForm]TeamMember request)
         {
-            var exitingsTeam = _context.TeamDetails.FirstOrDefault(e => e.UserId == request.UserId);
+            var exitingsTeam = _context.TeamMembers.FirstOrDefault(e => e.UserId == request.UserId);
             if(exitingsTeam != null ) {
                 return BadRequest("User already in team");
             }
@@ -68,13 +68,13 @@ namespace TicketingApi.Controllers.v1.Users
                
             try
             {
-                TeamDetail teamDetailEntity = new TeamDetail()
+                TeamMember teamDetailEntity = new TeamMember()
                 {   
                     TeamId = request.TeamId,
                     UserId = request.UserId,
                 };
 
-                _context.TeamDetails.Add(teamDetailEntity);
+                _context.TeamMembers.Add(teamDetailEntity);
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok(teamDetailEntity);
@@ -86,15 +86,15 @@ namespace TicketingApi.Controllers.v1.Users
         }
 
         [HttpPost("{id}")]
-        public IActionResult PutTeam(int id,[FromForm]TeamDetail request)
+        public IActionResult PutTeam(int id,[FromForm]TeamMember request)
         {
             try
             {
-                 var teamDetailExist =  _context.TeamDetails
+                 var teamDetailExist =  _context.TeamMembers
                         .Where(e => e.Id == id)
                         .FirstOrDefault();
                 
-                if (teamDetailExist == null) { return NotFound("TeamDetail Not Found !"); }
+                if (teamDetailExist == null) { return NotFound("TeamMember Not Found !"); }
 
                 var transaction =  _context.Database.BeginTransaction();
             
@@ -119,11 +119,11 @@ namespace TicketingApi.Controllers.v1.Users
             try
             {
                var transaction = _context.Database.BeginTransaction();
-               var teamDetailExist =  _context.TeamDetails
+               var teamDetailExist =  _context.TeamMembers
                         .Where(e => e.Id == id)
                         .FirstOrDefault();
        
-                _context.TeamDetails.Remove(teamDetailExist);
+                _context.TeamMembers.Remove(teamDetailExist);
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok();
