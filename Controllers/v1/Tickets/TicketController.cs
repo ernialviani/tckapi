@@ -74,13 +74,13 @@ namespace TicketingApi.Controllers.v1.Tickets
                                          td.Users.Email, 
                                          FullName = td.Users.FirstName + " " + td.Users.LastName, td.Users.Image 
                                      } 
-                                 }), 
-                                 t.TeamAt, 
-                                 Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
-                                 t.UserAt, 
-                                 t.Viewed, 
-                                 t.ViewedAt
-                             }
+                                 })
+                             }, 
+                            t.TeamAt, 
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
+                            t.UserAt, 
+                            t.Viewed, 
+                            t.ViewedAt
                         }),
                         e.Status, e.Apps, e.Modules,
                         Senders = new { e.Senders.Id, e.Senders.Email, FullName = e.Senders.FirstName + " " + e.Senders.LastName, e.Senders.Image, e.Senders.LoginStatus },
