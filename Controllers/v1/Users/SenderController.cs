@@ -40,7 +40,9 @@ namespace TicketingApi.Controllers.v1.Users
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allSender = _context.Senders.AsNoTracking();
+          var allSender = _context.Senders.AsNoTracking().Select(e => new {
+                              e.Id, e.FirstName, e.LastName, e.Email, e.Image, e.LoginStatus  
+                            });
            return Ok(allSender);
         }
 
