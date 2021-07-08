@@ -42,8 +42,9 @@ namespace TicketingApi.Utils
             var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
 
             var filePath = Path.Combine(uploadPath, fileName);
-            using (var image = Image.Load(file.OpenReadStream())){
-                image.Save(filePath);
+            using (var strem = File.Create(filePath))
+            {
+                file.CopyTo(strem);
             }
             return new Media {
                 FileName=fileName,

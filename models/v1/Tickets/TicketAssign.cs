@@ -1,5 +1,8 @@
 using System;
 using TicketingApi.Models.v1.Users;
+using TicketingApi.Models.v1.Misc;
+using System.Collections.Generic;  
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TicketingApi.Models.v1.Tickets
 {
@@ -20,6 +23,7 @@ namespace TicketingApi.Models.v1.Tickets
 
         public bool Viewed {get; set;}
         public DateTime? ViewedAt {get; set;}
+    
 
     }
 }

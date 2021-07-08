@@ -61,7 +61,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                     claimList.Add(new Claim(ClaimTypes.Role, firstRole.Roles.Name ));
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var expireDate = DateTime.UtcNow.AddDays(1);
+                    var expireDate = DateTime.UtcNow.AddDays(30);
                     var timeStamp = DateUtil.ConvertToTimeStamp(expireDate);
                     var token = new JwtSecurityToken(
                         claims: claimList,

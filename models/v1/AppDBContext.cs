@@ -64,9 +64,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<User>().Property(u => u.Salt).HasColumnName("salt").HasColumnType("nvarchar(36)").IsRequired();  
             modelBuilder.Entity<User>().Ignore(u => u.File);
             modelBuilder.Entity<User>().Property(u => u.Image).HasColumnName("image").HasColumnType("nvarchar(150)").IsRequired(false);  
-           // modelBuilder.Entity<User>().Ignore(u => u.CreatedAt); //.HasColumnName("created_at").HasColumnType("datetime").IsRequired();  
-           // modelBuilder.Entity<User>().Ignore(u => u.UpdateAt); //.HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
-
+            modelBuilder.Entity<User>().Property(u => u.Color).HasColumnName("color").HasColumnType("nvarchar(50)").IsRequired(false);  
+       
             modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);  
             modelBuilder.Entity<User>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
   
@@ -75,11 +74,19 @@ namespace TicketingApi.DBContexts
                 // admin programmer user
                 new { Id = 1, FirstName = "Vicky", LastName = "Epsylon", Email = "vicky.indiarto@epsylonhome.com", Password = CryptoUtil.HashMultiple("programmer3", salt), Salt=salt, Image="Users/vicky.jpg", CreatedAt = DateTime.Now },
                 // Manager CS
-                new { Id = 2, FirstName = "Crish", LastName = "Evans", Email = "vickyindiarto@gmail.com", Password = CryptoUtil.HashMultiple("captain", salt), Salt=salt, Image="Users/crish.jpg", CreatedAt = DateTime.Now },
-                // leader CS
+                new { Id = 2, FirstName = "Crish", LastName = "Evans", Email = "vickyindiarto@gmail.com", Password = CryptoUtil.HashMultiple("captain", salt), Salt=salt, Image="Users/crish.jpg", CreatedAt = DateTime.Now },              
+                // Manager Prg
                 new { Id = 3, FirstName = "Mark", LastName = "Ruffalo", Email = "vickynewonline@gmail.com", Password = CryptoUtil.HashMultiple("hulk", salt), Salt=salt, Image="Users/mark.jpg", CreatedAt = DateTime.Now },
-                // User CS
-                new { Id = 4, FirstName = "RobertDowny", LastName = "Downy", Email = "vickyindiar@yahoo.com", Password = CryptoUtil.HashMultiple("iron", salt), Salt=salt, Image="Users/robert.jpg", CreatedAt = DateTime.Now }
+               
+                // Leader CS
+                new { Id = 4, FirstName = "Robert", LastName = "Downy", Email = "vickyindiar@yahoo.com", Password = CryptoUtil.HashMultiple("iron", salt), Salt=salt, Image="Users/robert.jpg", CreatedAt = DateTime.Now },
+                // Leader Prg           
+                new { Id = 5, FirstName = "Tom", LastName = "Holan", Email = "vickyindiarx@yahoo.com", Password = CryptoUtil.HashMultiple("spidey", salt), Salt=salt,  Image="Users/tom.jpg", CreatedAt = DateTime.Now },
+               
+                //user cs 1
+                new { Id = 6, FirstName = "Scarlett", LastName = "Johansson", Email = "vickyindiary@yahoo.com", Password = CryptoUtil.HashMultiple("bwindow", salt), Salt=salt,CreatedAt = DateTime.Now },
+                //user cs2
+                new { Id = 7, FirstName = "Jeremy", LastName = "Renner", Email = "vickyindiarz@yahoo.com", Password = CryptoUtil.HashMultiple("hawkeye", salt), Salt=salt, CreatedAt = DateTime.Now }
             );
 
             // Configure relationships  
@@ -121,11 +128,18 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<UserRole>().Property(u => u.RoleId).HasColumnName("role_id").HasColumnType("int").IsRequired();  
 
              modelBuilder.Entity<UserRole>().HasData(
+                //admin
                 new { Id = 1, UserId = 1, RoleId = 1 },
                 new { Id = 2, UserId = 1, RoleId = 4 },
+                // manager
                 new { Id = 3, UserId = 2, RoleId = 2 },
-                new { Id = 4, UserId = 3, RoleId = 3 },
-                new { Id = 5, UserId = 4, RoleId = 2 }
+                new { Id = 4, UserId = 3, RoleId = 2 },
+                //leader
+                new { Id = 5, UserId = 4, RoleId = 3 },
+                new { Id = 6, UserId = 5, RoleId = 3 },
+                //user
+                new { Id = 7, UserId = 6, RoleId = 4 },
+                new { Id = 8, UserId = 7, RoleId = 4 }
             );
 
 
@@ -137,11 +151,18 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<UserDept>().Property(u => u.DepartmentId).HasColumnName("dept_id").HasColumnType("int").IsRequired();  
 
             modelBuilder.Entity<UserDept>().HasData(
+                //admin
                 new { Id = 1, UserId = 1, DepartmentId = 1 },
                 new { Id = 2, UserId = 1, DepartmentId = 3 },
+                //
                 new { Id = 3, UserId = 2, DepartmentId = 2 },
-                new { Id = 4, UserId = 3, DepartmentId = 2 }, 
-                new { Id = 5, UserId = 4, DepartmentId = 2 }
+                new { Id = 4, UserId = 3, DepartmentId = 3 }, 
+                
+                new { Id = 5, UserId = 4, DepartmentId = 2 },
+                new { Id = 6, UserId = 5, DepartmentId = 3 },
+
+                new { Id = 7, UserId = 6, DepartmentId = 2 },
+                new { Id = 8, UserId = 7, DepartmentId = 2 }
             );
 
             modelBuilder.Entity<Sender>().ToTable("senders");  
@@ -155,7 +176,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Sender>().Property(u => u.Salt).HasColumnName("salt").HasColumnType("nvarchar(36)").IsRequired();  
             modelBuilder.Entity<Sender>().Ignore(u => u.File);
             modelBuilder.Entity<Sender>().Property(u => u.LoginStatus).HasColumnName("login_status").HasColumnType("tinyint(1)").IsRequired(false);
-            modelBuilder.Entity<Sender>().Property(u => u.Image).HasColumnName("image").HasColumnType("nvarchar(50)").IsRequired(false);  
+            modelBuilder.Entity<Sender>().Property(u => u.Image).HasColumnName("image").HasColumnType("nvarchar(150)").IsRequired(false);  
+            modelBuilder.Entity<Sender>().Property(u => u.Color).HasColumnName("color").HasColumnType("nvarchar(50)").IsRequired(false);  
             modelBuilder.Entity<Sender>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);  
             modelBuilder.Entity<Sender>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
 
@@ -208,7 +230,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Team>().Property(u => u.LeaderId).HasColumnName("leader_id").HasColumnType("int").IsRequired();   
 
             modelBuilder.Entity<Team>().HasData(
-                new { Id = 1, Name = "TEAM CAP", LeaderId=3, Desc = "" }
+                new { Id = 1, Name = "TEAM CAP", LeaderId=4, Desc = "" }
             );
 
             modelBuilder.Entity<TeamMember>().ToTable("team_members");   
@@ -218,8 +240,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TeamMember>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
            
             modelBuilder.Entity<TeamMember>().HasData(
-                new { Id = 1, TeamId = 1, UserId=4},
-                new { Id = 2, TeamId = 1, UserId=3}
+                new { Id = 1, TeamId = 1, UserId=6},
+                new { Id = 2, TeamId = 1, UserId=7}
             );
 
             modelBuilder.Entity<Stat>().ToTable("stats");
@@ -306,10 +328,10 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Media>().Ignore(u => u.File);
 
             modelBuilder.Entity<Media>().HasData(
-                new { Id = 1, FileName="Tickets/atc1.jpg", FileType="image", RelId=1, RelType="T" },
-                new { Id = 2, FileName="Tickets/atc2.pdf", FileType="pdf", RelId=1, RelType="T" },
-                new { Id = 3, FileName="TicketDetails/atc3.jpeg", FileType="image", RelId=1, RelType="TD" },
-                new { Id = 4, FileName="TicketsDetails/atc4.xls", FileType="excel", RelId=1, RelType="TD" }
+                new { Id = 1, FileName="Tickets/atc1.jpg", FileType=".pf", RelId=1, RelType="T" },
+                new { Id = 2, FileName="Tickets/atc2.pdf", FileType=".pdf", RelId=1, RelType="T" },
+                new { Id = 3, FileName="TicketDetails/atc3.jpeg", FileType=".jpg", RelId=1, RelType="TD" },
+                new { Id = 4, FileName="TicketsDetails/atc4.xls", FileType=".xls", RelId=1, RelType="TD" }
             );
 
             modelBuilder.Entity<KBase>().ToTable("kbases");

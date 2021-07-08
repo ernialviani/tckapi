@@ -19,6 +19,7 @@ using TicketingApi.Entities;
 using TicketingApi.Utils;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace TicketingApi.Controllers.v1.Tickets
 {
@@ -28,18 +29,34 @@ namespace TicketingApi.Controllers.v1.Tickets
     public class TicketController: ControllerBase
     {
        //  private readonly IConfiguration _configuration;
-         private readonly AppDBContext  _context;
+        private readonly AppDBContext  _context;
         private readonly IFileUtil _fileUtil;
+
+        private readonly IMailUtil _mailUtil;
         private readonly IWebHostEnvironment _env; 
-        public TicketController(AppDBContext context, IFileUtil fileUtil, IWebHostEnvironment env )
+        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env )
         {
             _context = context; 
             _fileUtil = fileUtil;
+            _mailUtil = mailUtil;
             _env = env;   
         }
 
-        public static string GenerateTicketNumber(){
-            return "";
+        public string GenerateTicketNumber(){
+            string newNumber = "";
+            int lastTicket = 0;
+            int lastnumber = 0;
+            string nowDate = DateTime.Today.ToString().Substring(0, 10).Replace("-", "").Replace("/", "");
+            var lastTicketNumber = _context.Tickets.OrderByDescending(x => x.Id).FirstOrDefault(w => w.TicketNumber.Contains(nowDate));
+            if(lastTicketNumber != null){
+                lastnumber = Convert.ToInt32(lastTicketNumber.TicketNumber.Substring(8));
+                lastTicket =  lastnumber + 1;
+                newNumber =  nowDate + Convert.ToString(lastTicket);
+            }
+            else{
+                newNumber = nowDate+"1";
+            }
+            return newNumber;
         }
 
 
@@ -57,10 +74,14 @@ namespace TicketingApi.Controllers.v1.Tickets
                         .Include(ta => ta.TicketAssigns).ThenInclude(s => s.Teams).ThenInclude(s => s.TeamMembers).ThenInclude(s => s.Users)
                         .Include(ap => ap.Apps)
                         .Include(md => md.Modules)
-                        .Include(mda => mda.Medias.Where(item => item.RelType == "T"))
+                        .Include(mda => mda.Medias)
                     .Select(e => new {
                         e.Id, e.TicketNumber, e.Subject, e.Comment, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedAt, e.UpdatedAt,
-                        TicketDetails = e.TicketDetails.Select(t => new { t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image } }),
+                        TicketDetails = e.TicketDetails.Select(t => new { 
+                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
+                            Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "TD"),
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }
+                        }),
                         TicketAssigns = e.TicketAssigns.Select(t => new { 
                             t.Id,
                             t.AssignType, 
@@ -77,6 +98,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                  })
                              }, 
                             t.TeamAt, 
+                            t.UserId,
                             Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
                             t.UserAt, 
                             t.Viewed, 
@@ -84,8 +106,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                         }),
                         e.Status, e.Apps, e.Modules,
                         Senders = new { e.Senders.Id, e.Senders.Email, FullName = e.Senders.FirstName + " " + e.Senders.LastName, e.Senders.Image, e.Senders.LoginStatus },
-                        e.Medias
-                    });
+                        Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "T")
+                    }).OrderByDescending(e => e.Id);
            return Ok(allTicket);
         }
 
@@ -109,21 +131,57 @@ namespace TicketingApi.Controllers.v1.Tickets
             return NotFound();
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("mail/send")]
+        public IActionResult SendMail([FromForm]string to,[FromForm] string subject,[FromForm] string EmailBody, [FromForm]IList<IFormFile> file)
+        {
+            try
+            {
+                _mailUtil.SendEmailAsync(
+                        new MailType {
+                            ToEmail=to,
+                            Subject=subject,
+                            Body=EmailBody,
+                            Attachments = new List<IFormFile>(file)
+                        }
+                );
+
+                return Ok();
+            }
+            catch (System.Exception)
+            {
+                return BadRequest();
+            }
+        
+        }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Create([FromForm]Ticket request)
+        public IActionResult Create([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file)
         {
-            var exitingsTicket = _context.Tickets.FirstOrDefault(e => e.TicketNumber == request.TicketNumber);
-            if(exitingsTicket != null ) {
-                return BadRequest("Email already in use");
-            }
-            
-            var transaction =  _context.Database.BeginTransaction();
-               
-            try
-            {
-                var salt =  CryptoUtil.GenerateSalt();
+           Sender requestSender = JsonConvert.DeserializeObject<Sender>(sender);
+            var exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
+           
+           using (var transaction =  _context.Database.BeginTransaction())
+           {
+             try
+              {
+                 if (exitingsSender == null){
+                    Sender newSender = new Sender() {
+                        FirstName = requestSender.FirstName,
+                        LastName = requestSender.LastName,
+                        Email = requestSender.Email,
+                        Password = "",
+                        Salt = "",
+                        LoginStatus = false,
+                        CreatedAt = DateTime.Now 
+                    };
+                    _context.Senders.Add(newSender);
+                    _context.SaveChanges();
+                    exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
+                }
+
                 Ticket ticketEntity = new Ticket()
                 {   
                     TicketNumber = GenerateTicketNumber(),
@@ -131,20 +189,68 @@ namespace TicketingApi.Controllers.v1.Tickets
                     Comment = request.Comment,
                     AppId =  request.AppId,
                     ModuleId = request.ModuleId,
-                    SenderId = request.SenderId,
+                    SenderId = exitingsSender.Id,
                     StatId= 1,
                     CreatedAt = DateTime.Now
                 };
 
                 _context.Tickets.Add(ticketEntity);
                 _context.SaveChanges();
+                var newTicket = _context.Tickets.AsNoTracking().Where(w => w.TicketNumber == ticketEntity.TicketNumber).FirstOrDefault();
+                foreach(var f in file){
+                    Media uploadedFile = _fileUtil.FileUpload(f, "Tickets");
+                    _context.Medias.Add(new Media{
+                        FileName = "Tickets/"+uploadedFile.FileName,
+                        FileType = uploadedFile.FileType,
+                        RelId = newTicket.Id,
+                        RelType = "T"
+                    });
+                }
+
+         //       var getManager = _context.Users.Where(w => w.UserRoles.Any(a => a.RoleId == 2) && w.UserDepts.Any(a => a.DepartmentId == 2) ).ToList();
+                 var listManager = (from u in _context.Users 
+                                    join ur in _context.UserRoles on u.Id equals ur.UserId
+                                    join ud in _context.UserDepts on u.Id equals ud.UserId
+                                    where (ur.RoleId == 2 && ud.DepartmentId == 2)
+                                    select u 
+                                    ).ToList();
+
+                foreach (var mg in listManager)
+                {
+                    _context.TicketAssigns.Add(new TicketAssign{
+                        TicketId = newTicket.Id,
+                        UserId = mg.Id,
+                        UserAt = DateTime.Now,
+                        AssignType= "M",
+                        Viewed = false
+                    });
+
+                    _mailUtil.SendEmailAsync(
+                        new MailType {
+                            ToEmail=mg.Email,
+                            Subject= "New Ticket Number " + newTicket.TicketNumber,
+                            Title= request.Subject,
+                            Body= request.Comment,
+                            TicketFrom= requestSender.Email,
+                            TicketApp= "",
+                            TicketModule="",
+                            Attachments = new List<IFormFile>(file)
+                        }
+                    );
+
+                }
+
+                _context.SaveChanges();
                 transaction.Commit();
                 return Ok(ticketEntity);
-            }
-            catch (System.Exception e)
-            {
+            }   
+            catch (System.Exception e) {
+                transaction.Rollback();
                return BadRequest(e.Message);
-            }                
+            }  
+           } 
+          
+                       
         }
 
         [HttpPost("{id}")]

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using TicketingApi.Models.v1.Misc;
 
 namespace TicketingApi.Utils
 {
@@ -7,5 +8,7 @@ namespace TicketingApi.Utils
         string AvatarUpload(IFormFile file, string Dir);
 
         bool Remove(string uploadDirectory);
+
+        Media FileUpload(IFormFile file, string Dir);
     }
 }

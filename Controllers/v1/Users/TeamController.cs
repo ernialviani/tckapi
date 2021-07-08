@@ -26,14 +26,25 @@ namespace TicketingApi.Controllers.v1.Users
         public TeamController(AppDBContext context ) { _context = context; }
 
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize]
         public IActionResult GetTeams([FromHeader] string Authorization)
         {
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
           var allTeam = _context.Teams.AsNoTracking()
-                        .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users);
+                        .Include(s => s.Leader)
+                        .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
+                        .Select(s => new {
+                            s.Id, s.Name, s.Desc, s.CreatedAt,
+                            Leader = new { s.Leader.Id, s.Leader.FirstName, s.Leader.LastName, s.Leader.Email, s.Leader.Image, s.Leader.Color },
+                            TeamMembers = s.TeamMembers == null ? null : s.TeamMembers.Select( tm => new {
+                                tm.Id,
+                                tm.TeamId,
+                                Users = new {  tm.Users.Id, tm.Users.FirstName, tm.Users.LastName, tm.Users.Email, tm.Users.Image, tm.Users.Color }
+                            })
+                        });
+
            return Ok(allTeam);
         }
 

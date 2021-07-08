@@ -19,6 +19,14 @@ namespace TicketingApi.Utils
         }
         public async Task SendEmailAsync(MailType mailType)
         {
+
+            string FilePath = Directory.GetCurrentDirectory() + "\\Utils\\MailTemplate\\NewTicketHtmlTemplate.html";
+            StreamReader str = new StreamReader(FilePath);
+            string MailText = str.ReadToEnd();
+            str.Close();
+            MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
+            MailText = MailText.Replace("$TicketFrom", mailType.TicketFrom).Replace("$TicketApp", mailType.TicketApp).Replace("$TicketModule", mailType.TicketModule);
+
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
             email.To.Add(MailboxAddress.Parse(mailType.ToEmail));
@@ -40,7 +48,7 @@ namespace TicketingApi.Utils
                     }
                 }
             }
-            builder.HtmlBody = mailType.Body;
+            builder.HtmlBody = MailText;
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);

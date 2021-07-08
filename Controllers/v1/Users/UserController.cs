@@ -15,6 +15,7 @@ using System.IdentityModel.Tokens.Jwt;
 using TicketingApi.Entities;
 using TicketingApi.Utils;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace TicketingApi.Controllers.v1.Users
 {
@@ -212,15 +213,16 @@ namespace TicketingApi.Controllers.v1.Users
         //avatar update
         [HttpPut("{id}")]
         [Route("admin/avatar-update/{id}")]
-        public IActionResult PutAvatar(int id,[FromForm] User model)
+        public IActionResult PutAvatar(int id,[FromForm]List<IFormFile> file)
         {
-            var rec = _context.Users.FirstOrDefault(x => x.Id == id);
-            if(model.File != null){
-                var uploadedImage = _fileUtil.AvatarUpload(model.File, "Users");
-                rec.Image = uploadedImage;
-            }
-            _context.SaveChanges();
-            return Ok(rec);
+            // var rec = _context.Users.FirstOrDefault(x => x.Id == id);
+            // if(model.File != null){
+            //     var uploadedImage = _fileUtil.AvatarUpload(model.File, "Users");
+            //     rec.Image = uploadedImage;
+            // }
+            // _context.SaveChanges();
+            // return Ok(rec);
+            return Ok();
         }
 
         [HttpDelete("{id}")]

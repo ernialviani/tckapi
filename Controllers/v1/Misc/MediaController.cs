@@ -64,6 +64,81 @@ namespace TicketingApi.Controllers.v1.Misc
             return File(b, "image/jpeg");
         //    return Ok(userImage);
         }
+        
+        [AllowAnonymous]
+        [HttpGet("ticket/{id}")]
+        //TODO
+        public IActionResult GetTicketImage(int id){
+          //  var userImage = "";
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "T").FirstOrDefault();
+            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+            var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
+            byte[] b = System.IO.File.ReadAllBytes(filePath);
+          // var type = b.GetType();
+           //userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+            return File(b, "image/jpeg");
+          //  return Ok(File(b, "text/plain", Path.GetFileName(filePath)));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("ticket-detail/{id}")]
+        //TODO
+        public IActionResult GetTicketDetailImage(int id){
+          //  var userImage = "";
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "TD").FirstOrDefault();
+            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+            var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
+            byte[] b = System.IO.File.ReadAllBytes(filePath);
+          // var type = b.GetType();
+           //userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+            return File(b, "image/jpeg");
+          //  return Ok(File(b, "text/plain", Path.GetFileName(filePath)));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("ticket/download/{id}")]
+        //TODO
+        public IActionResult GetDownloadTicketFile(int id){
+          //  var userImage = "";
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "T").FirstOrDefault();
+            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+            var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
+            byte[] b = System.IO.File.ReadAllBytes(filePath);
+            var type = Path.GetExtension(filePath).ToLower();
+            var dtype = "image/jpeg";
+            if(  type == ".pdf") { dtype = "application/pdf"; }
+            else if( type == ".doc") { dtype = "application/msword"; }
+            else if( type == ".docs") {dtype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";  }
+            else if( type == ".xls"){ dtype = "application/vnd.ms-excel"; }  
+            else if( type == ".xlsx"){ dtype = " application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ; } 
+            // else if(type == ".rar" || type == ".zip"){
+            // }
+            return File(b, dtype, Path.GetFileName(filePath));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("ticket-detail/download/{id}")]
+        //TODO
+        public IActionResult GetDownloadTicketDetailFile(int id){
+          //  var userImage = "";
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "TD").FirstOrDefault();
+            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+            var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
+            byte[] b = System.IO.File.ReadAllBytes(filePath);
+            var type = Path.GetExtension(filePath).ToLower();
+            var dtype = "image/jpeg";
+            if(  type == ".pdf") { dtype = "application/pdf"; }
+            else if( type == ".doc") { dtype = "application/msword"; }
+            else if( type == ".docs") {dtype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";  }
+            else if( type == ".xls"){ dtype = "application/vnd.ms-excel"; }  
+            else if( type == ".xlsx"){ dtype = " application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ; } 
+            // else if(type == ".rar" || type == ".zip"){
+            // }
+            return File(b, dtype, Path.GetFileName(filePath));
+        }
+
+
+
 
         [HttpPost("/single-post")]
         [Authorize]
