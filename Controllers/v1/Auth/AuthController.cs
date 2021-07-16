@@ -38,6 +38,13 @@ namespace TicketingApi.Controllers.v1.Authentication
         }    
 
         [AllowAnonymous]
+        [HttpGet]
+        [Route("test")]
+        public IActionResult Tester(){
+            return Ok("test success");
+        }
+
+        [AllowAnonymous]
         [HttpPost]
         [Route("admin/login")]
         public IActionResult loginAdmin([FromBody] User user){
