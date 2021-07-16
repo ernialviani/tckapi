@@ -70,9 +70,9 @@ namespace TicketingApi.Controllers.v1.Misc
         //TODO
         public IActionResult GetTicketImage(int id){
           //  var userImage = "";
-            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "T").FirstOrDefault();
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "T").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
-            var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
+            var filePath = Path.Combine(uploadPath,  existingMedia.FileName);
             byte[] b = System.IO.File.ReadAllBytes(filePath);
           // var type = b.GetType();
            //userImage = "data:image/png;base64," + Convert.ToBase64String(b);
@@ -85,7 +85,7 @@ namespace TicketingApi.Controllers.v1.Misc
         //TODO
         public IActionResult GetTicketDetailImage(int id){
           //  var userImage = "";
-            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "TD").FirstOrDefault();
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "TD").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
             byte[] b = System.IO.File.ReadAllBytes(filePath);
@@ -100,7 +100,7 @@ namespace TicketingApi.Controllers.v1.Misc
         //TODO
         public IActionResult GetDownloadTicketFile(int id){
           //  var userImage = "";
-            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "T").FirstOrDefault();
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "T").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
             byte[] b = System.IO.File.ReadAllBytes(filePath);
@@ -121,7 +121,7 @@ namespace TicketingApi.Controllers.v1.Misc
         //TODO
         public IActionResult GetDownloadTicketDetailFile(int id){
           //  var userImage = "";
-            var existingMedia = _context.Medias.Where(e => e.Id == id && e.FileType == "TD").FirstOrDefault();
+            var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "TD").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
             byte[] b = System.IO.File.ReadAllBytes(filePath);

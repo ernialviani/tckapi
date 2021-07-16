@@ -1,3 +1,4 @@
+using System.Transactions;
 using System.Reflection;
 using Microsoft.VisualBasic;
 using System;
@@ -115,15 +116,47 @@ namespace TicketingApi.Controllers.v1.Tickets
          [Authorize]
         public IActionResult GetTicketById(int id)
         {
-            var ticket = _context.Tickets.AsNoTracking()
-                        .Where(e => e.Id == id)
+              var ticket = _context.Tickets.AsNoTracking().Where(w => w.Id == id)
                         .Include(sd => sd.Senders)
                         .Include(st => st.Status)
-                        .Include(td => td.TicketDetails)
-                        .Include(ta => ta.TicketAssigns)
+                        .Include(td => td.TicketDetails).ThenInclude(s => s.Users)
+                        .Include(ta => ta.TicketAssigns).ThenInclude(s => s.Teams).ThenInclude(s => s.TeamMembers).ThenInclude(s => s.Users)
                         .Include(ap => ap.Apps)
-                        .Include(md => md.Modules)        
-                        .FirstOrDefault();
+                        .Include(md => md.Modules)
+                        .Include(mda => mda.Medias)
+                    .Select(e => new {
+                        e.Id, e.TicketNumber, e.Subject, e.Comment, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedAt, e.UpdatedAt,
+                        TicketDetails = e.TicketDetails.Select(t => new { 
+                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
+                            Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "TD"),
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }
+                        }),
+                        TicketAssigns = e.TicketAssigns.Select(t => new { 
+                            t.Id,
+                            t.AssignType, 
+                            Team = t.Teams == null ? null : new { 
+                                t.Teams.Id, 
+                                t.Teams.Name, 
+                                TeamMembers = t.Teams.TeamMembers.Select(td => new {
+                                     td.Id,
+                                     Users = new { 
+                                         UserId = td.Users.Id, 
+                                         td.Users.Email, 
+                                         FullName = td.Users.FirstName + " " + td.Users.LastName, td.Users.Image 
+                                     } 
+                                 })
+                             }, 
+                            t.TeamAt, 
+                            t.UserId,
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
+                            t.UserAt, 
+                            t.Viewed, 
+                            t.ViewedAt
+                        }),
+                        e.Status, e.Apps, e.Modules,
+                        Senders = new { e.Senders.Id, e.Senders.Email, FullName = e.Senders.FirstName + " " + e.Senders.LastName, e.Senders.Image, e.Senders.LoginStatus },
+                        Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "T")
+                    }).FirstOrDefault();
                        
             if(ticket != null){
                 return Ok(ticket);
@@ -249,9 +282,120 @@ namespace TicketingApi.Controllers.v1.Tickets
                return BadRequest(e.Message);
             }  
            } 
-          
-                       
         }
+
+        [HttpPost("{id}")]
+        [Authorize]
+        [Route("update")]
+        public IActionResult updateTicket(int id,[FromForm]Ticket request,[FromForm] string sender,  [FromForm]IList<IFormFile> file)
+        {
+            using (var transaction =  _context.Database.BeginTransaction())
+            {
+                try {
+                    var ticketExist =  _context.Tickets .Where(e => e.Id == id) .FirstOrDefault();
+                    if (ticketExist == null) { return NotFound("ticket Not Found !"); }
+            
+                    ticketExist.Subject = request.Subject;
+                    ticketExist.Comment = request.Comment;
+                    ticketExist.AppId = request.AppId;
+                    ticketExist.ModuleId = request.ModuleId;
+                    ticketExist.StatId = request.StatId;
+                    ticketExist.SenderId = request.SenderId;
+                    ticketExist.SolvedBy = request.SolvedBy;
+                    ticketExist.SolvedAt = request.SolvedAt;
+                    ticketExist.RejectedBy = request.RejectedBy;
+                    ticketExist.RejectedReason = request.RejectedReason;
+                    ticketExist.RejectedAt = request.RejectedAt;
+                    ticketExist.UpdatedAt = DateTime.Now;
+
+                    _context.SaveChanges();
+                    transaction.Commit();
+
+                    return Ok(ticketExist);
+                }
+                catch (System.Exception e) {
+                    transaction.Rollback();
+                    return BadRequest(e.Message);
+                }
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("add-detail")]
+        public IActionResult postDetail(
+            [FromForm]TicketDetail request,
+            [FromForm]Ticket ticketRequest,
+            [FromForm] string sender,
+            [FromForm] string userLogin,
+            [FromForm]IList<IFormFile> file,
+            [FromForm] string ticketAssign )
+        {
+            using (var transaction =  _context.Database.BeginTransaction())
+            {
+                try {
+                    var ticketExist =  _context.Tickets .Where(e => e.Id == request.TicketId) .FirstOrDefault();
+                    if (ticketExist == null) { return NotFound("ticket Not Found !"); }
+
+                    TicketDetail td = new TicketDetail(){
+                        TicketId = request.TicketId,
+                        UserId = request.UserId,
+                        Comment = request.Comment,
+                        Flag = false,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    _context.TicketDetails.Add(td);
+                    _context.SaveChanges();
+
+
+                    var newTd = _context.TicketDetails.OrderByDescending(e => e.Id).FirstOrDefault();
+
+                    foreach(var f in file){
+                        Media uploadedFile = _fileUtil.FileUpload(f, "TicketDetails");
+                        _context.Medias.Add(new Media{
+                            FileName = "TicketDetails/"+uploadedFile.FileName,
+                            FileType = uploadedFile.FileType,
+                            RelId = newTd.Id,
+                            RelType = "TD"
+                        });
+                    }
+                    
+                    Sender requestSender = JsonConvert.DeserializeObject<Sender>(sender);
+                    User requestUser = JsonConvert.DeserializeObject<User>(userLogin);
+
+                    foreach (var assign in assigns)
+                    {
+                        if (requestUser.Email != assign.Users.Email)
+                        {
+                            _mailUtil.SendEmailAsync(
+                                new MailType {
+                                    ToEmail= assign.Users.Email,
+                                    Subject= "Update Ticket Number " + ticketRequest.TicketNumber,
+                                    Title= ticketRequest.Subject,
+                                    Body= request.Comment,
+                                    TicketFrom= requestSender.Email,
+                                    TicketApp= "",
+                                    TicketModule="",
+                                    Attachments = new List<IFormFile>(file)
+                                }
+                            );
+                            
+                        }
+                    }
+
+                    _context.SaveChanges();
+                    transaction.Commit();
+
+                    return GetTicketById(ticketRequest.Id);
+                }
+                catch (System.Exception e) {
+                    transaction.Rollback();
+                    return BadRequest(e.Message);
+                }
+            }
+        }
+
 
         [HttpPost("{id}")]
         public IActionResult PutTicket(int id,[FromForm]Ticket request)
