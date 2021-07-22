@@ -256,8 +256,9 @@ namespace TicketingApi.DBContexts
                 new { Id = 1, Name = "New", Color= "Green", Desc = "" },
                 new { Id = 2, Name = "Open", Color = "Orange", Desc = "" },
                 new { Id = 3, Name = "In Progress", Color = "Red", Desc = "" },
-                new { Id = 4, Name = "Resolved", Color = "Blue", Desc = "" },
-                new { Id = 5, Name = "Rejected", Color = "Grey", Desc = "" }
+                new { Id = 4, Name = "Pending", Color = "Yellow", Desc = "" },
+                new { Id = 5, Name = "Solve", Color = "Blue", Desc = "" },
+                new { Id = 6, Name = "Reject", Color = "Grey", Desc = "" }
             );
 
             modelBuilder.Entity<Ticket>().ToTable("tickets");
@@ -272,7 +273,9 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Ticket>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.StatId).HasColumnName("stat_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.SolvedBy).HasColumnName("solved_by").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<Ticket>().Property(u => u.SolvedAt).HasColumnName("solved_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.RejectedBy).HasColumnName("rejected_by").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<Ticket>().Property(u => u.RejectedAt).HasColumnName("rejected_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.RejectedReason).HasColumnName("rejected_reason").HasColumnType("text").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
@@ -321,7 +324,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Media>().ToTable("medias");
             modelBuilder.Entity<Media>().HasKey(u => u.Id).HasName("PK_Media");  
             modelBuilder.Entity<Media>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
-            modelBuilder.Entity<Media>().Property(u => u.FileName).HasColumnName("file_name").HasColumnType("nvarchar(50)").IsRequired();   
+            modelBuilder.Entity<Media>().Property(u => u.FileName).HasColumnName("file_name").HasColumnType("nvarchar(150)").IsRequired();   
             modelBuilder.Entity<Media>().Property(u => u.FileType).HasColumnName("file_type").HasColumnType("nvarchar(50)").IsRequired();   
             modelBuilder.Entity<Media>().Property(u => u.RelId).HasColumnName("rel_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Media>().Property(u => u.RelType).HasColumnName("rel_type").HasColumnType("nvarchar(5)").IsRequired();

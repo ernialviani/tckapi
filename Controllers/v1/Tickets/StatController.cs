@@ -35,13 +35,13 @@ namespace TicketingApi.Controllers.v1.Tickets
         }
 
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize]
         public IActionResult GetStats([FromHeader] string Authorization)
         {
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allStat = _context.Stats.AsNoTracking();
+          var allStat = _context.Stats.AsNoTracking().Where(w => w.Id > 3);
            return Ok(allStat);
         }
 

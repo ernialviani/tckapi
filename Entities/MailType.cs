@@ -14,5 +14,7 @@ namespace TicketingApi.Entities
         public string TicketApp {get; set;}
         public string TicketModule {get;set;}
         public List<IFormFile> Attachments { get; set; }
+
+        public string UserFullName {get; set;}
     }
 }
