@@ -26,6 +26,7 @@ namespace TicketingApi.Utils
             str.Close();
             MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
             MailText = MailText.Replace("$TicketFrom", mailType.TicketFrom).Replace("$TicketApp", mailType.TicketApp).Replace("$TicketModule", mailType.TicketModule);
+            MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
@@ -66,6 +67,7 @@ namespace TicketingApi.Utils
             str.Close();
             MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
             MailText = MailText.Replace("$TicketFrom", mailType.TicketFrom).Replace("$TicketApp", mailType.TicketApp).Replace("$TicketModule", mailType.TicketModule);
+            MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
@@ -107,7 +109,7 @@ namespace TicketingApi.Utils
             MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
             MailText = MailText.Replace("$TicketFrom", mailType.TicketFrom).Replace("$TicketApp", mailType.TicketApp).Replace("$TicketModule", mailType.TicketModule);
             MailText = MailText.Replace("$user", mailType.UserFullName);
-
+            MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);

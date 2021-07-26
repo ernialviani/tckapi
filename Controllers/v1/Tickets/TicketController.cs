@@ -267,7 +267,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketFrom= requestSender.Email,
                             TicketApp= "",
                             TicketModule="",
-                            Attachments = new List<IFormFile>(file)
+                            Attachments = new List<IFormFile>(file),
+                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
 
@@ -375,7 +376,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     TicketApp= "",
                                     TicketModule="",
                                     Attachments = new List<IFormFile>(file),
-                                    UserFullName = currentUser.FirstName + " " + currentUser.LastName
+                                    UserFullName = currentUser.FirstName + " " + currentUser.LastName,
+                                    ButtonLink = "http://localhost:3000/admin/ticket?tid="+ currentTicket.Id +"&open=true",
                                 }
                             );
                             
@@ -484,7 +486,9 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     TicketApp= "",
                                     TicketModule="",
                                     Attachments = null,
-                                    UserFullName = " "
+                                    UserFullName = " ",
+                                    ButtonLink = "http://localhost:3000/admin/ticket?tid="+ ctickets.Id +"&open=true",
+                                    
                                 }
                             );
                         }
@@ -510,7 +514,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     TicketApp= "",
                                     TicketModule="",
                                     Attachments = null,
-                                    UserFullName = " "
+                                    UserFullName = " ",
+                                    ButtonLink = "http://localhost:3000/admin/ticket?tid="+ ctickets.Id +"&open=true",
                                 }
                             );
                         }
@@ -526,10 +531,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     return BadRequest(e.Message);
                 }
             }
- 
         }
-
-
 
         [HttpPost("{id}")]
         public IActionResult PutTicket(int id,[FromForm]Ticket request)
