@@ -63,6 +63,7 @@ namespace TicketingApi.Controllers.v1.Tickets
 
         [HttpGet]
         [Authorize]
+        //  [Authorize(Roles = RoleType.Admin)]
         public IActionResult GetTickets([FromHeader] string Authorization)
         {
            
@@ -77,7 +78,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         .Include(md => md.Modules)
                         .Include(mda => mda.Medias)
                     .Select(e => new {
-                        e.Id, e.TicketNumber, e.Subject, e.Comment, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedAt, e.UpdatedAt,
+                        e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
                         TicketDetails = e.TicketDetails.Select(t => new { 
                             t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
                             Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "TD"),
@@ -105,8 +106,12 @@ namespace TicketingApi.Controllers.v1.Tickets
                             t.Viewed, 
                             t.ViewedAt
                         }),
-                        e.Status, e.Apps, e.Modules,
-                        Senders = new { e.Senders.Id, e.Senders.Email, FullName = e.Senders.FirstName + " " + e.Senders.LastName, e.Senders.Image, e.Senders.LoginStatus },
+                        e.Status, e.Apps, e.Modules, e.TicketType,
+                       // RequestFrom = e.TicketType == "E" ? "" : "",
+                     //   new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, LoginStatus = e.Senders.LoginStatus } :
+                     //   new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, LoginStatus = true },
+                        Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
+                        Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
                     }).OrderByDescending(e => e.Id);
            return Ok(allTicket);
@@ -125,7 +130,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         .Include(md => md.Modules)
                         .Include(mda => mda.Medias)
                     .Select(e => new {
-                        e.Id, e.TicketNumber, e.Subject, e.Comment, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedAt, e.UpdatedAt,
+                        e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
                         TicketDetails = e.TicketDetails.Select(t => new { 
                             t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
                             Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "TD"),
@@ -153,8 +158,10 @@ namespace TicketingApi.Controllers.v1.Tickets
                             t.Viewed, 
                             t.ViewedAt
                         }),
-                        e.Status, e.Apps, e.Modules,
-                        Senders = new { e.Senders.Id, e.Senders.Email, FullName = e.Senders.FirstName + " " + e.Senders.LastName, e.Senders.Image, e.Senders.LoginStatus },
+                        e.Status, e.Apps, e.Modules, e.TicketType,
+                 
+                        Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image },
+                        Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "T")
                     }).FirstOrDefault();
                        
@@ -164,43 +171,36 @@ namespace TicketingApi.Controllers.v1.Tickets
             return NotFound();
         }
 
-        [HttpPost]
-        [Authorize]
-        [Route("mail/send")]
-        public IActionResult SendMail([FromForm]string to,[FromForm] string subject,[FromForm] string EmailBody, [FromForm]IList<IFormFile> file)
-        {
-            try
-            {
-                _mailUtil.SendEmailAsync(
-                        new MailType {
-                            ToEmail=to,
-                            Subject=subject,
-                            Body=EmailBody,
-                            Attachments = new List<IFormFile>(file)
-                        }
-                );
-
-                return Ok();
-            }
-            catch (System.Exception)
-            {
-                return BadRequest();
-            }
-        
-        }
 
         [HttpPost]
         [Authorize]
         public IActionResult Create([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file)
         {
-           Sender requestSender = JsonConvert.DeserializeObject<Sender>(sender);
-            var exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
-           
+
            using (var transaction =  _context.Database.BeginTransaction())
            {
              try
               {
-                 if (exitingsSender == null){
+
+                Ticket ticketEntity = new Ticket()
+                {   
+                    TicketNumber = GenerateTicketNumber(),
+                    TicketType = request.TicketType,
+                    Subject = request.Subject,
+                    Comment = request.Comment,
+                    AppId =  request.AppId,
+                    ModuleId = request.ModuleId,
+                    StatId= 1,
+                    CreatedBy = request.CreatedBy,
+                    CreatedAt = DateTime.Now,
+                };
+
+                Sender requestSender = new Sender();
+
+                if(request.TicketType == "E"){
+                    requestSender = JsonConvert.DeserializeObject<Sender>(sender);
+                    var exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
+                    if (exitingsSender == null){
                     Sender newSender = new Sender() {
                         FirstName = requestSender.FirstName,
                         LastName = requestSender.LastName,
@@ -212,24 +212,24 @@ namespace TicketingApi.Controllers.v1.Tickets
                     };
                     _context.Senders.Add(newSender);
                     _context.SaveChanges();
+                    //add client user if not exist
                     exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
+                    ticketEntity.SenderId = exitingsSender.Id;
+                   }
+
+
                 }
-
-                Ticket ticketEntity = new Ticket()
-                {   
-                    TicketNumber = GenerateTicketNumber(),
-                    Subject = request.Subject,
-                    Comment = request.Comment,
-                    AppId =  request.AppId,
-                    ModuleId = request.ModuleId,
-                    SenderId = exitingsSender.Id,
-                    StatId= 1,
-                    CreatedAt = DateTime.Now
-                };
-
+                else if(request.TicketType == "I"){
+                    ticketEntity.UserId = request.UserId; 
+                }
                 _context.Tickets.Add(ticketEntity);
                 _context.SaveChanges();
+                //save ticket
+
                 var newTicket = _context.Tickets.AsNoTracking().Where(w => w.TicketNumber == ticketEntity.TicketNumber).FirstOrDefault();
+                var app = _context.Apps.Where(w => w.Id == newTicket.AppId).FirstOrDefault();
+                var appModule = _context.Modules.Where(w => w.Id == newTicket.ModuleId).FirstOrDefault();
+
                 foreach(var f in file){
                     Media uploadedFile = _fileUtil.FileUpload(f, "Tickets");
                     _context.Medias.Add(new Media{
@@ -240,40 +240,80 @@ namespace TicketingApi.Controllers.v1.Tickets
                     });
                 }
                 _context.SaveChanges();
-         //       var getManager = _context.Users.Where(w => w.UserRoles.Any(a => a.RoleId == 2) && w.UserDepts.Any(a => a.DepartmentId == 2) ).ToList();
-                 var listManager = (from u in _context.Users 
+                //save attachments
+
+
+
+                //ASSIGN AND MAIL CONFIG
+                 List<User> listManager = new List<User>(); 
+                 if(request.TicketType == "E"){
+                    List<string> listMailTo = new List<string>();
+                    listManager = (from u in _context.Users 
                                     join ur in _context.UserRoles on u.Id equals ur.UserId
                                     join ud in _context.UserDepts on u.Id equals ud.UserId
                                     where (ur.RoleId == 2 && ud.DepartmentId == 2)
                                     select u 
                                     ).ToList();
 
-                foreach (var mg in listManager)
-                {
-                    _context.TicketAssigns.Add(new TicketAssign{
-                        TicketId = newTicket.Id,
-                        UserId = mg.Id,
-                        UserAt = DateTime.Now,
-                        AssignType= "M",
-                        Viewed = false
-                    });
+                    foreach (var mg in listManager) {
+                        _context.TicketAssigns.Add(new TicketAssign{
+                            TicketId = newTicket.Id,
+                            UserId = mg.Id,
+                            UserAt = DateTime.Now,
+                            AssignType= "M",
+                            Viewed = false
+                        });
+                        listMailTo.Add(mg.Email);
+                    }
 
                     _mailUtil.SendEmailAsync(
                         new MailType {
-                            ToEmail=mg.Email,
+                            ToEmail=listMailTo,
                             Subject= "New Ticket Number " + newTicket.TicketNumber,
                             Title= request.Subject,
                             Body= request.Comment,
                             TicketFrom= requestSender.Email,
-                            TicketApp= "",
-                            TicketModule="",
+                            TicketApp= app.Name,
+                            TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
                             ButtonLink = "http://localhost:3000/admin/ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
+                 }
+                 else if(request.TicketType == "I"){
+                    List<string> listMailTo = new List<string>();
+                    listManager = (from u in _context.Users 
+                                    join ur in _context.UserRoles on u.Id equals ur.UserId
+                                    join ud in _context.UserDepts on u.Id equals ud.UserId
+                                    where (ur.RoleId == 2 && ud.DepartmentId == 3)
+                                    select u 
+                                    ).ToList();
 
-                }
-
+                    foreach (var mg in listManager) {
+                        _context.TicketAssigns.Add(new TicketAssign{
+                            TicketId = newTicket.Id,
+                            UserId = mg.Id,
+                            UserAt = DateTime.Now,
+                            AssignType= "M",
+                            Viewed = false
+                        });
+                        listMailTo.Add(mg.Email);
+                    }
+                    
+                    _mailUtil.SendEmailAsync(
+                        new MailType {
+                            ToEmail=listMailTo,
+                            Subject= "New Ticket Number " + newTicket.TicketNumber,
+                            Title= request.Subject,
+                            Body= request.Comment,
+                            TicketFrom= request.CreatedBy,
+                            TicketApp= app.Name,
+                            TicketModule=appModule.Name,
+                            Attachments = new List<IFormFile>(file),
+                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ newTicket.Id +"&open=true",
+                        }
+                    );
+                 }
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok(ticketEntity);
@@ -329,23 +369,36 @@ namespace TicketingApi.Controllers.v1.Tickets
             using (var transaction =  _context.Database.BeginTransaction())
             {
                 try {
-                    var currentTicket =  _context.Tickets .Where(e => e.Id == request.TicketId) .FirstOrDefault();
-                    if (currentTicket == null) { return NotFound("ticket Not Found !"); }
+                    var cTicket =  _context.Tickets .Where(e => e.Id == request.TicketId) .FirstOrDefault();
+                    if (cTicket == null) { return NotFound("ticket Not Found !"); }
+                    
+                    Sender requestSender = JsonConvert.DeserializeObject<Sender>(sender);
+                    User requestUser = JsonConvert.DeserializeObject<User>(user);
+                    IList<TicketAssign> requestAssign =  JsonConvert.DeserializeObject<IList<TicketAssign>>(ticketAssign);
+                    var cUser = _context.Users.Where(w => w.Id == request.UserId).FirstOrDefault();
+                    var app = _context.Apps.Where(w => w.Id == cTicket.AppId).FirstOrDefault();
+                    var appModule = _context.Modules.Where(w => w.Id == cTicket.ModuleId).FirstOrDefault();
 
                     TicketDetail td = new TicketDetail(){
                         TicketId = request.TicketId,
-                        UserId = request.UserId,
                         Comment = request.Comment,
                         Flag = false,
                         CreatedAt = DateTime.Now
                     };
 
+                    if(cTicket.TicketType == "E"){
+                       td.UserId = request.UserId;
+                    }
+                    else if(cTicket.TicketType == "I"){
+                        if(cTicket.CreatedBy != requestUser.Email){
+                            td.UserId = requestUser.Id;
+                        }
+                    }
+
                     _context.TicketDetails.Add(td);
                     _context.SaveChanges();
 
-
                     var newTd = _context.TicketDetails.OrderByDescending(e => e.Id).FirstOrDefault();
-
                     foreach(var f in file){
                         Media uploadedFile = _fileUtil.FileUpload(f, "TicketDetails");
                         _context.Medias.Add(new Media{
@@ -356,33 +409,57 @@ namespace TicketingApi.Controllers.v1.Tickets
                         });
                     }
                     
-                    Sender requestSender = JsonConvert.DeserializeObject<Sender>(sender);
-                    User requestUser = JsonConvert.DeserializeObject<User>(user);
-                    IList<TicketAssign> requestAssign =  JsonConvert.DeserializeObject<IList<TicketAssign>>(ticketAssign);
-                //    var currentTicket = _context.Tickets.Where(w => w.Id == request.TicketId).FirstOrDefault();
-                    var currentUser = _context.Users.Where(w => w.Id == request.UserId).FirstOrDefault();
-
+                    List<string> listMailTo = new List<string>();
                     foreach (var assign in requestAssign)
                     {
                         if (requestUser.Email != assign.Users.Email)
                         {
-                            _mailUtil.SendEmailPostCommentAsync(
-                                new MailType {
-                                    ToEmail= assign.Users.Email,
-                                    Subject= "New Comment on Ticket Number " + currentTicket.TicketNumber,
-                                    Title= currentTicket.Subject,
-                                    Body= request.Comment,
-                                    TicketFrom= requestSender.Email,
-                                    TicketApp= "",
-                                    TicketModule="",
-                                    Attachments = new List<IFormFile>(file),
-                                    UserFullName = currentUser.FirstName + " " + currentUser.LastName,
-                                    ButtonLink = "http://localhost:3000/admin/ticket?tid="+ currentTicket.Id +"&open=true",
-                                }
-                            );
-                            
+                          listMailTo.Add(assign.Users.Email);
                         }
                     }
+
+                    List<string> listMailToEx = new List<string>();
+                    var ticketRequestFrom = "";
+                    if(cTicket.TicketType == "I"){
+                        var fUser = _context.Users.Where(w => w.Id == cTicket.UserId).FirstOrDefault();
+                        ticketRequestFrom = fUser.Email; 
+                        listMailTo.Add(ticketRequestFrom);
+
+                    }
+                    else if(cTicket.TicketType == "E"){
+                        var fSender = _context.Senders.Where(w => w.Id == cTicket.SenderId).FirstOrDefault();
+                        ticketRequestFrom = fSender.Email;
+                        listMailToEx.Add(ticketRequestFrom);
+                        _mailUtil.SendEmailPostCommentForClientAsync(
+                            new MailType {
+                                ToEmail= listMailTo,
+                                Subject= "New Comment on Ticket Number " + cTicket.TicketNumber,
+                                Title= cTicket.Subject,
+                                Body= request.Comment,
+                                TicketFrom= ticketRequestFrom,
+                                TicketApp= app.Name,
+                                TicketModule=appModule.Name,
+                                Attachments = new List<IFormFile>(file),
+                                UserFullName = cUser.FirstName + " " + cUser.LastName,
+                                ButtonLink = "http://localhost:3000/", //todo
+                            }
+                        );
+                    }
+
+                    _mailUtil.SendEmailPostCommentAsync(
+                        new MailType {
+                            ToEmail= listMailTo,
+                            Subject= "New Comment on Ticket Number " + cTicket.TicketNumber,
+                            Title= cTicket.Subject,
+                            Body= request.Comment,
+                            TicketFrom= ticketRequestFrom,
+                            TicketApp= app.Name,
+                            TicketModule=appModule.Name,
+                            Attachments = new List<IFormFile>(file),
+                            UserFullName = cUser.FirstName + " " + cUser.LastName,
+                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ cTicket.Id +"&open=true",
+                        }
+                    );
 
                     _context.SaveChanges();
                     transaction.Commit();
@@ -399,29 +476,33 @@ namespace TicketingApi.Controllers.v1.Tickets
         [HttpPost]
         [Authorize]
         [Route("status-update")]
-        public IActionResult TicketStatusUpdate([FromBody]Ticket[] body){        
+        public IActionResult TicketStatusUpdate([FromBody]Ticket[] body) {        
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
                     foreach (var ticket in body)
                     {
-                        var ctickets = _context.Tickets.Where(w => w.Id == ticket.Id).FirstOrDefault();
-                        ctickets.StatId = ticket.StatId;
-                        ctickets.UpdatedAt = DateTime.Now;
+                        var cTickets = _context.Tickets.Where(w => w.Id == ticket.Id).FirstOrDefault();
+                        cTickets.StatId = ticket.StatId;
+                        cTickets.UpdatedAt = DateTime.Now;
                         if(ticket.StatId == 2){ // OPEN
                             var assign = _context.TicketAssigns.Where(w => w.TicketId == ticket.Id && w.AssignType == "M").FirstOrDefault();
                             assign.Viewed = true;
                             assign.ViewedAt = DateTime.Now;
                         }
+                        else if(ticket.StatId == 4){
+                            cTickets.PendingAt = DateTime.Now;
+                            cTickets.PendingBy = ticket.PendingBy;
+                        }
                         else if(ticket.StatId == 5){ //solve
-                            ctickets.SolvedAt = DateTime.Now;
-                            ctickets.SolvedBy = ticket.SolvedBy;
+                            cTickets.SolvedAt = DateTime.Now;
+                            cTickets.SolvedBy = ticket.SolvedBy;
                         }
                         else if(ticket.StatId == 6){
-                            ctickets.RejectedAt = DateTime.Now;
-                            ctickets.RejectedBy = ticket.RejectedBy;
-                            ctickets.RejectedReason = ticket.RejectedReason;
+                            cTickets.RejectedAt = DateTime.Now;
+                            cTickets.RejectedBy = ticket.RejectedBy;
+                            cTickets.RejectedReason = ticket.RejectedReason;
                         }
                         _context.SaveChanges();
                     }
@@ -447,12 +528,11 @@ namespace TicketingApi.Controllers.v1.Tickets
                 {
                     foreach (var assign in body)
                     {
-                        var ctickets = _context.Tickets.Where(w => w.Id == assign.TicketId).FirstOrDefault();
-                        ctickets.UpdatedAt = DateTime.Now;
+                        var cTickets = _context.Tickets.Where(w => w.Id == assign.TicketId).FirstOrDefault();
+                        cTickets.UpdatedAt = DateTime.Now;
                         
-                        if (assign.AssignType == "M")
-                        {
-                            ctickets.StatId = 1;
+                        if (assign.AssignType == "M") {
+                            cTickets.StatId = 1;
                             _context.TicketAssigns.Add(new TicketAssign(){
                                     TicketId = assign.TicketId,
                                     UserId = assign.UserId,
@@ -461,65 +541,134 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     AssignType = "M"
                             });
                         }
-                        else if (assign.AssignType == "T")
-                        {
-                             ctickets.StatId = 3;
+                        else if (assign.AssignType == "T") {
+
+                            if(cTickets.StatId < 3) { cTickets.StatId = 3; }
+                           
                             var team = _context.Teams.Where(w => w.Id == assign.TeamId).FirstOrDefault();
-                            _context.TicketAssigns.Add(new TicketAssign(){
+                            var cUser = _context.Users.Where(w => w.Id == team.LeaderId ).FirstOrDefault();
+                            var app = _context.Apps.Where(w => w.Id == cTickets.AppId).FirstOrDefault();
+                            var appModule = _context.Modules.Where(w => w.Id == cTickets.ModuleId).FirstOrDefault();
+                            var mgAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "M").FirstOrDefault();
+                          
+                            if (mgAssign.Viewed == false)  {
+                                mgAssign.Viewed = true;
+                                mgAssign.ViewedAt = DateTime.Now;
+                            }
+
+                            var tAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "T" && w.TeamId == assign.TeamId ).FirstOrDefault();
+                            if(tAssign == null) {
+                                 _context.TicketAssigns.Add(new TicketAssign(){
                                     TicketId = assign.TicketId,
                                     TeamId = assign.TeamId,
                                     TeamAt = DateTime.Now,
                                     UserId = team.LeaderId,
                                     Viewed = false,
                                     AssignType = "T"
-                            });
-                            
-                            var cSender = _context.Senders.Where(w => w.Id == ctickets.SenderId).FirstOrDefault();
-                            var cUser = _context.Users.Where(w => w.Id == team.LeaderId ).FirstOrDefault();
-                            _mailUtil.SendEmailPostCommentAsync(
-                                new MailType {
-                                    ToEmail= cUser.Email,
-                                    Subject= "Ticket Number " + ctickets.TicketNumber + " has been assign to your team.",
-                                    Title= ctickets.Subject,
-                                    Body= ctickets.Comment,
-                                    TicketFrom= cSender.Email,
-                                    TicketApp= "",
-                                    TicketModule="",
-                                    Attachments = null,
-                                    UserFullName = " ",
-                                    ButtonLink = "http://localhost:3000/admin/ticket?tid="+ ctickets.Id +"&open=true",
-                                    
+                                });
+
+                                List<string> ListToMail = new List<string>();
+                                ListToMail.Add(cUser.Email);
+
+                                List<string> LFile = new List<string>();
+                                var medias = _context.Medias.Where(w => w.RelId == assign.TicketId && w.RelType == "T").ToList();
+                                foreach (var media in medias)
+                                {
+                                    var path = Path.Combine(_env.ContentRootPath, "Medias/");
+                                    var fPath =  Path.Combine(path, media.FileName);
+                                    LFile.Add(fPath);
                                 }
-                            );
+
+                                var ticketRequestFrom = "";
+                                if(cTickets.TicketType == "I"){
+                                    var fUser = _context.Users.Where(w => w.Id == cTickets.UserId).FirstOrDefault();
+                                    ticketRequestFrom = fUser.Email; 
+                                }
+                                else if(cTickets.TicketType == "E"){
+                                    var fSender = _context.Senders.Where(w => w.Id == cTickets.SenderId).FirstOrDefault();
+                                    ticketRequestFrom = fSender.Email;
+                                }
+                                
+                                _mailUtil.SendEmailPostCommentAsync(
+                                    new MailType {
+                                        ToEmail= ListToMail,
+                                        Subject= "Ticket Number " + cTickets.TicketNumber + " has been assign to your team.",
+                                        Title= cTickets.Subject,
+                                        Body= cTickets.Comment,
+                                        TicketFrom= ticketRequestFrom,
+                                        TicketApp= app.Name,
+                                        TicketModule=appModule.Name,
+                                        Attachments = null,
+                                        AttachmentsString = LFile,
+                                        UserFullName = " ",
+                                        ButtonLink = "http://localhost:3000/admin/ticket?tid="+ cTickets.Id +"&open=true",
+                                        
+                                    }
+                                );
+                            }
                         }
                         else
                         {
-                             ctickets.StatId = 3;
-                            _context.TicketAssigns.Add(new TicketAssign(){
-                                    TicketId = assign.TicketId,
-                                    UserId = assign.UserId,
-                                    UserAt = DateTime.Now,
-                                    Viewed = false,
-                                    AssignType = "U"
-                            });
-                            var cSender = _context.Senders.Where(w => w.Id == ctickets.SenderId).FirstOrDefault();
+                            if(cTickets.StatId < 3) { cTickets.StatId = 3; }
+
                             var cUser = _context.Users.Where(w => w.Id == assign.UserId).FirstOrDefault();
-                            _mailUtil.SendEmailPostCommentAsync(
-                                new MailType {
-                                    ToEmail= cUser.Email,
-                                    Subject= "Ticket Number " + ctickets.TicketNumber + " has been assign to you.",
-                                    Title= ctickets.Subject,
-                                    Body= ctickets.Comment,
-                                    TicketFrom= cSender.Email,
-                                    TicketApp= "",
-                                    TicketModule="",
-                                    Attachments = null,
-                                    UserFullName = " ",
-                                    ButtonLink = "http://localhost:3000/admin/ticket?tid="+ ctickets.Id +"&open=true",
-                                }
-                            );
+                            var app = _context.Apps.Where(w => w.Id == cTickets.AppId).FirstOrDefault();
+                            var appModule = _context.Modules.Where(w => w.Id == cTickets.ModuleId).FirstOrDefault();
+                            var mgAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "M").FirstOrDefault();
+                            if (mgAssign.Viewed == false) {
+                                mgAssign.Viewed = true;
+                                mgAssign.ViewedAt = DateTime.Now;
+                            }
+
+                            var uAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "U" && w.UserId == assign.UserId).FirstOrDefault();
+                            if(uAssign == null){
+                                   _context.TicketAssigns.Add(new TicketAssign(){
+                                            TicketId = assign.TicketId,
+                                            UserId = assign.UserId,
+                                            UserAt = DateTime.Now,
+                                            Viewed = false,
+                                            AssignType = "U"
+                                    });
+                                    
+                                    List<string> ListToMail = new List<string>();
+                                    ListToMail.Add(cUser.Email);
+                                    
+                                    List<string> LFile = new List<string>();
+                                    var medias = _context.Medias.Where(w => w.RelId == assign.TicketId && w.RelType == "T").ToList();
+                                    foreach (var media in medias)
+                                    {
+                                        var path = Path.Combine(_env.ContentRootPath, "Medias/");
+                                        var fPath =  Path.Combine(path, media.FileName);
+                                        LFile.Add(fPath);
+                                    }
+
+                                    var ticketRequestFrom = "";
+                                    if(cTickets.TicketType == "I"){
+                                        var fUser = _context.Users.Where(w => w.Id == cTickets.UserId).FirstOrDefault();
+                                        ticketRequestFrom = fUser.Email; 
+                                    }
+                                    else if(cTickets.TicketType == "E"){
+                                        var fSender = _context.Senders.Where(w => w.Id == cTickets.SenderId).FirstOrDefault();
+                                        ticketRequestFrom = fSender.Email;
+                                    }
+
+                                    _mailUtil.SendEmailPostCommentAsync(
+                                        new MailType {
+                                            ToEmail = ListToMail,
+                                            Subject = "Ticket Number " + cTickets.TicketNumber + " has been assign to you.",
+                                            Title = cTickets.Subject,
+                                            Body = cTickets.Comment,
+                                            TicketFrom = ticketRequestFrom,
+                                            TicketApp = app.Name,
+                                            TicketModule = appModule.Name,
+                                            Attachments = null,
+                                            AttachmentsString = LFile,
+                                            UserFullName = " ",
+                                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ cTickets.Id +"&open=true",
+                                        }
+                                    );
+                            }
                         }
-                    
                         _context.SaveChanges();
                     }
                     transaction.Commit();
@@ -533,7 +682,39 @@ namespace TicketingApi.Controllers.v1.Tickets
             }
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("ticket-assign-viewed")]
+        public IActionResult TicketAssignViewed([FromBody]TicketAssign[] body){
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var assign in body)
+                    {
+                        var cTickets = _context.Tickets.Where(w => w.Id == assign.TicketId).FirstOrDefault();
+                        cTickets.UpdatedAt = DateTime.Now;
+
+                        var cAssign = _context.TicketAssigns.Where(w => w.Id == assign.Id).FirstOrDefault();
+                        cAssign.ViewedAt = DateTime.Now;
+                        cAssign.Viewed = true;
+
+                        _context.SaveChanges();
+                    }
+                    transaction.Commit();
+                    return Ok();
+                }
+                catch (System.Exception e)
+                {
+                    transaction.Rollback();
+                    return BadRequest(e.Message);
+                }
+            }
+        }
+
+
         [HttpPost("{id}")]
+        [Authorize]
         public IActionResult PutTicket(int id,[FromForm]Ticket request)
         {
             try
@@ -628,6 +809,37 @@ namespace TicketingApi.Controllers.v1.Tickets
             
             // }
             
+        } 
+
+        [HttpPost]
+        [Route("delete-comment")]
+        [Authorize]
+        public IActionResult DeleteTicketCommentById([FromBody]TicketDetail[] body)
+        {
+            try
+            {
+                var transaction = _context.Database.BeginTransaction();
+                foreach (var detail in body) {
+                    var cTDetails = _context.TicketDetails.Where(w => w.Id == detail.Id).FirstOrDefault();
+                    var mediaDetailExist = _context.Medias.Where(e => e.RelId == detail.Id && e.RelType == "TD");
+                    foreach (var item in mediaDetailExist)
+                    {
+                        var isRemoved = _fileUtil.Remove(item.FileName);
+                        if(isRemoved) _context.Medias.Remove(item);
+                    }
+                        
+                    _context.TicketDetails.Remove(cTDetails);
+                    _context.SaveChanges();
+                }
+                transaction.Commit();
+                return Ok();
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            
         }  
+
     }
 }

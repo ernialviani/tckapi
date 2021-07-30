@@ -18,21 +18,27 @@ namespace TicketingApi.Models.v1.Tickets
         public string Comment {get; set;}
         public int AppId {get; set;}
         public int ModuleId {get; set;}
-        public int SenderId {get; set;}
+        public int? SenderId {get; set;}
+        public int? UserId {get; set; }
         public int StatId {get;set;}
+        public string PendingBy {get; set;}
+        public DateTime? PendingAt {get; set;}
         public string SolvedBy {get; set;}
         public DateTime? SolvedAt {get; set;}
         public string RejectedBy {get; set;}
         public string RejectedReason {get;set;}
         public DateTime? RejectedAt {get; set;}
+        public string TicketType {get;set;}
+        public string CreatedBy {get; set;}
         public DateTime? CreatedAt {get;set;}
         public DateTime? UpdatedAt {get;set;}
 
 
         public ICollection<TicketDetail> TicketDetails {get; set;}
         public ICollection<TicketAssign> TicketAssigns {get; set;}
-        public Stat Status {get; set;}
         public Sender Senders {get; set;}
+        public User Users {get; set;}
+        public Stat Status {get; set;}
         public App Apps {get; set;}
         public Module Modules {get; set;}
 

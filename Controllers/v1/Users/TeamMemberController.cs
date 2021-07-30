@@ -30,7 +30,7 @@ namespace TicketingApi.Controllers.v1.Users
         }
 
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize]
         public IActionResult GetTeamDeatails([FromHeader] string Authorization)
         {
            

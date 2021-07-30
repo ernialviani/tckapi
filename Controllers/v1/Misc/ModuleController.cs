@@ -30,7 +30,7 @@ namespace TicketingApi.Controllers.v1.Misc
         }
 
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize]
         public IActionResult GetModules([FromHeader] string Authorization)
         {
            

@@ -102,7 +102,7 @@ namespace TicketingApi.Controllers.v1.Misc
           //  var userImage = "";
             var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "T").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
-            var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
+            var filePath = Path.Combine(uploadPath,  existingMedia.FileName );
             byte[] b = System.IO.File.ReadAllBytes(filePath);
             var type = Path.GetExtension(filePath).ToLower();
             var dtype = "image/jpeg";
@@ -123,7 +123,7 @@ namespace TicketingApi.Controllers.v1.Misc
           //  var userImage = "";
             var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "TD").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
-            var filePath = Path.Combine(uploadPath,  existingMedia.FileName             );
+            var filePath = Path.Combine(uploadPath,  existingMedia.FileName );
             byte[] b = System.IO.File.ReadAllBytes(filePath);
             var type = Path.GetExtension(filePath).ToLower();
             var dtype = "image/jpeg";

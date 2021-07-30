@@ -41,7 +41,7 @@ namespace TicketingApi.Controllers.v1.Tickets
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allStat = _context.Stats.AsNoTracking().Where(w => w.Id > 3);
+          var allStat = _context.Stats.AsNoTracking().Where(w => w.Id > 2);
            return Ok(allStat);
         }
 

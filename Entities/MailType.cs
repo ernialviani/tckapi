@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;  
 using Microsoft.AspNetCore.Http;
 namespace TicketingApi.Entities
 {
     public class MailType
     {
-        public string ToEmail { get; set; }
+        public List<string> ToEmail { get; set; }
+
+        public List<string> CCMail {get;set;}
         public string Subject { get; set; }
 
         public string Title { get; set; }
@@ -14,6 +17,8 @@ namespace TicketingApi.Entities
         public string TicketApp {get; set;}
         public string TicketModule {get;set;}
         public List<IFormFile> Attachments { get; set; }
+
+        public List<string> AttachmentsString {get; set;}
 
         public string UserFullName {get; set;}
 

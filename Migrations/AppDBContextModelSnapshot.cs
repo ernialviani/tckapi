@@ -291,43 +291,43 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            Color = "Green",
-                            Desc = "",
+                            Color = "Red",
+                            Desc = "bg-danger",
                             Name = "New"
                         },
                         new
                         {
                             Id = 2,
-                            Color = "Orange",
-                            Desc = "",
+                            Color = "Sky",
+                            Desc = "bg-info",
                             Name = "Open"
                         },
                         new
                         {
                             Id = 3,
-                            Color = "Red",
-                            Desc = "",
+                            Color = "Blue",
+                            Desc = "bg-primary",
                             Name = "In Progress"
                         },
                         new
                         {
                             Id = 4,
                             Color = "Yellow",
-                            Desc = "",
+                            Desc = "bg-warning",
                             Name = "Pending"
                         },
                         new
                         {
                             Id = 5,
-                            Color = "Blue",
-                            Desc = "",
+                            Color = "Green",
+                            Desc = "bg-success",
                             Name = "Solve"
                         },
                         new
                         {
                             Id = 6,
                             Color = "Grey",
-                            Desc = "",
+                            Desc = "bg-dark",
                             Name = "Reject"
                         });
                 });
@@ -353,6 +353,10 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("created_by");
+
                     b.Property<int>("ModuleId")
                         .HasColumnType("int")
                         .HasColumnName("module_id");
@@ -369,7 +373,7 @@ namespace TicketingApi.Migrations
                         .HasColumnType("text")
                         .HasColumnName("rejected_reason");
 
-                    b.Property<int>("SenderId")
+                    b.Property<int?>("SenderId")
                         .HasColumnType("int")
                         .HasColumnName("sender_id");
 
@@ -388,16 +392,24 @@ namespace TicketingApi.Migrations
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("supject");
+                        .HasColumnName("subject");
 
                     b.Property<string>("TicketNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("ticket_number");
 
+                    b.Property<string>("TicketType")
+                        .HasColumnType("nvarchar(1)")
+                        .HasColumnName("ticket_type");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("PK_Ticket");
@@ -413,6 +425,8 @@ namespace TicketingApi.Migrations
                     b.HasIndex("TicketNumber")
                         .HasDatabaseName("idx_TicketNumber");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("tickets");
 
                     b.HasData(
@@ -421,39 +435,56 @@ namespace TicketingApi.Migrations
                             Id = 1,
                             AppId = 1,
                             Comment = "lorem ipsu sdkskadn ksdnksin jdnskjdna jsandjkansdjkansd jndsajkdnajkd kasjndsndoqm dolor shit nyoasdasdaslibay knoper low",
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 377, DateTimeKind.Local).AddTicks(2714),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(6776),
+                            CreatedBy = "daniel@gmail.com",
                             ModuleId = 1,
                             SenderId = 1,
                             StatId = 3,
                             Subject = "Ini Test Subject satu ",
                             TicketNumber = "180620211",
-                            UpdatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 377, DateTimeKind.Local).AddTicks(2731)
+                            TicketType = "E"
                         },
                         new
                         {
                             Id = 2,
                             AppId = 1,
                             Comment = "asdhjkahsdjas jasdjj sjadnajk jasnd jas d asndjka  skjdnaksjdn sshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk",
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 377, DateTimeKind.Local).AddTicks(4920),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(8816),
+                            CreatedBy = "vickyindiary@yahoo.com",
                             ModuleId = 1,
                             SenderId = 2,
                             StatId = 1,
                             Subject = "Subject for ticket number 2",
                             TicketNumber = "180620212",
-                            UpdatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 377, DateTimeKind.Local).AddTicks(4929)
+                            TicketType = "E"
                         },
                         new
                         {
                             Id = 3,
                             AppId = 1,
                             Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq",
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 377, DateTimeKind.Local).AddTicks(4932),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(8827),
+                            CreatedBy = "vickyindiary@yahoo.com",
                             ModuleId = 1,
                             SenderId = 3,
                             StatId = 1,
                             Subject = "Subjecsdskkks ksnkandkasndk t 3",
                             TicketNumber = "180620213",
-                            UpdatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 377, DateTimeKind.Local).AddTicks(4934)
+                            TicketType = "E"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AppId = 1,
+                            Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq",
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(8830),
+                            CreatedBy = "vickyindiary@yahoo.com",
+                            ModuleId = 1,
+                            StatId = 1,
+                            Subject = "BUG SYSAD SAMPLE",
+                            TicketNumber = "180620214",
+                            TicketType = "I",
+                            UserId = 6
                         });
                 });
 
@@ -516,31 +547,58 @@ namespace TicketingApi.Migrations
                             Id = 1,
                             AssignType = "M",
                             TicketId = 1,
-                            UserAt = new DateTime(2021, 7, 22, 17, 31, 55, 387, DateTimeKind.Local).AddTicks(516),
+                            UserAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(2522),
                             UserId = 2,
                             Viewed = true,
-                            ViewedAt = new DateTime(2021, 7, 22, 17, 31, 55, 387, DateTimeKind.Local).AddTicks(527)
+                            ViewedAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(2535)
                         },
                         new
                         {
                             Id = 2,
                             AssignType = "T",
-                            TeamAt = new DateTime(2021, 7, 22, 17, 31, 55, 387, DateTimeKind.Local).AddTicks(2164),
+                            TeamAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(4151),
                             TeamId = 1,
                             TicketId = 1,
-                            UserId = 3,
+                            UserId = 4,
                             Viewed = true,
-                            ViewedAt = new DateTime(2021, 7, 22, 17, 31, 55, 387, DateTimeKind.Local).AddTicks(2174)
+                            ViewedAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(4159)
                         },
                         new
                         {
                             Id = 3,
                             AssignType = "U",
                             TicketId = 1,
-                            UserAt = new DateTime(2021, 7, 22, 17, 31, 55, 387, DateTimeKind.Local).AddTicks(3650),
-                            UserId = 4,
+                            UserAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(5632),
+                            UserId = 6,
                             Viewed = true,
-                            ViewedAt = new DateTime(2021, 7, 22, 17, 31, 55, 387, DateTimeKind.Local).AddTicks(3657)
+                            ViewedAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(5639)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AssignType = "M",
+                            TicketId = 2,
+                            UserAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(5643),
+                            UserId = 2,
+                            Viewed = false
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AssignType = "M",
+                            TicketId = 3,
+                            UserAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(6863),
+                            UserId = 2,
+                            Viewed = false
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AssignType = "M",
+                            TicketId = 4,
+                            UserAt = new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(6871),
+                            UserId = 3,
+                            Viewed = false
                         });
                 });
 
@@ -593,26 +651,26 @@ namespace TicketingApi.Migrations
                         {
                             Id = 1,
                             Comment = "lorem ipsum dolor shit nyolibay kksdj nknop ksiola knoper low",
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 385, DateTimeKind.Local).AddTicks(9096),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(751),
                             TicketId = 1,
-                            UpdatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 385, DateTimeKind.Local).AddTicks(9117),
+                            UpdatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(772),
                             UserId = 4
                         },
                         new
                         {
                             Id = 2,
                             Comment = "asdhjkahsdjas jasshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk",
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 386, DateTimeKind.Local).AddTicks(720),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(2642),
                             TicketId = 1,
-                            UpdatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 386, DateTimeKind.Local).AddTicks(731)
+                            UpdatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(2651)
                         },
                         new
                         {
                             Id = 3,
                             Comment = "ksknnina  lasklk  klsnklna ksaiopoells;mlauw klnskoiskel aksnkadia mkaskks ",
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 386, DateTimeKind.Local).AddTicks(1977),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(3888),
                             TicketId = 1,
-                            UpdatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 386, DateTimeKind.Local).AddTicks(1986),
+                            UpdatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(3896),
                             UserId = 4
                         });
                 });
@@ -785,8 +843,8 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 372, DateTimeKind.Local).AddTicks(8490),
-                            Email = "daniel@epsylonhome.com",
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 646, DateTimeKind.Local).AddTicks(1708),
+                            Email = "daniel@gmail.com",
                             FirstName = "Daniel",
                             Image = "Users/daniel.jpg",
                             LastName = "Radcliff",
@@ -796,7 +854,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 372, DateTimeKind.Local).AddTicks(8522),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 646, DateTimeKind.Local).AddTicks(1732),
                             Email = "ruppert@gmail.com",
                             FirstName = "Ruppert",
                             Image = "Users/ruppert.jpg",
@@ -807,14 +865,14 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 372, DateTimeKind.Local).AddTicks(9227),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 646, DateTimeKind.Local).AddTicks(2673),
                             Email = "emma@gmail.com",
                             FirstName = "Emma",
                             Image = "Users/emma.jpg",
                             LastName = "Watson",
                             LoginStatus = true,
-                            Password = "D4DBF83B073AC6E9BDC94B6B872657DD47D23B1DC42BC72D00B06EA76E3B3B45C85B213C33C0096B82E0954E30D3C2178E7F8FEF5037700AE8E945CDC9018DBA",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "64FEFC19C079C63DF213EE78C342DEA22EA24BF68E33A9D5B179A4C6493285235C8E26C2E2081B22161DC3BFCC536D15BC58CB7A8936FFCA103E3F24A0B71438",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         });
                 });
 
@@ -966,77 +1024,77 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 366, DateTimeKind.Local).AddTicks(6455),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 639, DateTimeKind.Local).AddTicks(6188),
                             Email = "vicky.indiarto@epsylonhome.com",
                             FirstName = "Vicky",
                             Image = "Users/vicky.jpg",
                             LastName = "Epsylon",
-                            Password = "10FD0607D57BC447945DAF5B0F5E7DA9EAFE144E3F853447DE443951FDE6DE46E1C6DF29B9FAEA0E4E2BC605A153A8AAEAC49AF81D73B391481EF9688206F47F",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "41F0070B1CAD67A1852B5F6F0E7D4A8F57ED768975C0D691B49AFCFC033F6A23A497EC68138C20573BDC162DC87086EC08748DEB18D87154B2AB94B92F1E7446",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 366, DateTimeKind.Local).AddTicks(9302),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 639, DateTimeKind.Local).AddTicks(9064),
                             Email = "vickyindiarto@gmail.com",
                             FirstName = "Crish",
                             Image = "Users/crish.jpg",
                             LastName = "Evans",
-                            Password = "BCAFF0132B92027CB20845D7B8F7E02A66A1B11FA0E4E0A8ECC114D66DC196D37AEBE290EA32433F0F7A412248786AB85A27CBA9419465A14DC60FDD30613CBE",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "540A358BA70A8B2026E9737FC4DE40A4C9C48FA70C91BFC1503A09F428453128725CB10A811ACE5316F4432ED6F74BFF4C01707AD14E5FE3E766D4A522D0B40E",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 366, DateTimeKind.Local).AddTicks(9835),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 639, DateTimeKind.Local).AddTicks(9840),
                             Email = "vickynewonline@gmail.com",
                             FirstName = "Mark",
                             Image = "Users/mark.jpg",
                             LastName = "Ruffalo",
-                            Password = "52C36130A9F843D088724E5EBDB0737CFA343969BA50ADEC2A37E3EEBE369D2C9CDCBC09F6EAA7AE74A061870FF9605D6289C58C2FC7679AB072A813876D1A05",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "053877C492D096F9B5C227EF0D9315E93CE01877EBB2FA0EF9E53E71CDAEAD2531122B5212E0A3A4136CCF94B405B7D4E67EB95292EF63AF6BC77D6030703E7B",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 367, DateTimeKind.Local).AddTicks(365),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(577),
                             Email = "vickyindiar@yahoo.com",
                             FirstName = "Robert",
                             Image = "Users/robert.jpg",
                             LastName = "Downy",
-                            Password = "6280CC9C7617836A54E71415E03A6D8EE21724524F2F3A152EF80C29A207F95AFA8D0CA7CDF73817552A544A7156B6FAA144F3C58B77A37B1E03BC2CFD51D95E",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "307D668DCA51F69CCDCDB6F0A400CB77559F6E5BA4F93BC0D0FF91921F7B16A9B5802A38F1AB6CCA246FD6B559CD702EA37C23F5A4FDD96A4D7B1416C438C0F3",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 367, DateTimeKind.Local).AddTicks(863),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(1309),
                             Email = "vickyindiarx@yahoo.com",
                             FirstName = "Tom",
                             Image = "Users/tom.jpg",
                             LastName = "Holan",
-                            Password = "8F17F616697882E5451FF270DCC4660015E259B88F9EF25D127FE350DA2976F8758C30126FD10EC3D4C9DCFEA4CFDB60B178B2606E0FB13F42390ECDE481CF90",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "7B18DDDFDD9044A7F8E1164D81C9B4E80894FA3041AAF17BE546ACC9948D8210D7B2146257B57C10A0F3EABFACEAEA09C62EA867920DCBA59C2D221ACEE91687",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 367, DateTimeKind.Local).AddTicks(1370),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(2038),
                             Email = "vickyindiary@yahoo.com",
                             FirstName = "Scarlett",
                             LastName = "Johansson",
-                            Password = "D8D86394D2F363E8C122D416ABD2E2124E82CA1AE3911E5A4E7A8B853C84A27CC628CAC0E6E1D22E3EA4AA1F380FC0857DD1CA0D9531BE08CAB733C704756C84",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "7C03E544F57C93339151EB81939899B0AFB6C39A38173FAB1279181BED1F841747AFE2CE057EDDD5A2723775C6D5FAD626AA57FE728283B24C5EEA9C0FB8E637",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2021, 7, 22, 17, 31, 55, 367, DateTimeKind.Local).AddTicks(3617),
+                            CreatedAt = new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(4428),
                             Email = "vickyindiarz@yahoo.com",
                             FirstName = "Jeremy",
                             LastName = "Renner",
-                            Password = "3756816E5B79280EC30A3B615C2862EB91AA53A2587B86B681002A3A84359307A7C20D327FFF46FCBC369AC6C64852CD144F6A7DEC6AA8719CE6750581940443",
-                            Salt = "3f532883-bcc5-40d5-8f42-5fdf5e241a51"
+                            Password = "CDC3FD1C80512180A16E4BDB581A05451286A5A4007B50544FE1EAD4392AB830CB2FCAA04BF7156CB96BADAFE2ABFE824C1C9CCF8788366EC57D7FD7513504D2",
+                            Salt = "01079031-d15e-4902-a79e-3f4b33963fb1"
                         });
                 });
 
@@ -1234,15 +1292,17 @@ namespace TicketingApi.Migrations
 
                     b.HasOne("TicketingApi.Models.v1.Users.Sender", "Senders")
                         .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SenderId");
 
                     b.HasOne("TicketingApi.Models.v1.Tickets.Stat", "Status")
                         .WithMany("Tickets")
                         .HasForeignKey("StatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TicketingApi.Models.v1.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Apps");
 
@@ -1251,6 +1311,8 @@ namespace TicketingApi.Migrations
                     b.Navigation("Senders");
 
                     b.Navigation("Status");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.TicketAssign", b =>

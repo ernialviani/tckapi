@@ -183,7 +183,7 @@ namespace TicketingApi.DBContexts
 
         
             modelBuilder.Entity<Sender>().HasData(
-                new { Id = 1, FirstName = "Daniel", LastName = "Radcliff", Email = "daniel@epsylonhome.com", Password = "", Salt="", Image="Users/daniel.jpg", CreatedAt = DateTime.Now },
+                new { Id = 1, FirstName = "Daniel", LastName = "Radcliff", Email = "daniel@gmail.com", Password = "", Salt="", Image="Users/daniel.jpg", CreatedAt = DateTime.Now },
                 new { Id = 2, FirstName = "Ruppert", LastName = "Grint", Email = "ruppert@gmail.com", Password = "", Salt="", Image="Users/ruppert.jpg", CreatedAt = DateTime.Now },
                 // logedin
                 new { Id = 3, FirstName = "Emma", LastName = "Watson", Email = "emma@gmail.com", Password = CryptoUtil.HashMultiple("emma", salt), Salt=salt, Image="Users/emma.jpg", LoginStatus=true, CreatedAt = DateTime.Now }
@@ -253,12 +253,12 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Stat>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("nvarchar(50)").IsRequired(false);
 
              modelBuilder.Entity<Stat>().HasData(
-                new { Id = 1, Name = "New", Color= "Green", Desc = "" },
-                new { Id = 2, Name = "Open", Color = "Orange", Desc = "" },
-                new { Id = 3, Name = "In Progress", Color = "Red", Desc = "" },
-                new { Id = 4, Name = "Pending", Color = "Yellow", Desc = "" },
-                new { Id = 5, Name = "Solve", Color = "Blue", Desc = "" },
-                new { Id = 6, Name = "Reject", Color = "Grey", Desc = "" }
+                new { Id = 1, Name = "New", Color= "Red", Desc = "bg-danger" },
+                new { Id = 2, Name = "Open", Color = "Sky", Desc = "bg-info" },
+                new { Id = 3, Name = "In Progress", Color = "Blue", Desc = "bg-primary" },
+                new { Id = 4, Name = "Pending", Color = "Yellow", Desc = "bg-warning" },
+                new { Id = 5, Name = "Solve", Color = "Green", Desc = "bg-success" },
+                new { Id = 6, Name = "Reject", Color = "Grey", Desc = "bg-dark" }
             );
 
             modelBuilder.Entity<Ticket>().ToTable("tickets");
@@ -266,25 +266,31 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Ticket>().HasIndex(u => u.TicketNumber).HasDatabaseName("idx_TicketNumber"); 
             modelBuilder.Entity<Ticket>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<Ticket>().Property(u => u.TicketNumber).HasColumnName("ticket_number").HasColumnType("nvarchar(50)").IsRequired();   
-            modelBuilder.Entity<Ticket>().Property(u => u.Subject).HasColumnName("supject").HasColumnType("text").IsRequired();   
+            modelBuilder.Entity<Ticket>().Property(u => u.Subject).HasColumnName("subject").HasColumnType("text").IsRequired();   
             modelBuilder.Entity<Ticket>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("text").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.AppId).HasColumnName("app_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.ModuleId).HasColumnName("module_id").HasColumnType("int").IsRequired();
-            modelBuilder.Entity<Ticket>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.StatId).HasColumnName("stat_id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<Ticket>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired(false);
+            modelBuilder.Entity<Ticket>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);
+            modelBuilder.Entity<Ticket>().Property(u => u.TicketType).HasColumnName("ticket_type").HasColumnType("nvarchar(1)").IsRequired(false);
+            modelBuilder.Entity<Ticket>().Property(u => u.PendingBy).HasColumnName("pending_by").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<Ticket>().Property(u => u.PendingAt).HasColumnName("pending_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.SolvedBy).HasColumnName("solved_by").HasColumnType("nvarchar(50)").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.SolvedAt).HasColumnName("solved_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.RejectedBy).HasColumnName("rejected_by").HasColumnType("nvarchar(50)").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.RejectedAt).HasColumnName("rejected_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.RejectedReason).HasColumnName("rejected_reason").HasColumnType("text").IsRequired(false);
+            modelBuilder.Entity<Ticket>().Property(u => u.CreatedBy).HasColumnName("created_by").HasColumnType("nvarchar(100)").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Ticket>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
 
             
              modelBuilder.Entity<Ticket>().HasData(
-                new { Id = 1, TicketNumber = "180620211", Subject= "Ini Test Subject satu ", Comment = "lorem ipsu sdkskadn ksdnksin jdnskjdna jsandjkansdjkansd jndsajkdnajkd kasjndsndoqm dolor shit nyoasdasdaslibay knoper low", AppId = 1, ModuleId = 1, SenderId = 1, StatId=3,  CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   },
-                new { Id = 2, TicketNumber = "180620212", Subject= "Subject for ticket number 2", Comment = "asdhjkahsdjas jasdjj sjadnajk jasnd jas d asndjka  skjdnaksjdn sshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", AppId = 1, ModuleId = 1, SenderId = 2, StatId=1, CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   },
-                new { Id = 3, TicketNumber = "180620213", Subject= "Subjecsdskkks ksnkandkasndk t 3", Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", AppId = 1, ModuleId = 1, SenderId = 3, StatId=1, CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   }
+                new { Id = 1, TicketNumber = "180620211", Subject= "Ini Test Subject satu ", Comment = "lorem ipsu sdkskadn ksdnksin jdnskjdna jsandjkansdjkansd jndsajkdnajkd kasjndsndoqm dolor shit nyoasdasdaslibay knoper low", AppId = 1, ModuleId = 1, SenderId = 1, StatId=3, CreatedBy="daniel@gmail.com", TicketType="E", CreatedAt = DateTime.Now  },
+                new { Id = 2, TicketNumber = "180620212", Subject= "Subject for ticket number 2", Comment = "asdhjkahsdjas jasdjj sjadnajk jasnd jas d asndjka  skjdnaksjdn sshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", AppId = 1, ModuleId = 1, SenderId = 2, StatId=1, CreatedBy="vickyindiary@yahoo.com", TicketType="E", CreatedAt = DateTime.Now  },
+                new { Id = 3, TicketNumber = "180620213", Subject= "Subjecsdskkks ksnkandkasndk t 3", Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", AppId = 1, ModuleId = 1, SenderId = 3, StatId=1, CreatedBy="vickyindiary@yahoo.com", TicketType="E", CreatedAt = DateTime.Now  },
+                new { Id = 4, TicketNumber = "180620214", Subject= "BUG SYSAD SAMPLE", Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", AppId = 1, ModuleId = 1, StatId=1, UserId=6, CreatedBy="vickyindiary@yahoo.com", TicketType="I", CreatedAt = DateTime.Now }
             );
 
             modelBuilder.Entity<TicketDetail>().ToTable("ticket_details");
@@ -317,8 +323,11 @@ namespace TicketingApi.DBContexts
 
             modelBuilder.Entity<TicketAssign>().HasData(
                 new { Id = 1, TicketId=1, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=true, ViewedAt=DateTime.Now},
-                new { Id = 2, TicketId=1, UserId=3, TeamId=1, TeamAt=DateTime.Now, AssignType="T", Viewed=true, ViewedAt=DateTime.Now},
-                new { Id = 3, TicketId=1, UserId=4, UserAt=DateTime.Now, AssignType="U", Viewed=true, ViewedAt=DateTime.Now}
+                new { Id = 2, TicketId=1, UserId=4, TeamId=1, TeamAt=DateTime.Now, AssignType="T", Viewed=true, ViewedAt=DateTime.Now},
+                new { Id = 3, TicketId=1, UserId=6, UserAt=DateTime.Now, AssignType="U", Viewed=true, ViewedAt=DateTime.Now},
+                new { Id = 4, TicketId=2, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=false },
+                new { Id = 5, TicketId=3, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=false },
+                new { Id = 6, TicketId=4, UserId=3, UserAt=DateTime.Now, AssignType="M", Viewed=false }
             );
 
             modelBuilder.Entity<Media>().ToTable("medias");

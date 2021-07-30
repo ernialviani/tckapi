@@ -35,7 +35,7 @@ namespace TicketingApi.Controllers.v1.Misc
         }
 
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize]
         public IActionResult GetKBases([FromHeader] string Authorization)
         {
            
