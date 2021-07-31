@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace TicketingApi.Controllers.v1.Tickets
 {
-     [ApiController]
+    [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     public class TicketController: ControllerBase
@@ -118,7 +118,7 @@ namespace TicketingApi.Controllers.v1.Tickets
         }
 
         [HttpGet("{id}")]
-         [Authorize]
+        [Authorize]
         public IActionResult GetTicketById(int id)
         {
               var ticket = _context.Tickets.AsNoTracking().Where(w => w.Id == id)
@@ -171,17 +171,14 @@ namespace TicketingApi.Controllers.v1.Tickets
             return NotFound();
         }
 
-
         [HttpPost]
         [Authorize]
         public IActionResult Create([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file)
         {
-
            using (var transaction =  _context.Database.BeginTransaction())
            {
              try
               {
-
                 Ticket ticketEntity = new Ticket()
                 {   
                     TicketNumber = GenerateTicketNumber(),
@@ -242,8 +239,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                 _context.SaveChanges();
                 //save attachments
 
-
-
                 //ASSIGN AND MAIL CONFIG
                  List<User> listManager = new List<User>(); 
                  if(request.TicketType == "E"){
@@ -277,6 +272,21 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
                             ButtonLink = "http://localhost:3000/admin/ticket?tid="+ newTicket.Id +"&open=true",
+                        }
+                    );
+                    List<string> listMailToSender = new List<string>();
+                    listMailToSender.Add(requestSender.Email);
+                    _mailUtil.SendEmailAsync(
+                        new MailType {
+                            ToEmail=listMailToSender,
+                            Subject= "New Ticket Number " + newTicket.TicketNumber,
+                            Title= request.Subject,
+                            Body= request.Comment,
+                            TicketFrom= requestSender.Email,
+                            TicketApp= app.Name,
+                            TicketModule=appModule.Name,
+                            Attachments = new List<IFormFile>(file),
+                            ButtonLink = "http://localhost:3000/ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
                  }
@@ -464,7 +474,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                     _context.SaveChanges();
                     transaction.Commit();
 
-                    return GetTicketById(request.TicketId);
+                    return Ok();
+                  //  return GetTicketById(request.TicketId);
                 }
                 catch (System.Exception e) {
                     transaction.Rollback();
@@ -516,7 +527,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                 }
             }
         }
-
 
         [HttpPost]
         [Authorize]
@@ -712,7 +722,6 @@ namespace TicketingApi.Controllers.v1.Tickets
             }
         }
 
-
         [HttpPost("{id}")]
         [Authorize]
         public IActionResult PutTicket(int id,[FromForm]Ticket request)
@@ -768,26 +777,21 @@ namespace TicketingApi.Controllers.v1.Tickets
                         .FirstOrDefault();
                 var mediasExist = _context.Medias.Where(e => e.RelId == id && e.RelType == "T");
 
-                foreach (var item in mediasExist)
-                {
+                foreach (var item in mediasExist) {
                     var isRemoved = _fileUtil.Remove("Tickets/"+item.FileName);
                     if(isRemoved) _context.Medias.Remove(item);
                 }
       
-                foreach (var itemDetail in ticketExist.TicketDetails)
-                {
+                foreach (var itemDetail in ticketExist.TicketDetails) {
                     var mediaDetailExist = _context.Medias.Where(e => e.RelId == id && e.RelType == "TD");
-                    foreach (var item in mediasExist)
-                    {
+                    foreach (var item in mediasExist) {
                         var isRemoved = _fileUtil.Remove("Tickets/"+item.FileName);
                         if(isRemoved) _context.Medias.Remove(item);
                     }
-                    
                     _context.TicketDetails.Remove(itemDetail);
-
                 }
-                foreach (var itemAssign in ticketExist.TicketAssigns)
-                {
+
+                foreach (var itemAssign in ticketExist.TicketAssigns) {
                     _context.TicketAssigns.Remove(itemAssign);
                 }
 
@@ -796,24 +800,52 @@ namespace TicketingApi.Controllers.v1.Tickets
                 transaction.Commit();
                 return Ok();
             }
-            catch (System.Exception e)
-            {
-                
+            catch (System.Exception e) {
                 return BadRequest(e.Message);
             }
-            // [Route("~/api/Delete/{fileName}")]
-            // [Route("~/api/Delete/{isValid:bool}")] 
-            // [Route("~/api/Delete/{fileName}/{isValid}")] 
-            // public  void Delete(string fileName, bool? isValid)
-            // {
-            
-            // }
-            
         } 
 
+
         [HttpPost]
-        [Route("delete-comment")]
         [Authorize]
+        [Route("update-comment")]
+        public IActionResult UpdateTicketComment([FromForm]TicketDetail request, [FromForm]IList<IFormFile> file){
+              using (var transaction = _context.Database.BeginTransaction()) {
+                try {
+                    var cTDetails = _context.TicketDetails.Where(w => w.Id == request.Id).FirstOrDefault();
+                    cTDetails.UpdatedAt = DateTime.Now;
+                    cTDetails.Comment = request.Comment;
+
+                    var cMedias = _context.Medias.Where(w => w.RelId == request.Id && w.RelType == "TD");
+                    foreach (var item in cMedias){
+                        var isRemoved = _fileUtil.Remove(item.FileName);
+                        if(isRemoved) _context.Medias.Remove(item);
+                    }
+                    foreach(var f in file){
+                        Media uploadedFile = _fileUtil.FileUpload(f, "TicketDetails");
+                        _context.Medias.Add(new Media{
+                            FileName = "TicketDetails/"+uploadedFile.FileName,
+                            FileType = uploadedFile.FileType,
+                            RelId = request.Id,
+                            RelType = "TD"
+                        });
+                    }
+                    _context.SaveChanges();
+                    transaction.Commit();
+                    return Ok();
+                }
+                catch (System.Exception e)
+                {
+                    transaction.Rollback();
+                    return BadRequest(e);
+                }
+            }
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [Route("delete-comment")]
         public IActionResult DeleteTicketCommentById([FromBody]TicketDetail[] body)
         {
             try
@@ -827,7 +859,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                         var isRemoved = _fileUtil.Remove(item.FileName);
                         if(isRemoved) _context.Medias.Remove(item);
                     }
-                        
                     _context.TicketDetails.Remove(cTDetails);
                     _context.SaveChanges();
                 }
@@ -838,8 +869,13 @@ namespace TicketingApi.Controllers.v1.Tickets
             {
                 return BadRequest(e.Message);
             }
-            
         }  
+
+// [Route("~/api/Delete/{fileName}")]
+// [Route("~/api/Delete/{isValid:bool}")] 
+// [Route("~/api/Delete/{fileName}/{isValid}")] 
 
     }
 }
+
+

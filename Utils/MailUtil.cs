@@ -27,7 +27,7 @@ namespace TicketingApi.Utils
             string MailText = str.ReadToEnd();
             str.Close();
             MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
-            MailText = MailText.Replace("$TicketFrom", mailType.TicketFrom).Replace("$TicketApp", mailType.TicketApp).Replace("$TicketModule", mailType.TicketModule);
+            MailText = MailText.Replace("$from", mailType.TicketFrom).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
             var email = new MimeMessage();
