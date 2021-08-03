@@ -64,19 +64,20 @@ namespace TicketingApi.Controllers.v1.Tickets
         [HttpGet]
         [Authorize]
         //  [Authorize(Roles = RoleType.Admin)]
-        public IActionResult GetTickets([FromHeader] string Authorization)
+        public IActionResult GetTickets([FromHeader] string Authorization, [FromQuery]int u, [FromQuery]int r)
         {
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
+
           var allTicket = _context.Tickets.AsNoTracking()
-                        .Include(sd => sd.Senders)
-                        .Include(st => st.Status)
-                        .Include(td => td.TicketDetails).ThenInclude(s => s.Users)
-                        .Include(ta => ta.TicketAssigns).ThenInclude(s => s.Teams).ThenInclude(s => s.TeamMembers).ThenInclude(s => s.Users)
-                        .Include(ap => ap.Apps)
-                        .Include(md => md.Modules)
-                        .Include(mda => mda.Medias)
+                        .Include(t => t.Senders)
+                        .Include(t => t.Status)
+                        .Include(t => t.TicketDetails).ThenInclude(s => s.Users)
+                        .Include(t => t.TicketAssigns).ThenInclude(s => s.Teams).ThenInclude(s => s.TeamMembers).ThenInclude(s => s.Users)
+                        .Include(t => t.Apps)
+                        .Include(t => t.Modules)
+                        .Include(t => t.Medias)
                     .Select(e => new {
                         e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
                         TicketDetails = e.TicketDetails.Select(t => new { 
@@ -113,8 +114,17 @@ namespace TicketingApi.Controllers.v1.Tickets
                         Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
                         Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
-                    }).OrderByDescending(e => e.Id);
-           return Ok(allTicket);
+                    });
+
+            IOrderedQueryable filtered = null;
+            if(r == 1){ 
+                 filtered = allTicket.OrderByDescending(e => e.Id);
+            }
+            else{
+                 filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u)).OrderByDescending(e => e.Id);;
+            }
+            
+           return Ok(filtered);
         }
 
         [HttpGet("{id}")]
