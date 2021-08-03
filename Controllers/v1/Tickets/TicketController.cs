@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace TicketingApi.Controllers.v1.Tickets
 {
-     [ApiController]
+    [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     public class TicketController: ControllerBase
@@ -64,19 +64,20 @@ namespace TicketingApi.Controllers.v1.Tickets
         [HttpGet]
         [Authorize]
         //  [Authorize(Roles = RoleType.Admin)]
-        public IActionResult GetTickets([FromHeader] string Authorization)
+        public IActionResult GetTickets([FromHeader] string Authorization, [FromQuery]int u, [FromQuery]int r)
         {
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
+
           var allTicket = _context.Tickets.AsNoTracking()
-                        .Include(sd => sd.Senders)
-                        .Include(st => st.Status)
-                        .Include(td => td.TicketDetails).ThenInclude(s => s.Users)
-                        .Include(ta => ta.TicketAssigns).ThenInclude(s => s.Teams).ThenInclude(s => s.TeamMembers).ThenInclude(s => s.Users)
-                        .Include(ap => ap.Apps)
-                        .Include(md => md.Modules)
-                        .Include(mda => mda.Medias)
+                        .Include(t => t.Senders)
+                        .Include(t => t.Status)
+                        .Include(t => t.TicketDetails).ThenInclude(s => s.Users)
+                        .Include(t => t.TicketAssigns).ThenInclude(s => s.Teams).ThenInclude(s => s.TeamMembers).ThenInclude(s => s.Users)
+                        .Include(t => t.Apps)
+                        .Include(t => t.Modules)
+                        .Include(t => t.Medias)
                     .Select(e => new {
                         e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
                         TicketDetails = e.TicketDetails.Select(t => new { 
@@ -113,12 +114,21 @@ namespace TicketingApi.Controllers.v1.Tickets
                         Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
                         Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
-                    }).OrderByDescending(e => e.Id);
-           return Ok(allTicket);
+                    });
+
+            IOrderedQueryable filtered = null;
+            if(r == 1){ 
+                 filtered = allTicket.OrderByDescending(e => e.Id);
+            }
+            else{
+                 filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u)).OrderByDescending(e => e.Id);;
+            }
+            
+           return Ok(filtered);
         }
 
         [HttpGet("{id}")]
-         [Authorize]
+        [Authorize]
         public IActionResult GetTicketById(int id)
         {
               var ticket = _context.Tickets.AsNoTracking().Where(w => w.Id == id)
@@ -171,17 +181,14 @@ namespace TicketingApi.Controllers.v1.Tickets
             return NotFound();
         }
 
-
         [HttpPost]
         [Authorize]
         public IActionResult Create([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file)
         {
-
            using (var transaction =  _context.Database.BeginTransaction())
            {
              try
               {
-
                 Ticket ticketEntity = new Ticket()
                 {   
                     TicketNumber = GenerateTicketNumber(),
@@ -242,8 +249,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                 _context.SaveChanges();
                 //save attachments
 
-
-
                 //ASSIGN AND MAIL CONFIG
                  List<User> listManager = new List<User>(); 
                  if(request.TicketType == "E"){
@@ -277,6 +282,21 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
                             ButtonLink = "http://localhost:3000/admin/ticket?tid="+ newTicket.Id +"&open=true",
+                        }
+                    );
+                    List<string> listMailToSender = new List<string>();
+                    listMailToSender.Add(requestSender.Email);
+                    _mailUtil.SendEmailAsync(
+                        new MailType {
+                            ToEmail=listMailToSender,
+                            Subject= "New Ticket Number " + newTicket.TicketNumber,
+                            Title= request.Subject,
+                            Body= request.Comment,
+                            TicketFrom= requestSender.Email,
+                            TicketApp= app.Name,
+                            TicketModule=appModule.Name,
+                            Attachments = new List<IFormFile>(file),
+                            ButtonLink = "http://localhost:3000/ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
                  }
@@ -464,7 +484,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                     _context.SaveChanges();
                     transaction.Commit();
 
-                    return GetTicketById(request.TicketId);
+                    return Ok();
+                  //  return GetTicketById(request.TicketId);
                 }
                 catch (System.Exception e) {
                     transaction.Rollback();
@@ -516,7 +537,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                 }
             }
         }
-
 
         [HttpPost]
         [Authorize]
@@ -712,7 +732,6 @@ namespace TicketingApi.Controllers.v1.Tickets
             }
         }
 
-
         [HttpPost("{id}")]
         [Authorize]
         public IActionResult PutTicket(int id,[FromForm]Ticket request)
@@ -768,26 +787,21 @@ namespace TicketingApi.Controllers.v1.Tickets
                         .FirstOrDefault();
                 var mediasExist = _context.Medias.Where(e => e.RelId == id && e.RelType == "T");
 
-                foreach (var item in mediasExist)
-                {
+                foreach (var item in mediasExist) {
                     var isRemoved = _fileUtil.Remove("Tickets/"+item.FileName);
                     if(isRemoved) _context.Medias.Remove(item);
                 }
       
-                foreach (var itemDetail in ticketExist.TicketDetails)
-                {
+                foreach (var itemDetail in ticketExist.TicketDetails) {
                     var mediaDetailExist = _context.Medias.Where(e => e.RelId == id && e.RelType == "TD");
-                    foreach (var item in mediasExist)
-                    {
+                    foreach (var item in mediasExist) {
                         var isRemoved = _fileUtil.Remove("Tickets/"+item.FileName);
                         if(isRemoved) _context.Medias.Remove(item);
                     }
-                    
                     _context.TicketDetails.Remove(itemDetail);
-
                 }
-                foreach (var itemAssign in ticketExist.TicketAssigns)
-                {
+
+                foreach (var itemAssign in ticketExist.TicketAssigns) {
                     _context.TicketAssigns.Remove(itemAssign);
                 }
 
@@ -796,24 +810,52 @@ namespace TicketingApi.Controllers.v1.Tickets
                 transaction.Commit();
                 return Ok();
             }
-            catch (System.Exception e)
-            {
-                
+            catch (System.Exception e) {
                 return BadRequest(e.Message);
             }
-            // [Route("~/api/Delete/{fileName}")]
-            // [Route("~/api/Delete/{isValid:bool}")] 
-            // [Route("~/api/Delete/{fileName}/{isValid}")] 
-            // public  void Delete(string fileName, bool? isValid)
-            // {
-            
-            // }
-            
         } 
 
+
         [HttpPost]
-        [Route("delete-comment")]
         [Authorize]
+        [Route("update-comment")]
+        public IActionResult UpdateTicketComment([FromForm]TicketDetail request, [FromForm]IList<IFormFile> file){
+              using (var transaction = _context.Database.BeginTransaction()) {
+                try {
+                    var cTDetails = _context.TicketDetails.Where(w => w.Id == request.Id).FirstOrDefault();
+                    cTDetails.UpdatedAt = DateTime.Now;
+                    cTDetails.Comment = request.Comment;
+
+                    var cMedias = _context.Medias.Where(w => w.RelId == request.Id && w.RelType == "TD");
+                    foreach (var item in cMedias){
+                        var isRemoved = _fileUtil.Remove(item.FileName);
+                        if(isRemoved) _context.Medias.Remove(item);
+                    }
+                    foreach(var f in file){
+                        Media uploadedFile = _fileUtil.FileUpload(f, "TicketDetails");
+                        _context.Medias.Add(new Media{
+                            FileName = "TicketDetails/"+uploadedFile.FileName,
+                            FileType = uploadedFile.FileType,
+                            RelId = request.Id,
+                            RelType = "TD"
+                        });
+                    }
+                    _context.SaveChanges();
+                    transaction.Commit();
+                    return Ok();
+                }
+                catch (System.Exception e)
+                {
+                    transaction.Rollback();
+                    return BadRequest(e);
+                }
+            }
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [Route("delete-comment")]
         public IActionResult DeleteTicketCommentById([FromBody]TicketDetail[] body)
         {
             try
@@ -827,7 +869,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                         var isRemoved = _fileUtil.Remove(item.FileName);
                         if(isRemoved) _context.Medias.Remove(item);
                     }
-                        
                     _context.TicketDetails.Remove(cTDetails);
                     _context.SaveChanges();
                 }
@@ -838,8 +879,13 @@ namespace TicketingApi.Controllers.v1.Tickets
             {
                 return BadRequest(e.Message);
             }
-            
         }  
+
+// [Route("~/api/Delete/{fileName}")]
+// [Route("~/api/Delete/{isValid:bool}")] 
+// [Route("~/api/Delete/{fileName}/{isValid}")] 
 
     }
 }
+
+
