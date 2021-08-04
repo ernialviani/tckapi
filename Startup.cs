@@ -30,9 +30,11 @@ namespace TicketingApi
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        public Startup(IConfiguration configuration)
+        public IWebHostEnvironment Environment { get; }
+        public Startup(IConfiguration configuration, IWebHostEnvironment Env)
         {
             Configuration = configuration;
+            Environment = Env;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -101,11 +103,17 @@ namespace TicketingApi
             services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailUtil, MailUtil>();
 
-       
+           
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });
             });
+             if (Environment.IsProduction())
+             {
+                services.AddSpaStaticFiles(configuration =>
+                configuration.RootPath ="ClientApp");
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -133,6 +141,14 @@ namespace TicketingApi
             {
                 endpoints.MapControllers();
             });
+             if (env.IsProduction())
+                {
+                    app.UseSpaStaticFiles();
+                    app.UseSpa(spa =>
+                    {
+                        spa.Options.DefaultPage = "/index.html";
+                    });
+                }
         }
     }
 }

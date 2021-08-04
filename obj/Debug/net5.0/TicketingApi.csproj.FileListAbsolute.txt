@@ -422,3 +422,6 @@ X:\TICKETING\backend\obj\Debug\net5.0\TicketingApi.dll
 X:\TICKETING\backend\obj\Debug\net5.0\ref\TicketingApi.dll
 X:\TICKETING\backend\obj\Debug\net5.0\TicketingApi.pdb
 X:\TICKETING\backend\obj\Debug\net5.0\TicketingApi.genruntimeconfig.cache
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\Microsoft.AspNetCore.NodeServices.dll
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\Microsoft.AspNetCore.SpaServices.dll
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\Microsoft.AspNetCore.SpaServices.Extensions.dll
