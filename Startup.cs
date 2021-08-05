@@ -143,6 +143,7 @@ namespace TicketingApi
             });
              if (env.IsProduction())
                 {
+                    app.UseStaticFiles();
                     app.UseSpaStaticFiles();
                     app.UseSpa(spa =>
                     {

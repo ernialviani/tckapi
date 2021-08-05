@@ -43,7 +43,7 @@ namespace TicketingApi.Models.v1.Tickets
         public Module Modules {get; set;}
 
 
-         [ForeignKey("RelId")]
+        [ForeignKey("RelId")]
          public ICollection<Media> Medias {get; set;}
 
     }

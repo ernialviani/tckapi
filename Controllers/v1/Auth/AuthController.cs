@@ -48,59 +48,65 @@ namespace TicketingApi.Controllers.v1.Authentication
         [HttpPost]
         [Route("admin/login")]
         public IActionResult loginAdmin([FromBody] User user){
-
-            var existingUser = _context.Users.Where(v => v.Email.Equals(user.Email))
-                             .AsNoTracking()
-                             .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
-                             .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
-                             .FirstOrDefault();
-            var userImage = "";
-                             
-            if (existingUser != null)
+            try
             {
-                var isPasswordVerified = CryptoUtil.VerifyPassword(user.Password, existingUser.Salt, existingUser.Password);
-                var firstRole = existingUser.UserRoles.FirstOrDefault();
-                
-                if (isPasswordVerified)
+                var existingUser = _context.Users.Where(v => v.Email.Equals(user.Email))
+                                .AsNoTracking()
+                                .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
+                                .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
+                                .FirstOrDefault();
+                var userImage = "";
+                                
+                if (existingUser != null)
                 {
-                    var claimList = new List<Claim>();
-                    claimList.Add(new Claim(ClaimTypes.Email, existingUser.Email));
-                    claimList.Add(new Claim(ClaimTypes.Role, firstRole.Roles.Name ));
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
-                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var expireDate = DateTime.UtcNow.AddDays(30);
-                    var timeStamp = DateUtil.ConvertToTimeStamp(expireDate);
-                    var token = new JwtSecurityToken(
-                        claims: claimList,
-                        notBefore: DateTime.UtcNow,
-                        expires: expireDate,
-                        signingCredentials: creds);
+                    var isPasswordVerified = CryptoUtil.VerifyPassword(user.Password, existingUser.Salt, existingUser.Password);
+                    var firstRole = existingUser.UserRoles.FirstOrDefault();
+                    
+                    if (isPasswordVerified)
+                    {
+                        var claimList = new List<Claim>();
+                        claimList.Add(new Claim(ClaimTypes.Email, existingUser.Email));
+                        claimList.Add(new Claim(ClaimTypes.Role, firstRole.Roles.Name ));
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+                        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                        var expireDate = DateTime.UtcNow.AddDays(30);
+                        var timeStamp = DateUtil.ConvertToTimeStamp(expireDate);
+                        var token = new JwtSecurityToken(
+                            claims: claimList,
+                            notBefore: DateTime.UtcNow,
+                            expires: expireDate,
+                            signingCredentials: creds);
 
-                    if(String.IsNullOrEmpty(existingUser.Image) == false){
-                           var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
-                           var filePath = Path.Combine(uploadPath, existingUser.Image);
-                           byte[] b = System.IO.File.ReadAllBytes(filePath);
-                            userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+                        if(String.IsNullOrEmpty(existingUser.Image) == false){
+                            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+                            var filePath = Path.Combine(uploadPath, existingUser.Image);
+                            byte[] b = System.IO.File.ReadAllBytes(filePath);
+                                userImage = "data:image/png;base64," + Convert.ToBase64String(b);
+                        }
+
+                        return Ok(new {
+                            token          = new JwtSecurityTokenHandler().WriteToken(token),
+                            expireDate      = timeStamp,
+                            Id             = existingUser.Id,
+                            FirstName      = existingUser.FirstName,
+                            LastName       = existingUser.LastName,
+                            Email          = existingUser.Email,
+                            role           = existingUser.UserRoles,
+                            dept           = existingUser.UserDepts,
+                            Image          = userImage,
+                        });
                     }
-
-                    return Ok(new {
-                        token          = new JwtSecurityTokenHandler().WriteToken(token),
-                        expireDate      = timeStamp,
-                        Id             = existingUser.Id,
-                        FirstName      = existingUser.FirstName,
-                        LastName       = existingUser.LastName,
-                        Email          = existingUser.Email,
-                        role           = existingUser.UserRoles,
-                        dept           = existingUser.UserDepts,
-                        Image          = userImage,
-                    });
+                    else {
+                        return BadRequest("Wrong Password");
+                    }
                 }
                 else {
-                    return BadRequest("Wrong Password");
-                }
+                    return BadRequest("User Not Found");
+                }      
             }
-            else {
-                return BadRequest("User Not Found");
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
 

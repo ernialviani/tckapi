@@ -136,14 +136,13 @@ namespace TicketingApi.Controllers.v1.Users
         }
 
         [HttpPost("{id}")]
-        public IActionResult PutUser(int id,[FromForm]User request)
+        [Authorize]
+        public IActionResult PutUser(int id,[FromBody]User request)
         {
             try
             {
                  var userExist =  _context.Users
                         .Where(e => e.Id == id)
-                        .Include(ur => ur.UserRoles)
-                        .Include(ud => ud.UserDepts)
                         .FirstOrDefault();
                 
                 if (userExist == null)
@@ -157,47 +156,51 @@ namespace TicketingApi.Controllers.v1.Users
                 userExist.LastName = request.LastName;
                 userExist.Email = request.Email;
                 userExist.UpdatedAt = DateTime.Now;
-             
 
-                if (string.IsNullOrEmpty(request.Password) == false)
-                {
-                     var salt =  CryptoUtil.GenerateSalt();
-                     userExist.Salt = salt;
-                     userExist.Password =  CryptoUtil.HashMultiple(request.Password, salt);
-                }
+                // var salt =  CryptoUtil.GenerateSalt();
+                //  userExist.Salt = salt;
+                var pass = request.FirstName.ToLower()+request.LastName.ToLower();
+                 userExist.Password =  CryptoUtil.HashMultiple(pass, request.Salt);
+
+                // if (string.IsNullOrEmpty(request.Password) == false)
+                // {
+                //      var salt =  CryptoUtil.GenerateSalt();
+                //      userExist.Salt = salt;
+                //      userExist.Password =  CryptoUtil.HashMultiple(request.Password, salt);
+                // }
               
-                if (request.File != null)
-                {
-                  var isRemovedImage = _fileUtil.Remove(userExist.Image);
-                  if(isRemovedImage){
-                    var uploadedImage = _fileUtil.AvatarUpload(request.File, "Users");
-                    userExist.Image = uploadedImage;  
-                  }
-                }
+                // if (request.File != null)
+                // {
+                //   var isRemovedImage = _fileUtil.Remove(userExist.Image);
+                //   if(isRemovedImage){
+                //     var uploadedImage = _fileUtil.AvatarUpload(request.File, "Users");
+                //     userExist.Image = uploadedImage;  
+                //   }
+                // }
            
-                _context.SaveChanges();
+                // _context.SaveChanges();
                 
-                userExist.UserRoles
-                .Where(eur => !request.UserRoles.Any(mur => mur.RoleId == eur.RoleId))
-                .ToList()
-                .ForEach(eur => 
-                    userExist.UserRoles.Remove(eur)
-                );
+                // userExist.UserRoles
+                // .Where(eur => !request.UserRoles.Any(mur => mur.RoleId == eur.RoleId))
+                // .ToList()
+                // .ForEach(eur => 
+                //     userExist.UserRoles.Remove(eur)
+                // );
 
-                request.UserRoles
-                .Where(mur => !userExist.UserRoles.Any(eur => eur.RoleId == mur.RoleId))
-                .ToList()
-                .ForEach(mur => userExist.UserRoles.Add(new UserRole { RoleId = mur.RoleId, UserId = mur.UserId}));
+                // request.UserRoles
+                // .Where(mur => !userExist.UserRoles.Any(eur => eur.RoleId == mur.RoleId))
+                // .ToList()
+                // .ForEach(mur => userExist.UserRoles.Add(new UserRole { RoleId = mur.RoleId, UserId = mur.UserId}));
 
-                userExist.UserDepts
-                .Where(eur => !request.UserDepts.Any(mur => mur.DepartmentId == eur.DepartmentId))
-                .ToList()
-                .ForEach(eur => userExist.UserDepts.Remove(eur));
+                // userExist.UserDepts
+                // .Where(eur => !request.UserDepts.Any(mur => mur.DepartmentId == eur.DepartmentId))
+                // .ToList()
+                // .ForEach(eur => userExist.UserDepts.Remove(eur));
 
-                request.UserDepts
-                .Where(mur => !userExist.UserDepts.Any(eur => eur.DepartmentId == mur.DepartmentId))
-                .ToList()
-                .ForEach(mur => userExist.UserDepts.Add(new UserDept { DepartmentId = mur.DepartmentId, UserId = mur.UserId}));
+                // request.UserDepts
+                // .Where(mur => !userExist.UserDepts.Any(eur => eur.DepartmentId == mur.DepartmentId))
+                // .ToList()
+                // .ForEach(mur => userExist.UserDepts.Add(new UserDept { DepartmentId = mur.DepartmentId, UserId = mur.UserId}));
 
                 _context.SaveChanges();
                 transaction.Commit();

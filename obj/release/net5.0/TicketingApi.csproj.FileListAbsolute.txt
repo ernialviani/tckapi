@@ -53,6 +53,7 @@ X:\TICKETING\backend\obj\release\net5.0\TicketingApi.dll
 X:\TICKETING\backend\obj\release\net5.0\ref\TicketingApi.dll
 X:\TICKETING\backend\obj\release\net5.0\TicketingApi.pdb
 X:\TICKETING\backend\obj\release\net5.0\TicketingApi.genruntimeconfig.cache
+<<<<<<< HEAD
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\release\net5.0\appsettings.Development.json
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\release\net5.0\appsettings.json
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\release\net5.0\db.vuerd.json
@@ -111,3 +112,8 @@ C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\obj\release\net5.0\Ticketing
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\obj\release\net5.0\ref\TicketingApi.dll
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\obj\release\net5.0\TicketingApi.pdb
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\obj\release\net5.0\TicketingApi.genruntimeconfig.cache
+=======
+X:\TICKETING\backend\bin\Release\net5.0\Microsoft.AspNetCore.NodeServices.dll
+X:\TICKETING\backend\bin\Release\net5.0\Microsoft.AspNetCore.SpaServices.dll
+X:\TICKETING\backend\bin\Release\net5.0\Microsoft.AspNetCore.SpaServices.Extensions.dll
+>>>>>>> 9e3586cada7c1491e45dcc251fab27e690bdad94
