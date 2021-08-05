@@ -72,21 +72,25 @@ namespace TicketingApi.DBContexts
             var salt =  CryptoUtil.GenerateSalt();
             modelBuilder.Entity<User>().HasData(
                 // admin programmer user
-                new { Id = 1, FirstName = "Vicky", LastName = "Epsylon", Email = "vicky.indiarto@epsylonhome.com", Password = CryptoUtil.HashMultiple("programmer3", salt), Salt=salt, Image="Users/vicky.jpg", CreatedAt = DateTime.Now },
+                new { Id = 1, FirstName = "Admin", LastName = "Super", Email = "adminsuper@epsylonhome.com", Password = CryptoUtil.HashMultiple("adminsuper", salt), Salt=salt, Image="Users/adminsuper.jpg", CreatedAt = DateTime.Now },
                 // Manager CS
-                new { Id = 2, FirstName = "Crish", LastName = "Evans", Email = "vickyindiarto@gmail.com", Password = CryptoUtil.HashMultiple("captain", salt), Salt=salt, Image="Users/crish.jpg", CreatedAt = DateTime.Now },              
+                new { Id = 2, FirstName = "Manager", LastName = "CS", Email = "managercs@epsylonhome.com", Password = CryptoUtil.HashMultiple("managercs", salt), Salt=salt, Image="Users/managercs.jpg", CreatedAt = DateTime.Now },              
                 // Manager Prg
-                new { Id = 3, FirstName = "Mark", LastName = "Ruffalo", Email = "vickynewonline@gmail.com", Password = CryptoUtil.HashMultiple("hulk", salt), Salt=salt, Image="Users/mark.jpg", CreatedAt = DateTime.Now },
+                new { Id = 3, FirstName = "Manager", LastName = "DEV", Email = "managerdev@epsylonhome.com", Password = CryptoUtil.HashMultiple("managerdev", salt), Salt=salt, Image="Users/managerdev.jpg", CreatedAt = DateTime.Now },
                
                 // Leader CS
-                new { Id = 4, FirstName = "Robert", LastName = "Downy", Email = "vickyindiar@yahoo.com", Password = CryptoUtil.HashMultiple("iron", salt), Salt=salt, Image="Users/robert.jpg", CreatedAt = DateTime.Now },
+                new { Id = 4, FirstName = "Teamlead", LastName = "CS", Email = "teamleadcs@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleadcs", salt), Salt=salt, Image="Users/teamleadcs.jpg", CreatedAt = DateTime.Now },
                 // Leader Prg           
-                new { Id = 5, FirstName = "Tom", LastName = "Holan", Email = "vickyindiarx@yahoo.com", Password = CryptoUtil.HashMultiple("spidey", salt), Salt=salt,  Image="Users/tom.jpg", CreatedAt = DateTime.Now },
+                new { Id = 5, FirstName = "Teamlead", LastName = "DEV", Email = "teamleaddev@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleaddev", salt), Salt=salt,  Image="Users/teamleaddev.jpg", CreatedAt = DateTime.Now },
                
                 //user cs 1
-                new { Id = 6, FirstName = "Scarlett", LastName = "Johansson", Email = "vickyindiary@yahoo.com", Password = CryptoUtil.HashMultiple("bwindow", salt), Salt=salt,CreatedAt = DateTime.Now },
+                new { Id = 6, FirstName = "AUser", LastName = "CS1", Email = "ausercs1@epsylonhome.com", Password = CryptoUtil.HashMultiple("ausercs1", salt), Salt=salt,CreatedAt = DateTime.Now },
                 //user cs2
-                new { Id = 7, FirstName = "Jeremy", LastName = "Renner", Email = "vickyindiarz@yahoo.com", Password = CryptoUtil.HashMultiple("hawkeye", salt), Salt=salt, CreatedAt = DateTime.Now }
+                new { Id = 7, FirstName = "BUser", LastName = "DEV1", Email = "buserdev1@epsylonhome.com", Password = CryptoUtil.HashMultiple("buserdev1", salt), Salt=salt, CreatedAt = DateTime.Now },
+               
+                new { Id = 8, FirstName = "CUser", LastName = "CS2", Email = "cusercs2@epsylonhome.com", Password = CryptoUtil.HashMultiple("cusercs2", salt), Salt=salt, CreatedAt = DateTime.Now },
+               
+                new { Id = 9, FirstName = "DUser", LastName = "DEV2", Email = "duserdev2@epsylonhome.com", Password = CryptoUtil.HashMultiple("duserdev2", salt), Salt=salt, CreatedAt = DateTime.Now }
             );
 
             // Configure relationships  
@@ -139,7 +143,9 @@ namespace TicketingApi.DBContexts
                 new { Id = 6, UserId = 5, RoleId = 3 },
                 //user
                 new { Id = 7, UserId = 6, RoleId = 4 },
-                new { Id = 8, UserId = 7, RoleId = 4 }
+                new { Id = 8, UserId = 7, RoleId = 4 },
+                new { Id = 9, UserId = 8, RoleId = 4 },
+                new { Id = 10, UserId = 9, RoleId = 4 }
             );
 
 
@@ -162,7 +168,9 @@ namespace TicketingApi.DBContexts
                 new { Id = 6, UserId = 5, DepartmentId = 3 },
 
                 new { Id = 7, UserId = 6, DepartmentId = 2 },
-                new { Id = 8, UserId = 7, DepartmentId = 2 }
+                new { Id = 8, UserId = 7, DepartmentId = 3 },
+                new { Id = 9, UserId = 8, DepartmentId = 2 },
+                new { Id = 10, UserId = 9, DepartmentId = 3 }
             );
 
             modelBuilder.Entity<Sender>().ToTable("senders");  
@@ -183,10 +191,10 @@ namespace TicketingApi.DBContexts
 
         
             modelBuilder.Entity<Sender>().HasData(
-                new { Id = 1, FirstName = "Daniel", LastName = "Radcliff", Email = "daniel@gmail.com", Password = "", Salt="", Image="Users/daniel.jpg", CreatedAt = DateTime.Now },
-                new { Id = 2, FirstName = "Ruppert", LastName = "Grint", Email = "ruppert@gmail.com", Password = "", Salt="", Image="Users/ruppert.jpg", CreatedAt = DateTime.Now },
+                new { Id = 1, FirstName = "AClient", LastName = "Satu", Email = "aclientsatu@gmail.com", Password = "", Salt="", Image="Users/aclientsatu.jpg", CreatedAt = DateTime.Now },
+                new { Id = 2, FirstName = "BClient", LastName = "Dua", Email = "bclientdua@gmail.com", Password = "", Salt="", Image="Users/bclientdua.jpg", CreatedAt = DateTime.Now },
                 // logedin
-                new { Id = 3, FirstName = "Emma", LastName = "Watson", Email = "emma@gmail.com", Password = CryptoUtil.HashMultiple("emma", salt), Salt=salt, Image="Users/emma.jpg", LoginStatus=true, CreatedAt = DateTime.Now }
+                new { Id = 3, FirstName = "CClient", LastName = "Tiga", Email = "cclienttiga@gmail.com", Password = CryptoUtil.HashMultiple("cclienttiga", salt), Salt=salt, Image="Users/cclienttiga.jpg", LoginStatus=true, CreatedAt = DateTime.Now }
             );
 
 
@@ -230,7 +238,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Team>().Property(u => u.LeaderId).HasColumnName("leader_id").HasColumnType("int").IsRequired();   
 
             modelBuilder.Entity<Team>().HasData(
-                new { Id = 1, Name = "TEAM CAP", LeaderId=4, Desc = "" }
+                new { Id = 1, Name = "TEAM CS1", LeaderId=4, Desc = "" },
+                new { Id = 2, Name = "TEAM PROG1", LeaderId=4, Desc = "" }
             );
 
             modelBuilder.Entity<TeamMember>().ToTable("team_members");   
@@ -241,7 +250,9 @@ namespace TicketingApi.DBContexts
            
             modelBuilder.Entity<TeamMember>().HasData(
                 new { Id = 1, TeamId = 1, UserId=6},
-                new { Id = 2, TeamId = 1, UserId=7}
+                new { Id = 2, TeamId = 1, UserId=8},
+                new { Id = 3, TeamId = 2, UserId=7},
+                new { Id = 4, TeamId = 2, UserId=9}
             );
 
             modelBuilder.Entity<Stat>().ToTable("stats");
@@ -286,12 +297,12 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Ticket>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
 
             
-             modelBuilder.Entity<Ticket>().HasData(
-                new { Id = 1, TicketNumber = "180620211", Subject= "Ini Test Subject satu ", Comment = "lorem ipsu sdkskadn ksdnksin jdnskjdna jsandjkansdjkansd jndsajkdnajkd kasjndsndoqm dolor shit nyoasdasdaslibay knoper low", AppId = 1, ModuleId = 1, SenderId = 1, StatId=3, CreatedBy="daniel@gmail.com", TicketType="E", CreatedAt = DateTime.Now  },
-                new { Id = 2, TicketNumber = "180620212", Subject= "Subject for ticket number 2", Comment = "asdhjkahsdjas jasdjj sjadnajk jasnd jas d asndjka  skjdnaksjdn sshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", AppId = 1, ModuleId = 1, SenderId = 2, StatId=1, CreatedBy="vickyindiary@yahoo.com", TicketType="E", CreatedAt = DateTime.Now  },
-                new { Id = 3, TicketNumber = "180620213", Subject= "Subjecsdskkks ksnkandkasndk t 3", Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", AppId = 1, ModuleId = 1, SenderId = 3, StatId=1, CreatedBy="vickyindiary@yahoo.com", TicketType="E", CreatedAt = DateTime.Now  },
-                new { Id = 4, TicketNumber = "180620214", Subject= "BUG SYSAD SAMPLE", Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", AppId = 1, ModuleId = 1, StatId=1, UserId=6, CreatedBy="vickyindiary@yahoo.com", TicketType="I", CreatedAt = DateTime.Now }
-            );
+            //  modelBuilder.Entity<Ticket>().HasData(
+            //     new { Id = 1, TicketNumber = "180620211", Subject= "Ini Test Subject satu ", Comment = "lorem ipsu sdkskadn ksdnksin jdnskjdna jsandjkansdjkansd jndsajkdnajkd kasjndsndoqm dolor shit nyoasdasdaslibay knoper low", AppId = 1, ModuleId = 1, SenderId = 1, StatId=3, CreatedBy="daniel@gmail.com", TicketType="E", CreatedAt = DateTime.Now  },
+            //     new { Id = 2, TicketNumber = "180620212", Subject= "Subject for ticket number 2", Comment = "asdhjkahsdjas jasdjj sjadnajk jasnd jas d asndjka  skjdnaksjdn sshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", AppId = 1, ModuleId = 1, SenderId = 2, StatId=1, CreatedBy="vickyindiary@yahoo.com", TicketType="E", CreatedAt = DateTime.Now  },
+            //     new { Id = 3, TicketNumber = "180620213", Subject= "Subjecsdskkks ksnkandkasndk t 3", Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", AppId = 1, ModuleId = 1, SenderId = 3, StatId=1, CreatedBy="vickyindiary@yahoo.com", TicketType="E", CreatedAt = DateTime.Now  },
+            //     new { Id = 4, TicketNumber = "180620214", Subject= "BUG SYSAD SAMPLE", Comment = "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", AppId = 1, ModuleId = 1, StatId=1, UserId=6, CreatedBy="vickyindiary@yahoo.com", TicketType="I", CreatedAt = DateTime.Now }
+            // );
 
             modelBuilder.Entity<TicketDetail>().ToTable("ticket_details");
             modelBuilder.Entity<TicketDetail>().HasKey(u => u.Id).HasName("PK_Ticket_details");  
@@ -303,11 +314,11 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TicketDetail>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<TicketDetail>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
 
-            modelBuilder.Entity<TicketDetail>().HasData(
-                new { Id = 1, TicketId = 1, UserId= 4, Comment = "lorem ipsum dolor shit nyolibay kksdj nknop ksiola knoper low", CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   },
-                new { Id = 2, TicketId = 1, Comment = "asdhjkahsdjas jasshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   },
-                new { Id = 3, TicketId = 1, UserId= 4, Comment = "ksknnina  lasklk  klsnklna ksaiopoells;mlauw klnskoiskel aksnkadia mkaskks ", CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   }
-            );
+            // modelBuilder.Entity<TicketDetail>().HasData(
+            //     new { Id = 1, TicketId = 1, UserId= 4, Comment = "lorem ipsum dolor shit nyolibay kksdj nknop ksiola knoper low", CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   },
+            //     new { Id = 2, TicketId = 1, Comment = "asdhjkahsdjas jasshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   },
+            //     new { Id = 3, TicketId = 1, UserId= 4, Comment = "ksknnina  lasklk  klsnklna ksaiopoells;mlauw klnskoiskel aksnkadia mkaskks ", CreatedAt = DateTime.Now, UpdatedAt=DateTime.Now   }
+            // );
 
             modelBuilder.Entity<TicketAssign>().ToTable("ticket_assigns");
             modelBuilder.Entity<TicketAssign>().HasKey(u => u.Id).HasName("PK_Ticket_assign");  
@@ -321,14 +332,14 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TicketAssign>().Property(u => u.Viewed).HasColumnName("viewed").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false);
             modelBuilder.Entity<TicketAssign>().Property(u => u.ViewedAt).HasColumnName("viewed_at").HasColumnType("datetime").IsRequired(false);
 
-            modelBuilder.Entity<TicketAssign>().HasData(
-                new { Id = 1, TicketId=1, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=true, ViewedAt=DateTime.Now},
-                new { Id = 2, TicketId=1, UserId=4, TeamId=1, TeamAt=DateTime.Now, AssignType="T", Viewed=true, ViewedAt=DateTime.Now},
-                new { Id = 3, TicketId=1, UserId=6, UserAt=DateTime.Now, AssignType="U", Viewed=true, ViewedAt=DateTime.Now},
-                new { Id = 4, TicketId=2, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=false },
-                new { Id = 5, TicketId=3, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=false },
-                new { Id = 6, TicketId=4, UserId=3, UserAt=DateTime.Now, AssignType="M", Viewed=false }
-            );
+            // modelBuilder.Entity<TicketAssign>().HasData(
+            //     new { Id = 1, TicketId=1, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=true, ViewedAt=DateTime.Now},
+            //     new { Id = 2, TicketId=1, UserId=4, TeamId=1, TeamAt=DateTime.Now, AssignType="T", Viewed=true, ViewedAt=DateTime.Now},
+            //     new { Id = 3, TicketId=1, UserId=6, UserAt=DateTime.Now, AssignType="U", Viewed=true, ViewedAt=DateTime.Now},
+            //     new { Id = 4, TicketId=2, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=false },
+            //     new { Id = 5, TicketId=3, UserId=2, UserAt=DateTime.Now, AssignType="M", Viewed=false },
+            //     new { Id = 6, TicketId=4, UserId=3, UserAt=DateTime.Now, AssignType="M", Viewed=false }
+            // );
 
             modelBuilder.Entity<Media>().ToTable("medias");
             modelBuilder.Entity<Media>().HasKey(u => u.Id).HasName("PK_Media");  
@@ -339,12 +350,12 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Media>().Property(u => u.RelType).HasColumnName("rel_type").HasColumnType("nvarchar(5)").IsRequired();
             modelBuilder.Entity<Media>().Ignore(u => u.File);
 
-            modelBuilder.Entity<Media>().HasData(
-                new { Id = 1, FileName="Tickets/atc1.jpg", FileType=".pf", RelId=1, RelType="T" },
-                new { Id = 2, FileName="Tickets/atc2.pdf", FileType=".pdf", RelId=1, RelType="T" },
-                new { Id = 3, FileName="TicketDetails/atc3.jpeg", FileType=".jpg", RelId=1, RelType="TD" },
-                new { Id = 4, FileName="TicketsDetails/atc4.xls", FileType=".xls", RelId=1, RelType="TD" }
-            );
+            // modelBuilder.Entity<Media>().HasData(
+            //     new { Id = 1, FileName="Tickets/atc1.jpg", FileType=".pf", RelId=1, RelType="T" },
+            //     new { Id = 2, FileName="Tickets/atc2.pdf", FileType=".pdf", RelId=1, RelType="T" },
+            //     new { Id = 3, FileName="TicketDetails/atc3.jpeg", FileType=".jpg", RelId=1, RelType="TD" },
+            //     new { Id = 4, FileName="TicketsDetails/atc4.xls", FileType=".xls", RelId=1, RelType="TD" }
+            // );
 
             modelBuilder.Entity<KBase>().ToTable("kbases");
             modelBuilder.Entity<KBase>().HasKey(u => u.Id).HasName("PK_KBase");  

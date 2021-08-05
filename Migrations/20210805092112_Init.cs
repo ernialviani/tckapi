@@ -256,6 +256,8 @@ namespace TicketingApi.Migrations
                     sender_id = table.Column<int>(type: "int", nullable: true),
                     user_id = table.Column<int>(type: "int", nullable: true),
                     stat_id = table.Column<int>(type: "int", nullable: false),
+                    pending_by = table.Column<string>(type: "nvarchar(50)", nullable: true),
+                    pending_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     solved_by = table.Column<string>(type: "nvarchar(50)", nullable: true),
                     solved_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     rejected_by = table.Column<string>(type: "nvarchar(50)", nullable: true),
@@ -450,19 +452,8 @@ namespace TicketingApi.Migrations
                 {
                     { 4, "", "Other" },
                     { 3, "", "Programmer" },
-                    { 1, "", "Management" },
-                    { 2, "", "CS" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "medias",
-                columns: new[] { "id", "file_name", "file_type", "rel_id", "rel_type", "TicketDetailsId", "TicketsId" },
-                values: new object[,]
-                {
-                    { 3, "TicketDetails/atc3.jpeg", ".jpg", 1, "TD", null, null },
-                    { 4, "TicketsDetails/atc4.xls", ".xls", 1, "TD", null, null },
-                    { 2, "Tickets/atc2.pdf", ".pdf", 1, "T", null, null },
-                    { 1, "Tickets/atc1.jpg", ".pf", 1, "T", null, null }
+                    { 2, "", "CS" },
+                    { 1, "", "Management" }
                 });
 
             migrationBuilder.InsertData(
@@ -470,9 +461,9 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "desc", "name" },
                 values: new object[,]
                 {
-                    { 2, "", "Manager" },
                     { 4, "", "User" },
                     { 3, "", "Leader" },
+                    { 2, "", "Manager" },
                     { 1, "", "SuperAdmin" }
                 });
 
@@ -481,9 +472,9 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "color", "created_at", "email", "first_name", "image", "last_name", "login_status", "password", "salt", "updated_at" },
                 values: new object[,]
                 {
-                    { 3, null, new DateTime(2021, 7, 27, 10, 39, 38, 646, DateTimeKind.Local).AddTicks(2673), "emma@gmail.com", "Emma", "Users/emma.jpg", "Watson", true, "64FEFC19C079C63DF213EE78C342DEA22EA24BF68E33A9D5B179A4C6493285235C8E26C2E2081B22161DC3BFCC536D15BC58CB7A8936FFCA103E3F24A0B71438", "01079031-d15e-4902-a79e-3f4b33963fb1", null },
-                    { 2, null, new DateTime(2021, 7, 27, 10, 39, 38, 646, DateTimeKind.Local).AddTicks(1732), "ruppert@gmail.com", "Ruppert", "Users/ruppert.jpg", "Grint", null, "", "", null },
-                    { 1, null, new DateTime(2021, 7, 27, 10, 39, 38, 646, DateTimeKind.Local).AddTicks(1708), "daniel@gmail.com", "Daniel", "Users/daniel.jpg", "Radcliff", null, "", "", null }
+                    { 3, null, new DateTime(2021, 8, 5, 16, 21, 11, 419, DateTimeKind.Local).AddTicks(808), "cclienttiga@gmail.com", "CClient", "Users/cclienttiga.jpg", "Tiga", true, "B3791BBAC96A76010B24CC69D5B11C0866755659723F72E161D8E869EEBD5DC343DF310C8AAB52D8B9C4998F6932DC2AA4C2294C2735D818BE2F6C03F11ABA6F", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 2, null, new DateTime(2021, 8, 5, 16, 21, 11, 419, DateTimeKind.Local).AddTicks(808), "bclientdua@gmail.com", "BClient", "Users/bclientdua.jpg", "Dua", null, "", "", null },
+                    { 1, null, new DateTime(2021, 8, 5, 16, 21, 11, 419, DateTimeKind.Local).AddTicks(808), "aclientsatu@gmail.com", "AClient", "Users/aclientsatu.jpg", "Satu", null, "", "", null }
                 });
 
             migrationBuilder.InsertData(
@@ -491,11 +482,11 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "color", "desc", "name" },
                 values: new object[,]
                 {
-                    { 1, "Red", "bg-danger", "New" },
                     { 6, "Grey", "bg-dark", "Reject" },
+                    { 1, "Red", "bg-danger", "New" },
                     { 5, "Green", "bg-success", "Solve" },
-                    { 4, "Yellow", "bg-warning", "Pending" },
                     { 3, "Blue", "bg-primary", "In Progress" },
+                    { 4, "Yellow", "bg-warning", "Pending" },
                     { 2, "Sky", "bg-info", "Open" }
                 });
 
@@ -504,13 +495,15 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "color", "created_at", "email", "first_name", "image", "last_name", "password", "salt", "updated_at" },
                 values: new object[,]
                 {
-                    { 1, null, new DateTime(2021, 7, 27, 10, 39, 38, 639, DateTimeKind.Local).AddTicks(6188), "vicky.indiarto@epsylonhome.com", "Vicky", "Users/vicky.jpg", "Epsylon", "41F0070B1CAD67A1852B5F6F0E7D4A8F57ED768975C0D691B49AFCFC033F6A23A497EC68138C20573BDC162DC87086EC08748DEB18D87154B2AB94B92F1E7446", "01079031-d15e-4902-a79e-3f4b33963fb1", null },
-                    { 2, null, new DateTime(2021, 7, 27, 10, 39, 38, 639, DateTimeKind.Local).AddTicks(9064), "vickyindiarto@gmail.com", "Crish", "Users/crish.jpg", "Evans", "540A358BA70A8B2026E9737FC4DE40A4C9C48FA70C91BFC1503A09F428453128725CB10A811ACE5316F4432ED6F74BFF4C01707AD14E5FE3E766D4A522D0B40E", "01079031-d15e-4902-a79e-3f4b33963fb1", null },
-                    { 3, null, new DateTime(2021, 7, 27, 10, 39, 38, 639, DateTimeKind.Local).AddTicks(9840), "vickynewonline@gmail.com", "Mark", "Users/mark.jpg", "Ruffalo", "053877C492D096F9B5C227EF0D9315E93CE01877EBB2FA0EF9E53E71CDAEAD2531122B5212E0A3A4136CCF94B405B7D4E67EB95292EF63AF6BC77D6030703E7B", "01079031-d15e-4902-a79e-3f4b33963fb1", null },
-                    { 4, null, new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(577), "vickyindiar@yahoo.com", "Robert", "Users/robert.jpg", "Downy", "307D668DCA51F69CCDCDB6F0A400CB77559F6E5BA4F93BC0D0FF91921F7B16A9B5802A38F1AB6CCA246FD6B559CD702EA37C23F5A4FDD96A4D7B1416C438C0F3", "01079031-d15e-4902-a79e-3f4b33963fb1", null },
-                    { 5, null, new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(1309), "vickyindiarx@yahoo.com", "Tom", "Users/tom.jpg", "Holan", "7B18DDDFDD9044A7F8E1164D81C9B4E80894FA3041AAF17BE546ACC9948D8210D7B2146257B57C10A0F3EABFACEAEA09C62EA867920DCBA59C2D221ACEE91687", "01079031-d15e-4902-a79e-3f4b33963fb1", null },
-                    { 6, null, new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(2038), "vickyindiary@yahoo.com", "Scarlett", null, "Johansson", "7C03E544F57C93339151EB81939899B0AFB6C39A38173FAB1279181BED1F841747AFE2CE057EDDD5A2723775C6D5FAD626AA57FE728283B24C5EEA9C0FB8E637", "01079031-d15e-4902-a79e-3f4b33963fb1", null },
-                    { 7, null, new DateTime(2021, 7, 27, 10, 39, 38, 640, DateTimeKind.Local).AddTicks(4428), "vickyindiarz@yahoo.com", "Jeremy", null, "Renner", "CDC3FD1C80512180A16E4BDB581A05451286A5A4007B50544FE1EAD4392AB830CB2FCAA04BF7156CB96BADAFE2ABFE824C1C9CCF8788366EC57D7FD7513504D2", "01079031-d15e-4902-a79e-3f4b33963fb1", null }
+                    { 8, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "cusercs2@epsylonhome.com", "CUser", null, "CS2", "43899744D963D451C865A38B7B1E64210E5CC6E30E24950603AD95273D69EABCEFFCF2983C27D85FBB578E7F03B7A87B0D87D0D205396DB3B3BF83A90ACA695C", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 1, null, new DateTime(2021, 8, 5, 16, 21, 11, 414, DateTimeKind.Local).AddTicks(803), "adminsuper@epsylonhome.com", "Admin", "Users/adminsuper.jpg", "Super", "63F6C1E4905D242AE2D67F1D0FE11686A93BF41CBA13D731B2846F84AD60826A6A56AA140D774167CB6A54C5E2722E009263BD5068583FE06996222DAA835902", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 2, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "managercs@epsylonhome.com", "Manager", "Users/managercs.jpg", "CS", "AEC59A8733FD04AB43F50EBB53E731974F1BF3810DBBAB43FB41BC7A7FB3C50E34CE9573C457E9F201E1018BF4AFD0EB172C7AA455A9E298F53F9FC0C2186328", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 3, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "managerdev@epsylonhome.com", "Manager", "Users/managerdev.jpg", "DEV", "7F5F3410C72E044BBF1AAF9E4E844D20465664A34A3E2FEC40C6AEC4DEE97C57B06A5EBC1059AEDDE272FA9FDFC29D2F34646AA9BC4EC9DC8DCF23FB0EED0887", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 4, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "teamleadcs@epsylonhome.com", "Teamlead", "Users/teamleadcs.jpg", "CS", "B0D4E22452BF49BF4E62BE095B1CBDE5AD75DAE6EFE8BD0FBC5C805E1096AC0E734A22985AB24002378BB537EC228F9EC7AA3C9B1891213E13E09AFA2515CAF8", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 5, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "teamleaddev@epsylonhome.com", "Teamlead", "Users/teamleaddev.jpg", "DEV", "F3E5E1034FDB094D2817C7BEFDCBA117BFE88D467B9D3FE4783D0D9D95E6842009E61988C237A649BAC7E8D96BE91A8515D25AB2007510C3F689AA03ECC4ABC2", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 6, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "ausercs1@epsylonhome.com", "AUser", null, "CS1", "FEC2B15B18A15091D91E67971ADCAC76C1C6F6BE94E010162EAAB09C4BB89B6166E7D0C3A089BFA27170A4BFD60F60A75CFD5719C028FEA2251BDD762488FF6A", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 7, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "buserdev1@epsylonhome.com", "BUser", null, "DEV1", "5014539BD8295164C15128F657424078F116A42CDCECC39B9899D4A36BF35AC9D1F75534BBD1CABC0DE199602BEAB334CBADEC92DE62A17F2C2A465168985064", "d8963f7c-36ad-476a-9874-7762802ebd5b", null },
+                    { 9, null, new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804), "duserdev2@epsylonhome.com", "DUser", null, "DEV2", "8EA57E6D9FC4F61A9C39E2B6F07E7CD7CBE8AEDC43887FDEDD0CFE3657A56F89AB576E586A544666FA24EB6E995BCD9B1A3999B2491AF5A41B0E35D15FED3E63", "d8963f7c-36ad-476a-9874-7762802ebd5b", null }
                 });
 
             migrationBuilder.InsertData(
@@ -527,21 +520,27 @@ namespace TicketingApi.Migrations
             migrationBuilder.InsertData(
                 table: "teams",
                 columns: new[] { "id", "CreatedAt", "desc", "leader_id", "name", "UpdatedAt" },
-                values: new object[] { 1, null, "", 4, "TEAM CAP", null });
+                values: new object[,]
+                {
+                    { 2, null, "", 4, "TEAM PROG1", null },
+                    { 1, null, "", 4, "TEAM CS1", null }
+                });
 
             migrationBuilder.InsertData(
                 table: "user_depatments",
                 columns: new[] { "id", "dept_id", "user_id" },
                 values: new object[,]
                 {
-                    { 7, 2, 6 },
-                    { 6, 3, 5 },
-                    { 5, 2, 4 },
-                    { 8, 2, 7 },
-                    { 4, 3, 3 },
                     { 3, 2, 2 },
+                    { 9, 2, 8 },
+                    { 4, 3, 3 },
+                    { 10, 3, 9 },
+                    { 1, 1, 1 },
+                    { 5, 2, 4 },
                     { 2, 3, 1 },
-                    { 1, 1, 1 }
+                    { 6, 3, 5 },
+                    { 8, 3, 7 },
+                    { 7, 2, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -549,14 +548,16 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "role_id", "user_id" },
                 values: new object[,]
                 {
-                    { 4, 2, 3 },
-                    { 2, 4, 1 },
                     { 1, 1, 1 },
+                    { 9, 4, 8 },
+                    { 8, 4, 7 },
                     { 5, 3, 4 },
                     { 6, 3, 5 },
-                    { 7, 4, 6 },
+                    { 4, 2, 3 },
                     { 3, 2, 2 },
-                    { 8, 4, 7 }
+                    { 2, 4, 1 },
+                    { 7, 4, 6 },
+                    { 10, 4, 9 }
                 });
 
             migrationBuilder.InsertData(
@@ -565,48 +566,9 @@ namespace TicketingApi.Migrations
                 values: new object[,]
                 {
                     { 1, 1, 6 },
-                    { 2, 1, 7 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "tickets",
-                columns: new[] { "id", "app_id", "comment", "created_at", "created_by", "module_id", "rejected_at", "rejected_by", "rejected_reason", "sender_id", "solved_at", "solved_by", "stat_id", "subject", "ticket_number", "ticket_type", "updated_at", "user_id" },
-                values: new object[,]
-                {
-                    { 1, 1, "lorem ipsu sdkskadn ksdnksin jdnskjdna jsandjkansdjkansd jndsajkdnajkd kasjndsndoqm dolor shit nyoasdasdaslibay knoper low", new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(6776), "daniel@gmail.com", 1, null, null, null, 1, null, null, 3, "Ini Test Subject satu ", "180620211", "E", null, null },
-                    { 2, 1, "asdhjkahsdjas jasdjj sjadnajk jasnd jas d asndjka  skjdnaksjdn sshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(8816), "vickyindiary@yahoo.com", 1, null, null, null, 2, null, null, 1, "Subject for ticket number 2", "180620212", "E", null, null },
-                    { 3, 1, "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(8827), "vickyindiary@yahoo.com", 1, null, null, null, 3, null, null, 1, "Subjecsdskkks ksnkandkasndk t 3", "180620213", "E", null, null },
-                    { 4, 1, "ksknnina  lasklk  klsnklna ksaiopoellss ksdoasjdandanwdwqo sdnskandjasd  jskdnjksanda asndndiqwioqdwq", new DateTime(2021, 7, 27, 10, 39, 38, 651, DateTimeKind.Local).AddTicks(8830), "vickyindiary@yahoo.com", 1, null, null, null, null, null, null, 1, "BUG SYSAD SAMPLE", "180620214", "I", null, 6 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ticket_assigns",
-                columns: new[] { "id", "assign_type", "team_at", "team_id", "ticket_id", "user_at", "user_id", "viewed", "viewed_at" },
-                values: new object[,]
-                {
-                    { 1, "M", null, null, 1, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(2522), 2, true, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(2535) },
-                    { 2, "T", new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(4151), 1, 1, null, 4, true, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(4159) },
-                    { 3, "U", null, null, 1, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(5632), 6, true, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(5639) }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ticket_assigns",
-                columns: new[] { "id", "assign_type", "team_at", "team_id", "ticket_id", "user_at", "user_id", "viewed_at" },
-                values: new object[,]
-                {
-                    { 4, "M", null, null, 2, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(5643), 2, null },
-                    { 5, "M", null, null, 3, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(6863), 2, null },
-                    { 6, "M", null, null, 4, new DateTime(2021, 7, 27, 10, 39, 38, 661, DateTimeKind.Local).AddTicks(6871), 3, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ticket_details",
-                columns: new[] { "id", "comment", "created_at", "ticket_id", "updated_at", "user_id" },
-                values: new object[,]
-                {
-                    { 1, "lorem ipsum dolor shit nyolibay kksdj nknop ksiola knoper low", new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(751), 1, new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(772), 4 },
-                    { 2, "asdhjkahsdjas jasshdjkajksdas jashdjkahsjkd oashdasihsjskaslnsk", new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(2642), 1, new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(2651), null },
-                    { 3, "ksknnina  lasklk  klsnklna ksaiopoells;mlauw klnskoiskel aksnkadia mkaskks ", new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(3888), 1, new DateTime(2021, 7, 27, 10, 39, 38, 660, DateTimeKind.Local).AddTicks(3896), 4 }
+                    { 2, 1, 8 },
+                    { 3, 2, 7 },
+                    { 4, 2, 9 }
                 });
 
             migrationBuilder.CreateIndex(

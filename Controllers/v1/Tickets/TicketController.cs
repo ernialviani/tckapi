@@ -32,15 +32,16 @@ namespace TicketingApi.Controllers.v1.Tickets
        //  private readonly IConfiguration _configuration;
         private readonly AppDBContext  _context;
         private readonly IFileUtil _fileUtil;
-
         private readonly IMailUtil _mailUtil;
         private readonly IWebHostEnvironment _env; 
-        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env )
+         private readonly IConfiguration _config;
+        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config )
         {
             _context = context; 
             _fileUtil = fileUtil;
             _mailUtil = mailUtil;
             _env = env;   
+            _config = config;
         }
 
         public string GenerateTicketNumber(){
@@ -62,8 +63,8 @@ namespace TicketingApi.Controllers.v1.Tickets
 
 
         [HttpGet]
-      //  [Authorize]
-      [AllowAnonymous]
+        [Authorize]
+     // [AllowAnonymous]
         //  [Authorize(Roles = RoleType.Admin)]
         public IActionResult GetTickets([FromHeader] string Authorization, [FromQuery]int u, [FromQuery]int r)
         {
@@ -282,7 +283,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketApp= app.Name,
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
-                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ newTicket.Id +"&open=true",
+                           // ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
+                            ButtonLink =  _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
                     List<string> listMailToSender = new List<string>();
@@ -297,7 +299,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketApp= app.Name,
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
-                            ButtonLink = "http://localhost:3000/ticket?tid="+ newTicket.Id +"&open=true",
+                            ButtonLink = _config.GetSection("HomeSite").Value + "ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
                  }
@@ -331,7 +333,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketApp= app.Name,
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
-                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ newTicket.Id +"&open=true",
+                            ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
                  }
@@ -462,7 +464,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 TicketModule=appModule.Name,
                                 Attachments = new List<IFormFile>(file),
                                 UserFullName = cUser.FirstName + " " + cUser.LastName,
-                                ButtonLink = "http://localhost:3000/", //todo
+                                ButtonLink = _config.GetSection("HomeSite").Value + "", //todo
                             }
                         );
                     }
@@ -478,7 +480,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
                             UserFullName = cUser.FirstName + " " + cUser.LastName,
-                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ cTicket.Id +"&open=true",
+                            ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTicket.Id +"&open=true",
                         }
                     );
 
@@ -622,7 +624,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                         Attachments = null,
                                         AttachmentsString = LFile,
                                         UserFullName = " ",
-                                        ButtonLink = "http://localhost:3000/admin/ticket?tid="+ cTickets.Id +"&open=true",
+                                        ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         
                                     }
                                 );
@@ -685,7 +687,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                             Attachments = null,
                                             AttachmentsString = LFile,
                                             UserFullName = " ",
-                                            ButtonLink = "http://localhost:3000/admin/ticket?tid="+ cTickets.Id +"&open=true",
+                                            ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         }
                                     );
                             }
