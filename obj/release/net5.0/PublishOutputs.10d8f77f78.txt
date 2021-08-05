@@ -10,6 +10,9 @@ X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.AspNetCore.Authenticat
 X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.AspNetCore.JsonPatch.dll
 X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.AspNetCore.Mvc.Versioning.dll
+X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.AspNetCore.NodeServices.dll
+X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.AspNetCore.SpaServices.dll
+X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.AspNetCore.SpaServices.Extensions.dll
 X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.EntityFrameworkCore.dll
 X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.EntityFrameworkCore.Abstractions.dll
 X:\TICKETING\backend\bin\Release\net5.0\publish\Microsoft.EntityFrameworkCore.Relational.dll

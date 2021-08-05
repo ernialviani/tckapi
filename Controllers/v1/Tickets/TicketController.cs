@@ -62,12 +62,13 @@ namespace TicketingApi.Controllers.v1.Tickets
 
 
         [HttpGet]
-        [Authorize]
+      //  [Authorize]
+      [AllowAnonymous]
         //  [Authorize(Roles = RoleType.Admin)]
         public IActionResult GetTickets([FromHeader] string Authorization, [FromQuery]int u, [FromQuery]int r)
         {
            
-          var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+      //   var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
 
           var allTicket = _context.Tickets.AsNoTracking()
