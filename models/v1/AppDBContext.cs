@@ -65,7 +65,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<User>().Ignore(u => u.File);
             modelBuilder.Entity<User>().Property(u => u.Image).HasColumnName("image").HasColumnType("nvarchar(150)").IsRequired(false);  
             modelBuilder.Entity<User>().Property(u => u.Color).HasColumnName("color").HasColumnType("nvarchar(50)").IsRequired(false);  
-       
+            modelBuilder.Entity<User>().Property(u => u.Deleted).HasColumnName("deleted").HasColumnType("tinyint(1)").HasDefaultValue(0).IsRequired();
             modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);  
             modelBuilder.Entity<User>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
   
@@ -73,16 +73,17 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<User>().HasData(
                 // admin programmer user
                 new { Id = 1, FirstName = "Admin", LastName = "Super", Email = "adminsuper@epsylonhome.com", Password = CryptoUtil.HashMultiple("adminsuper", salt), Salt=salt, Image="Users/adminsuper.jpg", CreatedAt = DateTime.Now },
-                // Manager CS
-                new { Id = 2, FirstName = "Manager", LastName = "CS", Email = "managercs@epsylonhome.com", Password = CryptoUtil.HashMultiple("managercs", salt), Salt=salt, Image="Users/managercs.jpg", CreatedAt = DateTime.Now },              
-                // Manager Prg
-                new { Id = 3, FirstName = "Manager", LastName = "DEV", Email = "managerdev@epsylonhome.com", Password = CryptoUtil.HashMultiple("managerdev", salt), Salt=salt, Image="Users/managerdev.jpg", CreatedAt = DateTime.Now },
                
                 // Leader CS
-                new { Id = 4, FirstName = "Teamlead", LastName = "CS", Email = "teamleadcs@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleadcs", salt), Salt=salt, Image="Users/teamleadcs.jpg", CreatedAt = DateTime.Now },
+                new { Id = 2, FirstName = "Leader", LastName = "CS", Email = "teamleadcs@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleadcs", salt), Salt=salt, Image="Users/teamleadcs.jpg", CreatedAt = DateTime.Now },
                 // Leader Prg           
-                new { Id = 5, FirstName = "Teamlead", LastName = "DEV", Email = "teamleaddev@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleaddev", salt), Salt=salt,  Image="Users/teamleaddev.jpg", CreatedAt = DateTime.Now },
-               
+                new { Id = 3, FirstName = "Leader", LastName = "DEV", Email = "teamleaddev@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleaddev", salt), Salt=salt,  Image="Users/teamleaddev.jpg", CreatedAt = DateTime.Now },
+
+                // Manager CS
+                new { Id = 4, FirstName = "Manager", LastName = "CS", Email = "managercs@epsylonhome.com", Password = CryptoUtil.HashMultiple("managercs", salt), Salt=salt, Image="Users/managercs.jpg", CreatedAt = DateTime.Now },              
+                // Manager Prg
+                new { Id = 5, FirstName = "Manager", LastName = "DEV", Email = "managerdev@epsylonhome.com", Password = CryptoUtil.HashMultiple("managerdev", salt), Salt=salt, Image="Users/managerdev.jpg", CreatedAt = DateTime.Now },
+
                 //user cs 1
                 new { Id = 6, FirstName = "AUser", LastName = "CS1", Email = "ausercs1@epsylonhome.com", Password = CryptoUtil.HashMultiple("ausercs1", salt), Salt=salt,CreatedAt = DateTime.Now },
                 //user cs2
@@ -105,8 +106,8 @@ namespace TicketingApi.DBContexts
 
             modelBuilder.Entity<Role>().HasData(
                 new { Id = 1, Name = "SuperAdmin", Desc = "" },
-                new { Id = 2, Name = "Manager", Desc = "" },
-                new { Id = 3, Name = "Leader", Desc = "" },
+                new { Id = 2, Name = "Leader", Desc = "" },
+                new { Id = 3, Name = "Manager", Desc = "" },
                 new { Id = 4, Name = "User", Desc = "" }
             );
            
@@ -235,11 +236,11 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Team>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<Team>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();   
             modelBuilder.Entity<Team>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("nvarchar(150)").IsRequired(false);  
-            modelBuilder.Entity<Team>().Property(u => u.LeaderId).HasColumnName("leader_id").HasColumnType("int").IsRequired();   
+            modelBuilder.Entity<Team>().Property(u => u.ManagerId).HasColumnName("manager_id").HasColumnType("int").IsRequired();   
 
             modelBuilder.Entity<Team>().HasData(
-                new { Id = 1, Name = "TEAM CS1", LeaderId=4, Desc = "" },
-                new { Id = 2, Name = "TEAM PROG1", LeaderId=4, Desc = "" }
+                new { Id = 1, Name = "TEAM CS1", ManagerId=4, Desc = "" },
+                new { Id = 2, Name = "TEAM PROG1", ManagerId=5, Desc = "" }
             );
 
             modelBuilder.Entity<TeamMember>().ToTable("team_members");   

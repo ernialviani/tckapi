@@ -27,10 +27,14 @@ namespace TicketingApi.Controllers.v1.Users
        //  private readonly IConfiguration _configuration;
          private readonly AppDBContext  _context;
         private readonly IFileUtil _fileUtil;
-        public UserController(AppDBContext context, IFileUtil fileUtil )
+         private readonly IMailUtil _mailUtil;
+        private readonly IConfiguration _config;
+        public UserController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IConfiguration config  )
         {
             _context = context; 
             _fileUtil = fileUtil;
+            _mailUtil = mailUtil;
+            _config = config;
         }
 
         [HttpGet]
@@ -40,9 +44,24 @@ namespace TicketingApi.Controllers.v1.Users
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allUser = _context.Users.AsNoTracking()
+          var allUser = _context.Users.AsNoTracking().Where(wr => wr.Deleted == false)
                         .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
-                        .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments);
+                        .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
+                        .Include(i => i.Teams).ThenInclude(ti => ti.TeamMembers)
+                        .Select(s => new {
+                           s.Id,
+                           s.FirstName,
+                           s.LastName,
+                           s.Email,
+                           s.Image,
+                           s.Color,
+                           s.UserDepts,
+                           s.UserRoles,
+                           s.CreatedAt,
+                           s.UpdatedAt,
+                           Teams = s.Teams.Select(st => new { st.Id, st.Name, st.Desc, st.ManagerId, st.TeamMembers  }).Where(w => w.ManagerId.Equals(s.Id) || w.TeamMembers.Any(a => a.UserId == s.Id) )
+                           //|| w.TeamMembers.Any(a => a.UserId == s.Id)
+                        });
            return Ok(allUser);
         }
 
@@ -52,7 +71,7 @@ namespace TicketingApi.Controllers.v1.Users
         public IActionResult GetUserById(int id)
         {
             var user = _context.Users.AsNoTracking()
-                        .Where(e => e.Id == id)
+                        .Where(e => e.Id == id && e.Deleted == false)
                         .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
                         .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
                         .FirstOrDefault();
@@ -66,17 +85,15 @@ namespace TicketingApi.Controllers.v1.Users
 
         [HttpPost]
         [Authorize]
-        //, [FromForm] string UserRoles, [FromForm] string UserDepts
-        //, [FromForm] List<UserRole> UserRoles, [FromForm] List<UserDept> UserDepts
-        public IActionResult Create([FromForm]User request)
+        public IActionResult Create([FromForm]User request, [FromForm]string UserRoles,  [FromForm]string UserDepts, [FromForm]IList<IFormFile> file )
         {
-            var exitingsUser = _context.Users.FirstOrDefault(e => e.Email == request.Email);
-            if(exitingsUser != null ) {
-                return BadRequest("Email already in use");
-            }
             
+            var exitingsUser = _context.Users.FirstOrDefault(e => e.Email == request.Email && e.Deleted == false);
+            IList<UserRole> reqUR =  JsonConvert.DeserializeObject<IList<UserRole>>(UserRoles);
+            IList<UserDept> reqUD =  JsonConvert.DeserializeObject<IList<UserDept>>(UserDepts);
+
+            if(exitingsUser != null ) { return BadRequest("Email already in use"); }
             var transaction =  _context.Database.BeginTransaction();
-               
             try
             {
                 var salt =  CryptoUtil.GenerateSalt();
@@ -87,13 +104,14 @@ namespace TicketingApi.Controllers.v1.Users
                     Email = request.Email,
                     Password =  CryptoUtil.HashMultiple(request.Password, salt),
                     Salt = salt,
+                    Color = request.Color,
                     CreatedAt = DateTime.Now
                 };
 
                 if (request.File != null)
                 {
                     var uploadedImage = _fileUtil.AvatarUpload(request.File, "Users");
-                    userEntity.Image = uploadedImage;
+                    userEntity.Image = "Users/"+uploadedImage;
                 }
 
                 _context.Users.Add(userEntity);
@@ -101,106 +119,105 @@ namespace TicketingApi.Controllers.v1.Users
 
                 var currentUser  = _context.Users.FirstOrDefault(e => e.Email == request.Email);
                 
-                foreach (UserRole role in request.UserRoles){
+                foreach (UserRole role in reqUR){
                     UserRole userRoleEntity = new UserRole(){ RoleId = role.RoleId, UserId = currentUser.Id };
                     _context.UserRoles.Add(userRoleEntity);
                 };  
 
-                foreach (var dept in request.UserDepts) {
+                foreach (var dept in reqUD) {
                     UserDept userDeptEntity = new UserDept(){ DepartmentId = dept.DepartmentId, UserId = currentUser.Id };
                     _context.UserDepts.Add(userDeptEntity);
                 }
-
-            //     ICollection<UserRole> UserRoleSerialize = JsonConvert.DeserializeObject<ICollection<UserRole>>(UserRoles);
-            //     foreach (var role in UserRoleSerialize)
-            //     {
-            //         UserRole userRoleEntity = new UserRole(){ RoleId = role.RoleId, UserId = currentUser.Id };
-            //         _context.UserRoles.Add(userRoleEntity);
-            //     }            
-
-            //  ICollection<UserDept> UserDeptSerialize = JsonConvert.DeserializeObject<ICollection<UserDept>>(UserDepts);
-            //     foreach (var dept in UserDeptSerialize)
-            //     {
-            //         UserDept userDeptEntity = new UserDept(){ DepartmentId = dept.DepartmentId, UserId = currentUser.Id };
-            //         _context.UserDepts.Add(userDeptEntity);
-            //     }
-       
+                
+                List<string> listMailTo = new List<string>();
+                listMailTo.Add(request.Email);
+                  _mailUtil.SendEmailWelcomeAsync(
+                        new MailType {
+                            ToEmail=listMailTo,
+                            Subject= "Your email has been registered in Epsylon Ticketing",
+                            UserFullName = request.FirstName + " " + request.LastName,
+                            WelcomeEmail = request.Email,
+                            WelcomePass = request.Password,
+                            ButtonLink =  _config.GetSection("HomeSite").Value + "admin/login",
+                        }
+                    );
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok();
             }
             catch (System.Exception e)
             {
+                transaction.Rollback();
                return BadRequest(e.Message);
             }                
         }
 
         [HttpPost("{id}")]
         [Authorize]
-        public IActionResult PutUser(int id,[FromBody]User request)
+        public IActionResult PutUser(int id,[FromForm]User request, [FromForm]string UserRoles,  [FromForm]string UserDepts)
         {
+            var transaction =  _context.Database.BeginTransaction();
             try
             {
-                 var userExist =  _context.Users
-                        .Where(e => e.Id == id)
-                        .FirstOrDefault();
+            //    var hasSuper = _context.UserRoles.Where(w => w.UserId == id && w.RoleId == 1).FirstOrDefault();
+            //    if(hasSuper == null) { return BadRequest("You have not access !"); }
+                 var userExist =  _context.Users.Where(e => e.Id == id) .FirstOrDefault();
                 
-                if (userExist == null)
-                {
+                if (userExist == null) {
                     return NotFound("User Not Found !");
                 }
 
-                var transaction =  _context.Database.BeginTransaction();
-            
                 userExist.FirstName = request.FirstName;
                 userExist.LastName = request.LastName;
                 userExist.Email = request.Email;
                 userExist.UpdatedAt = DateTime.Now;
-
-                // var salt =  CryptoUtil.GenerateSalt();
-                //  userExist.Salt = salt;
-                var pass = request.FirstName.ToLower()+request.LastName.ToLower();
-                 userExist.Password =  CryptoUtil.HashMultiple(pass, request.Salt);
-
-                // if (string.IsNullOrEmpty(request.Password) == false)
-                // {
-                //      var salt =  CryptoUtil.GenerateSalt();
-                //      userExist.Salt = salt;
-                //      userExist.Password =  CryptoUtil.HashMultiple(request.Password, salt);
-                // }
+                if (string.IsNullOrEmpty(request.Password) == false)
+                {
+                     var salt =  CryptoUtil.GenerateSalt();
+                     userExist.Salt = salt;
+                     userExist.Password =  CryptoUtil.HashMultiple(request.Password, salt);
+                }
               
-                // if (request.File != null)
-                // {
-                //   var isRemovedImage = _fileUtil.Remove(userExist.Image);
-                //   if(isRemovedImage){
-                //     var uploadedImage = _fileUtil.AvatarUpload(request.File, "Users");
-                //     userExist.Image = uploadedImage;  
-                //   }
-                // }
+                if (request.File != null)
+                {
+                  var isRemovedImage = _fileUtil.Remove(userExist.Image);
+                  if(isRemovedImage){
+                    var uploadedImage = _fileUtil.AvatarUpload(request.File, "Users");
+                    userExist.Image = "Users/"+uploadedImage;  
+                  }
+                }
            
-                // _context.SaveChanges();
+                 _context.SaveChanges();
+
+                IList<UserRole> reqUR =  JsonConvert.DeserializeObject<IList<UserRole>>(UserRoles);
+                IList<UserDept> reqUD =  JsonConvert.DeserializeObject<IList<UserDept>>(UserDepts);
                 
-                // userExist.UserRoles
-                // .Where(eur => !request.UserRoles.Any(mur => mur.RoleId == eur.RoleId))
-                // .ToList()
-                // .ForEach(eur => 
-                //     userExist.UserRoles.Remove(eur)
-                // );
+                var cUR = _context.UserRoles.Where(w => w.UserId == id).ToList(); //get user roles list by id
+                var excludeInReqUR = cUR.Where(eur => !reqUR.Any(mur => mur.RoleId == eur.RoleId)).ToList(); // find cUR data where not exist in reqUR
+                excludeInReqUR.ForEach(eur => {
+                      //  _context.Entry(eur).State = EntityState.Deleted; 
+                    _context.UserRoles.Remove(eur);
+                }); // remove excluded data
+                 _context.SaveChanges();
 
-                // request.UserRoles
-                // .Where(mur => !userExist.UserRoles.Any(eur => eur.RoleId == mur.RoleId))
-                // .ToList()
-                // .ForEach(mur => userExist.UserRoles.Add(new UserRole { RoleId = mur.RoleId, UserId = mur.UserId}));
+                // _context.Entry(cUR).State = EntityState.Added; 
+                var excludeInCUR = reqUR.Where(mur => !cUR.Any(eur => eur.RoleId == mur.RoleId)).ToList();
+                excludeInCUR.ForEach(mur => 
+                {
+                     _context.UserRoles.Add(new UserRole { RoleId = mur.RoleId, UserId = id});
+                });
+                _context.SaveChanges();
 
-                // userExist.UserDepts
-                // .Where(eur => !request.UserDepts.Any(mur => mur.DepartmentId == eur.DepartmentId))
-                // .ToList()
-                // .ForEach(eur => userExist.UserDepts.Remove(eur));
 
-                // request.UserDepts
-                // .Where(mur => !userExist.UserDepts.Any(eur => eur.DepartmentId == mur.DepartmentId))
-                // .ToList()
-                // .ForEach(mur => userExist.UserDepts.Add(new UserDept { DepartmentId = mur.DepartmentId, UserId = mur.UserId}));
+                var cUD = _context.UserDepts.Where(w => w.UserId == id).ToList();
+              //  _context.Entry(cUD).State = EntityState.Deleted; 
+                var excludeInReqUD = cUD.Where(eur => !reqUD.Any(mur => mur.DepartmentId == eur.DepartmentId)).ToList();
+                excludeInReqUD.ForEach(eur => _context.UserDepts.Remove(eur));
+                 _context.SaveChanges();
+
+              //  _context.Entry(cUD).State = EntityState.Added; 
+                var excludeInCUD = reqUD.Where(mur => !cUD.Any(eur => eur.DepartmentId == mur.DepartmentId)).ToList();
+                excludeInCUD.ForEach(mur => _context.UserDepts.Add(new UserDept { DepartmentId = mur.DepartmentId, UserId = id}));
 
                 _context.SaveChanges();
                 transaction.Commit();
@@ -209,6 +226,7 @@ namespace TicketingApi.Controllers.v1.Users
             }
             catch (System.Exception e)
             {
+                transaction.Rollback();
                 return BadRequest(e.Message);
             }
         }
@@ -232,45 +250,42 @@ namespace TicketingApi.Controllers.v1.Users
         [Authorize]
         public IActionResult DeleteUserById(int id)
         {
+            var transaction = _context.Database.BeginTransaction();
+
             try
             {
-               var transaction = _context.Database.BeginTransaction();
-               var userExist =  _context.Users
-                        .Where(e => e.Id == id)
-                        .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
-                        .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
-                        .FirstOrDefault();
+            //   var hasSuper = _context.UserRoles.Where(w => w.Id == id && w.RoleId == 1).FirstOrDefault();
+            //   if(hasSuper == null) {
+            //       return BadRequest("You have not access !");
+            //   }
+
+               var userExist =  _context.Users.Where(e => e.Id == id) .FirstOrDefault();
                 var isRemovedImage = false;
                 if(String.IsNullOrEmpty(userExist.Image) == false){
-                    isRemovedImage = _fileUtil.Remove("Users/"+userExist.Image);
+                    isRemovedImage = _fileUtil.Remove(userExist.Image);
                 }
-               
-                foreach (var itemRole in userExist.UserRoles)
-                {
-                    _context.UserRoles.Remove(itemRole);
-                }
-                foreach (var itemDept in userExist.UserDepts)
-                {
-                    _context.UserDepts.Remove(itemDept);
-                }
+                userExist.Image = null;
+               userExist.Deleted = true;
+                // foreach (var itemRole in userExist.UserRoles)
+                // {
+                //     _context.UserRoles.Remove(itemRole);
+                // }
+                // foreach (var itemDept in userExist.UserDepts)
+                // {
+                //     _context.UserDepts.Remove(itemDept);
+                // }
 
-                _context.Users.Remove(userExist);
+
+               // _context.Users.Remove(userExist);
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok();
             }
             catch (System.Exception e)
             {
-                
+                transaction.Rollback();
                 return BadRequest(e.Message);
             }
-            // [Route("~/api/Delete/{fileName}")]
-            // [Route("~/api/Delete/{isValid:bool}")] 
-            // [Route("~/api/Delete/{fileName}/{isValid}")] 
-            // public  void Delete(string fileName, bool? isValid)
-            // {
-            
-            // }
             
         }  
     }

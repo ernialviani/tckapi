@@ -50,7 +50,7 @@ namespace TicketingApi.Controllers.v1.Authentication
         public IActionResult loginAdmin([FromBody] User user){
             try
             {
-                var existingUser = _context.Users.Where(v => v.Email.Equals(user.Email))
+                var existingUser = _context.Users.Where(v => v.Email.Equals(user.Email) && v.Deleted == false)
                                 .AsNoTracking()
                                 .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
                                 .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
@@ -189,20 +189,20 @@ namespace TicketingApi.Controllers.v1.Authentication
             var bearer = Authorization.Replace("Bearer ", "");
             var token = new JwtSecurityTokenHandler().ReadJwtToken(bearer);
             var email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
-            var existingUser = _context.Users.Where(v => v.Email.Equals(email))
+            var existingUser = _context.Users.Where(v => v.Email.Equals(email) && !v.Deleted)
                                 .AsNoTracking()
                                 .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
                                 .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
                                 .FirstOrDefault();
 
-            if(String.IsNullOrEmpty(existingUser.Image) == false ){
+            if(existingUser != null){
+                  if(existingUser.Deleted) {  return BadRequest("User has been deleted !"); }
+                  if(String.IsNullOrEmpty(existingUser.Image) == false ){
                     var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
                     var filePath = Path.Combine(uploadPath, existingUser.Image);
                     byte[] b = System.IO.File.ReadAllBytes(filePath);
                     userImage = "data:image/png;base64," + Convert.ToBase64String(b);
-            }
-
-            if(existingUser != null){
+                  }
                   return Ok(new {
                         Id             = existingUser.Id,
                         FirstName      = existingUser.FirstName,

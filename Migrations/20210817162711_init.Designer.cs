@@ -10,8 +10,8 @@ using TicketingApi.DBContexts;
 namespace TicketingApi.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20210805092112_Init")]
-    partial class Init
+    [Migration("20210817162711_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -593,13 +593,13 @@ namespace TicketingApi.Migrations
                         {
                             Id = 2,
                             Desc = "",
-                            Name = "Manager"
+                            Name = "Leader"
                         },
                         new
                         {
                             Id = 3,
                             Desc = "",
-                            Name = "Leader"
+                            Name = "Manager"
                         },
                         new
                         {
@@ -673,7 +673,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 419, DateTimeKind.Local).AddTicks(808),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 192, DateTimeKind.Local).AddTicks(4769),
                             Email = "aclientsatu@gmail.com",
                             FirstName = "AClient",
                             Image = "Users/aclientsatu.jpg",
@@ -684,7 +684,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 419, DateTimeKind.Local).AddTicks(808),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 192, DateTimeKind.Local).AddTicks(4789),
                             Email = "bclientdua@gmail.com",
                             FirstName = "BClient",
                             Image = "Users/bclientdua.jpg",
@@ -695,14 +695,14 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 419, DateTimeKind.Local).AddTicks(808),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 192, DateTimeKind.Local).AddTicks(5549),
                             Email = "cclienttiga@gmail.com",
                             FirstName = "CClient",
                             Image = "Users/cclienttiga.jpg",
                             LastName = "Tiga",
                             LoginStatus = true,
-                            Password = "B3791BBAC96A76010B24CC69D5B11C0866755659723F72E161D8E869EEBD5DC343DF310C8AAB52D8B9C4998F6932DC2AA4C2294C2735D818BE2F6C03F11ABA6F",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "7A3E8A48F1AFF97ACBF233B356C5A56EB423AF2FBCC1EE6831B0F4DF1E7F48556017A43E7EBF325F6E9CF8A85AA95905DC581CFF395C1C4EA829A35EEBDC91FA",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         });
                 });
 
@@ -721,9 +721,9 @@ namespace TicketingApi.Migrations
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("desc");
 
-                    b.Property<int>("LeaderId")
+                    b.Property<int>("ManagerId")
                         .HasColumnType("int")
-                        .HasColumnName("leader_id");
+                        .HasColumnName("manager_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -736,7 +736,7 @@ namespace TicketingApi.Migrations
                     b.HasKey("Id")
                         .HasName("PK_Teams");
 
-                    b.HasIndex("LeaderId");
+                    b.HasIndex("ManagerId");
 
                     b.HasIndex("Name")
                         .HasDatabaseName("idx_name");
@@ -748,14 +748,14 @@ namespace TicketingApi.Migrations
                         {
                             Id = 1,
                             Desc = "",
-                            LeaderId = 4,
+                            ManagerId = 4,
                             Name = "TEAM CS1"
                         },
                         new
                         {
                             Id = 2,
                             Desc = "",
-                            LeaderId = 4,
+                            ManagerId = 5,
                             Name = "TEAM PROG1"
                         });
                 });
@@ -828,6 +828,12 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("deleted");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
@@ -873,97 +879,97 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 414, DateTimeKind.Local).AddTicks(803),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(2110),
                             Email = "adminsuper@epsylonhome.com",
                             FirstName = "Admin",
                             Image = "Users/adminsuper.jpg",
                             LastName = "Super",
-                            Password = "63F6C1E4905D242AE2D67F1D0FE11686A93BF41CBA13D731B2846F84AD60826A6A56AA140D774167CB6A54C5E2722E009263BD5068583FE06996222DAA835902",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "E43368C058D8D3222B52EB4CF83A2FD894036AFF6D67FBF964D2D17499BEA35DAEC34D7F1C44050FFB6B34D0B41701E2B402BFCE78AE08EAEF94BB92A67C8817",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
-                            Email = "managercs@epsylonhome.com",
-                            FirstName = "Manager",
-                            Image = "Users/managercs.jpg",
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(4848),
+                            Email = "teamleadcs@epsylonhome.com",
+                            FirstName = "Leader",
+                            Image = "Users/teamleadcs.jpg",
                             LastName = "CS",
-                            Password = "AEC59A8733FD04AB43F50EBB53E731974F1BF3810DBBAB43FB41BC7A7FB3C50E34CE9573C457E9F201E1018BF4AFD0EB172C7AA455A9E298F53F9FC0C2186328",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "F8E909F9EB746B56B56399E040B903C13E2577629D7A57FF9BEFE4C087A6EBAC661D48D91F7DD315FE282E4FC6D2EB4AD9726879053EE5893DA32D197A7F8C89",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
-                            Email = "managerdev@epsylonhome.com",
-                            FirstName = "Manager",
-                            Image = "Users/managerdev.jpg",
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(5369),
+                            Email = "teamleaddev@epsylonhome.com",
+                            FirstName = "Leader",
+                            Image = "Users/teamleaddev.jpg",
                             LastName = "DEV",
-                            Password = "7F5F3410C72E044BBF1AAF9E4E844D20465664A34A3E2FEC40C6AEC4DEE97C57B06A5EBC1059AEDDE272FA9FDFC29D2F34646AA9BC4EC9DC8DCF23FB0EED0887",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "434C1F12CDA9C087754983FC7BAFBA0BF9928EDA3CE1A23A7111068A698E694196E2703A826A7A18523A8979001DC8AF056BDF0C2D4EEADF358F922A1A50BF5A",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
-                            Email = "teamleadcs@epsylonhome.com",
-                            FirstName = "Teamlead",
-                            Image = "Users/teamleadcs.jpg",
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(5907),
+                            Email = "managercs@epsylonhome.com",
+                            FirstName = "Manager",
+                            Image = "Users/managercs.jpg",
                             LastName = "CS",
-                            Password = "B0D4E22452BF49BF4E62BE095B1CBDE5AD75DAE6EFE8BD0FBC5C805E1096AC0E734A22985AB24002378BB537EC228F9EC7AA3C9B1891213E13E09AFA2515CAF8",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "7F72F5ECB5974C08B13A9931639021CB1A8487FCAF358AFCDC0EA3A728734796C90DF5E58CA4B5F5BA62DA29D75658451C0107FBE5850C1FFCE6C15E855CC021",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
-                            Email = "teamleaddev@epsylonhome.com",
-                            FirstName = "Teamlead",
-                            Image = "Users/teamleaddev.jpg",
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(6414),
+                            Email = "managerdev@epsylonhome.com",
+                            FirstName = "Manager",
+                            Image = "Users/managerdev.jpg",
                             LastName = "DEV",
-                            Password = "F3E5E1034FDB094D2817C7BEFDCBA117BFE88D467B9D3FE4783D0D9D95E6842009E61988C237A649BAC7E8D96BE91A8515D25AB2007510C3F689AA03ECC4ABC2",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "EDBBD8F51B34ECA2FF307AD7722D2397F8DAACB474170546A5B004B1AD23F0981954851CBFB7700CB9A7AE80A18A5DF4AE7D13BB61CBF21BD70583D662F3BD8B",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(6984),
                             Email = "ausercs1@epsylonhome.com",
                             FirstName = "AUser",
                             LastName = "CS1",
-                            Password = "FEC2B15B18A15091D91E67971ADCAC76C1C6F6BE94E010162EAAB09C4BB89B6166E7D0C3A089BFA27170A4BFD60F60A75CFD5719C028FEA2251BDD762488FF6A",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "BC821F48E9DCC8E96EFCFCCD7D16078A48EDB84A381A10D42A1EBDA567DB733A827B559698CBE1EF23C013EBE497D08CA111034CD0CED5D08B4C5EE1329216AC",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(9313),
                             Email = "buserdev1@epsylonhome.com",
                             FirstName = "BUser",
                             LastName = "DEV1",
-                            Password = "5014539BD8295164C15128F657424078F116A42CDCECC39B9899D4A36BF35AC9D1F75534BBD1CABC0DE199602BEAB334CBADEC92DE62A17F2C2A465168985064",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "22EC875439A30004E61FEC45F99760D462B009EEC6BD2F340A160918F89D38947C7C9563EE685DB78AC835DC71D624666D3C5A5A068B22DABE9DA65DA16BEB15",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(9827),
                             Email = "cusercs2@epsylonhome.com",
                             FirstName = "CUser",
                             LastName = "CS2",
-                            Password = "43899744D963D451C865A38B7B1E64210E5CC6E30E24950603AD95273D69EABCEFFCF2983C27D85FBB578E7F03B7A87B0D87D0D205396DB3B3BF83A90ACA695C",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "383B1C92EA059ACDD13F33F985400F159C2B5C44E45149ACB9145417EBC6ED6708F752AE88B03DEA7A9232B65E72310442947062028D08D7914DF0890D6363B5",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2021, 8, 5, 16, 21, 11, 415, DateTimeKind.Local).AddTicks(804),
+                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 187, DateTimeKind.Local).AddTicks(334),
                             Email = "duserdev2@epsylonhome.com",
                             FirstName = "DUser",
                             LastName = "DEV2",
-                            Password = "8EA57E6D9FC4F61A9C39E2B6F07E7CD7CBE8AEDC43887FDEDD0CFE3657A56F89AB576E586A544666FA24EB6E995BCD9B1A3999B2491AF5A41B0E35D15FED3E63",
-                            Salt = "d8963f7c-36ad-476a-9874-7762802ebd5b"
+                            Password = "3C078BF7812F18247F5879F8EDCDEE56394B5BAE5E8936A612A5E2DFB221F6FD3C063A6E8C5CA0F77BBC05E3B9B51DF6D232F04D5D2BAEC689CD27FFFEFC328F",
+                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
                         });
                 });
 
@@ -1246,13 +1252,13 @@ namespace TicketingApi.Migrations
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.Team", b =>
                 {
-                    b.HasOne("TicketingApi.Models.v1.Users.User", "Leader")
+                    b.HasOne("TicketingApi.Models.v1.Users.User", "Manager")
                         .WithMany("Teams")
-                        .HasForeignKey("LeaderId")
+                        .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Leader");
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.TeamMember", b =>

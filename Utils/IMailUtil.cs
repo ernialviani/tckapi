@@ -9,6 +9,8 @@ namespace TicketingApi.Utils
     public interface IMailUtil
     {
            Task SendEmailAsync(MailType mailType);
+
+            Task SendEmailWelcomeAsync(MailType mailType);
            Task SendEmailPostCommentAsync(MailType mailType);
            Task SendEmailPostCommentForClientAsync(MailType mailType);
            

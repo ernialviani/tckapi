@@ -33,14 +33,15 @@ namespace TicketingApi.Controllers.v1.Users
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
           var allTeam = _context.Teams.AsNoTracking()
-                        .Include(s => s.Leader)
+                        .Include(s => s.Manager)
                         .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
                         .Select(s => new {
                             s.Id, s.Name, s.Desc, s.CreatedAt,
-                            Leader = new { s.Leader.Id, s.Leader.FirstName, s.Leader.LastName, s.Leader.Email, s.Leader.Image, s.Leader.Color },
+                            Leader = new { s.Manager.Id, s.Manager.FirstName, s.Manager.LastName, s.Manager.Email, s.Manager.Image, s.Manager.Color },
                             TeamMembers = s.TeamMembers == null ? null : s.TeamMembers.Select( tm => new {
                                 tm.Id,
                                 tm.TeamId,
+                                tm.UserId,
                                 Users = new {  tm.Users.Id, tm.Users.FirstName, tm.Users.LastName, tm.Users.Email, tm.Users.Image, tm.Users.Color }
                             })
                         });
@@ -82,7 +83,7 @@ namespace TicketingApi.Controllers.v1.Users
                 {   
                     Name = request.Name,
                     Desc = request.Desc,
-                    LeaderId = request.LeaderId,
+                    ManagerId = request.ManagerId,
                     CreatedAt = DateTime.Now
                 };
 
@@ -113,7 +114,7 @@ namespace TicketingApi.Controllers.v1.Users
             
                 teamExist.Name = request.Name;
                 teamExist.Desc = request.Desc;
-                teamExist.LeaderId = request.LeaderId;
+                teamExist.ManagerId = request.ManagerId;
                 teamExist.UpdatedAt = DateTime.Now;
            
                 _context.SaveChanges();

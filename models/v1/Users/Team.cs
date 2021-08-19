@@ -11,10 +11,10 @@ namespace TicketingApi.Models.v1.Users
         public string Name {get;set;}
         public string Desc {get;set;}
 
-        public int LeaderId {get; set;}
+        public int ManagerId {get; set;}
 
-        [ForeignKey("LeaderId")]
-        public User Leader {get;set;}
+     //   [ForeignKey("ManagerId")]
+        public User Manager {get;set;}
 
         public DateTime? CreatedAt {get;  set;}
         public DateTime? UpdatedAt {get; set;}
