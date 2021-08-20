@@ -236,6 +236,9 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Team>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<Team>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();   
             modelBuilder.Entity<Team>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("nvarchar(150)").IsRequired(false);  
+            modelBuilder.Entity<Team>().Ignore(u => u.File);
+            modelBuilder.Entity<Team>().Property(u => u.Image).HasColumnName("image").HasColumnType("nvarchar(150)").IsRequired(false);  
+            modelBuilder.Entity<Team>().Property(u => u.CreateBy).HasColumnName("created_by").HasColumnType("nvarchar(150)").IsRequired(false);  
             modelBuilder.Entity<Team>().Property(u => u.ManagerId).HasColumnName("manager_id").HasColumnType("int").IsRequired();   
 
             modelBuilder.Entity<Team>().HasData(

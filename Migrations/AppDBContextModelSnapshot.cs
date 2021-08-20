@@ -671,7 +671,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 192, DateTimeKind.Local).AddTicks(4769),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 585, DateTimeKind.Local).AddTicks(6271),
                             Email = "aclientsatu@gmail.com",
                             FirstName = "AClient",
                             Image = "Users/aclientsatu.jpg",
@@ -682,7 +682,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 192, DateTimeKind.Local).AddTicks(4789),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 585, DateTimeKind.Local).AddTicks(6299),
                             Email = "bclientdua@gmail.com",
                             FirstName = "BClient",
                             Image = "Users/bclientdua.jpg",
@@ -693,14 +693,14 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 192, DateTimeKind.Local).AddTicks(5549),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 585, DateTimeKind.Local).AddTicks(7131),
                             Email = "cclienttiga@gmail.com",
                             FirstName = "CClient",
                             Image = "Users/cclienttiga.jpg",
                             LastName = "Tiga",
                             LoginStatus = true,
-                            Password = "7A3E8A48F1AFF97ACBF233B356C5A56EB423AF2FBCC1EE6831B0F4DF1E7F48556017A43E7EBF325F6E9CF8A85AA95905DC581CFF395C1C4EA829A35EEBDC91FA",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "CC2B6C625479F3D46DF932E9AED054E37C1690920FE318F83850AED3339CCE739FEE7E88D2415AF17929C39102920C5169E06BB9AB18227E26E772C57F063244",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         });
                 });
 
@@ -712,12 +712,20 @@ namespace TicketingApi.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("CreateBy")
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("created_by");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Desc")
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("desc");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("image");
 
                     b.Property<int>("ManagerId")
                         .HasColumnType("int")
@@ -877,97 +885,97 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(2110),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(192),
                             Email = "adminsuper@epsylonhome.com",
                             FirstName = "Admin",
                             Image = "Users/adminsuper.jpg",
                             LastName = "Super",
-                            Password = "E43368C058D8D3222B52EB4CF83A2FD894036AFF6D67FBF964D2D17499BEA35DAEC34D7F1C44050FFB6B34D0B41701E2B402BFCE78AE08EAEF94BB92A67C8817",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "2E2E97B8897A0383FCA237064BB03BDD6F3E2FA7C87055ACC37629517A321445C9976A98F0A7BEAEE547C7D6F61752289C771209286E92B70F79516405E56D33",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(4848),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(3143),
                             Email = "teamleadcs@epsylonhome.com",
                             FirstName = "Leader",
                             Image = "Users/teamleadcs.jpg",
                             LastName = "CS",
-                            Password = "F8E909F9EB746B56B56399E040B903C13E2577629D7A57FF9BEFE4C087A6EBAC661D48D91F7DD315FE282E4FC6D2EB4AD9726879053EE5893DA32D197A7F8C89",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "F3E800DEF95815AA74AB4AC1FAD644CC3328AE0C4597E8E7730ABA62963FD2F8D860753A50CD2AA4BE6F5F536D65F5EC70D0E3519072B8A8D917E67710614DC2",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(5369),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(3664),
                             Email = "teamleaddev@epsylonhome.com",
                             FirstName = "Leader",
                             Image = "Users/teamleaddev.jpg",
                             LastName = "DEV",
-                            Password = "434C1F12CDA9C087754983FC7BAFBA0BF9928EDA3CE1A23A7111068A698E694196E2703A826A7A18523A8979001DC8AF056BDF0C2D4EEADF358F922A1A50BF5A",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "FB3FBB466677BE4E02DC299CE8DDD1AA1AAAB36789C34BF4A38356A6E6263B2286CDECAB90A0FDD14CCFC118BB129BC0C55583DBB493FAE68A1A8F6CDE461718",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(5907),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(4182),
                             Email = "managercs@epsylonhome.com",
                             FirstName = "Manager",
                             Image = "Users/managercs.jpg",
                             LastName = "CS",
-                            Password = "7F72F5ECB5974C08B13A9931639021CB1A8487FCAF358AFCDC0EA3A728734796C90DF5E58CA4B5F5BA62DA29D75658451C0107FBE5850C1FFCE6C15E855CC021",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "E449AC1B80EB4633ACA3CDC1CBF48C439F5D9891DE072CB681B60CCC1B70E30BCDC5B49863E588F81C4ED99607738EC996F335A4E03C8E36259384247254F564",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(6414),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(4687),
                             Email = "managerdev@epsylonhome.com",
                             FirstName = "Manager",
                             Image = "Users/managerdev.jpg",
                             LastName = "DEV",
-                            Password = "EDBBD8F51B34ECA2FF307AD7722D2397F8DAACB474170546A5B004B1AD23F0981954851CBFB7700CB9A7AE80A18A5DF4AE7D13BB61CBF21BD70583D662F3BD8B",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "3D7ADB3B7DD5E184440D74A134B9696910F5759EA9D2136A0C4AF41E0113AD7640DA782F1C88AFE5B4C8FF59F6B46A7115E8CCFBEFF20F20A87630E18497BE95",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(6984),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(5192),
                             Email = "ausercs1@epsylonhome.com",
                             FirstName = "AUser",
                             LastName = "CS1",
-                            Password = "BC821F48E9DCC8E96EFCFCCD7D16078A48EDB84A381A10D42A1EBDA567DB733A827B559698CBE1EF23C013EBE497D08CA111034CD0CED5D08B4C5EE1329216AC",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "8D812D7A01EC08A05B1A5C11C95F544729FA7A13E032C99EEC7481970191FBE10533028E1CE1B05001B361C7B17355CA113EEF147BA7C5E79F02B0E6B3F34E55",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(9313),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(7710),
                             Email = "buserdev1@epsylonhome.com",
                             FirstName = "BUser",
                             LastName = "DEV1",
-                            Password = "22EC875439A30004E61FEC45F99760D462B009EEC6BD2F340A160918F89D38947C7C9563EE685DB78AC835DC71D624666D3C5A5A068B22DABE9DA65DA16BEB15",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "FACE11E8472C87A9415DC657BD8546485804CAADFC4A6F1855C988BBCE76E8F66942E425A3DE3AA4099B9FE23787FD3A465AA75DA1795C5257A2BCCAE7CC0534",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 186, DateTimeKind.Local).AddTicks(9827),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(8222),
                             Email = "cusercs2@epsylonhome.com",
                             FirstName = "CUser",
                             LastName = "CS2",
-                            Password = "383B1C92EA059ACDD13F33F985400F159C2B5C44E45149ACB9145417EBC6ED6708F752AE88B03DEA7A9232B65E72310442947062028D08D7914DF0890D6363B5",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "00E3742B77A68F33B561334C44C079F080CCDF78B1C191D94C40DB40679681BB8DF3C0155DCDA58FF44851BA5677CA58D02364067F0FE050073F30BAFC4603CA",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2021, 8, 17, 23, 27, 10, 187, DateTimeKind.Local).AddTicks(334),
+                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(8727),
                             Email = "duserdev2@epsylonhome.com",
                             FirstName = "DUser",
                             LastName = "DEV2",
-                            Password = "3C078BF7812F18247F5879F8EDCDEE56394B5BAE5E8936A612A5E2DFB221F6FD3C063A6E8C5CA0F77BBC05E3B9B51DF6D232F04D5D2BAEC689CD27FFFEFC328F",
-                            Salt = "07d81016-8b37-42ff-8f0a-489ebde74047"
+                            Password = "DF080BCE00C6F11AD40124374366AB1A200691FED90D4FB5E1CB7DCDCF630556CF194F0265FB7ED7664DE9512FDDEF416ACA635B7BD09D135C81A02D91B0D56F",
+                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
                         });
                 });
 
