@@ -36,15 +36,15 @@ namespace TicketingApi.Controllers.v1.Users
                         .Include(s => s.Manager)
                         .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
                         .Select(s => new {
-                            s.Id, s.Name, s.Desc, s.CreatedAt,
-                            Leader = new { s.Manager.Id, s.Manager.FirstName, s.Manager.LastName, s.Manager.Email, s.Manager.Image, s.Manager.Color },
+                            s.Id, s.Name, s.Desc, s.Image, s.Color, s.CreatedAt,
+                            Manager = new { s.Manager.Id, s.Manager.FirstName, s.Manager.LastName, s.Manager.Email, s.Manager.Image, s.Manager.Color },
                             TeamMembers = s.TeamMembers == null ? null : s.TeamMembers.Select( tm => new {
                                 tm.Id,
                                 tm.TeamId,
                                 tm.UserId,
                                 Users = new {  tm.Users.Id, tm.Users.FirstName, tm.Users.LastName, tm.Users.Email, tm.Users.Image, tm.Users.Color }
                             })
-                        });
+                        }).OrderByDescending(e => e.Id);
 
            return Ok(allTeam);
         }
@@ -68,7 +68,7 @@ namespace TicketingApi.Controllers.v1.Users
 
         [HttpPost]
         [Authorize]
-        public IActionResult Create([FromForm]Team request)
+        public IActionResult Create([FromBody]Team request, string Members)
         {
             var exitingsTeam = _context.Teams.FirstOrDefault(e => e.Name == request.Name);
             if(exitingsTeam != null ) {
@@ -79,6 +79,7 @@ namespace TicketingApi.Controllers.v1.Users
                
             try
             {
+
                 Team teamEntity = new Team()
                 {   
                     Name = request.Name,
@@ -89,11 +90,22 @@ namespace TicketingApi.Controllers.v1.Users
 
                 _context.Teams.Add(teamEntity);
                 _context.SaveChanges();
+
+                 var cTeam = _context.Teams.Where(w => w.Name == request.Name).FirstOrDefault();
+                 foreach (var member in request.TeamMembers)
+                 {
+                     _context.TeamMembers.Add(new TeamMember(){
+                         TeamId = cTeam.Id,
+                         UserId = member.UserId
+                      });
+                      _context.SaveChanges();
+                 }
                 transaction.Commit();
                 return Ok(teamEntity);
             }
             catch (System.Exception e)
             {
+                transaction.Rollback();
                return BadRequest(e.Message);
             }                
         }

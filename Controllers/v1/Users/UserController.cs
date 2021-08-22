@@ -61,7 +61,7 @@ namespace TicketingApi.Controllers.v1.Users
                            s.UpdatedAt,
                            Teams = s.Teams.Select(st => new { st.Id, st.Name, st.Desc, st.ManagerId, st.TeamMembers  }).Where(w => w.ManagerId.Equals(s.Id) || w.TeamMembers.Any(a => a.UserId == s.Id) )
                            //|| w.TeamMembers.Any(a => a.UserId == s.Id)
-                        });
+                        }).OrderByDescending(e => e.Id);
            return Ok(allUser);
         }
 

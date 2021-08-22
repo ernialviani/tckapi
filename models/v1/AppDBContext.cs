@@ -240,6 +240,9 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Team>().Property(u => u.Image).HasColumnName("image").HasColumnType("nvarchar(150)").IsRequired(false);  
             modelBuilder.Entity<Team>().Property(u => u.CreateBy).HasColumnName("created_by").HasColumnType("nvarchar(150)").IsRequired(false);  
             modelBuilder.Entity<Team>().Property(u => u.ManagerId).HasColumnName("manager_id").HasColumnType("int").IsRequired();   
+            modelBuilder.Entity<Team>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);  
+            modelBuilder.Entity<Team>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
+            modelBuilder.Entity<Team>().Property(u => u.Color).HasColumnName("color").HasColumnType("nvarchar(45)").IsRequired(false);  
 
             modelBuilder.Entity<Team>().HasData(
                 new { Id = 1, Name = "TEAM CS1", ManagerId=4, Desc = "" },

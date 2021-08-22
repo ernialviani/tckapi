@@ -14,6 +14,7 @@ namespace TicketingApi.Models.v1.Users
         public int ManagerId {get; set;}
         public IFormFile File {get; set;}
         public string Image {get; set;}
+        public string Color {get;set;}
         public string CreateBy {get; set;}
         public DateTime? CreatedAt {get;  set;}
         public DateTime? UpdatedAt {get; set;}
