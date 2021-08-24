@@ -32,7 +32,7 @@ namespace TicketingApi.Controllers.v1.Users
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allTeam = _context.Teams.AsNoTracking()
+          var allTeam = _context.Teams.AsNoTracking().Where(w => w.Deleted == false)
                         .Include(s => s.Manager)
                         .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
                         .Select(s => new {
@@ -154,17 +154,16 @@ namespace TicketingApi.Controllers.v1.Users
             var transaction = _context.Database.BeginTransaction();
             try
             {
-               var teamExist =  _context.Teams
-                        .Where(e => e.Id == id)
-                        .Include(ur => ur.TeamMembers)
-                        .FirstOrDefault();
-               
-                foreach (var itemRole in teamExist.TeamMembers)
+
+               var teamExist =  _context.Teams .Where(e => e.Id == id) .Include(ur => ur.TeamMembers) .FirstOrDefault();
+                   teamExist.Deleted = true;
+
+                var teamMembers = _context.TeamMembers .Where(e => e.TeamId == teamExist.Id);
+                foreach (var member in teamExist.TeamMembers)
                 {
-                    _context.TeamMembers.Remove(itemRole);
+                    member.Deleted = true;
                 }
 
-                _context.Teams.Remove(teamExist);
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok();

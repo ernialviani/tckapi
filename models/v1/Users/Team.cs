@@ -18,6 +18,9 @@ namespace TicketingApi.Models.v1.Users
         public string CreateBy {get; set;}
         public DateTime? CreatedAt {get;  set;}
         public DateTime? UpdatedAt {get; set;}
+
+        public Boolean Deleted {get; set;}
+
          //   [ForeignKey("ManagerId")]
         public User Manager {get;set;}
         public ICollection<TeamMember> TeamMembers {get; set;}

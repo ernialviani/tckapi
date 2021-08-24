@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System;
 
 namespace TicketingApi.Models.v1.Users
 {
@@ -10,6 +11,8 @@ namespace TicketingApi.Models.v1.Users
         public int TeamId {get; set;}
 
         public Team Teams { get; set;}
+
+        public Boolean Deleted {get; set;}
 
         public int UserId {get; set;}
 

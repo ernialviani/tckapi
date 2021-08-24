@@ -10,8 +10,8 @@ using TicketingApi.DBContexts;
 namespace TicketingApi.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20210820033744_Init")]
-    partial class Init
+    [Migration("20210824092125_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -56,25 +56,95 @@ namespace TicketingApi.Migrations
                             Desc = "Integrated Advertising System",
                             Logo = "Apps/Sysad.jpg",
                             Name = "SysAd"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Desc = "",
-                            Name = "App2"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Desc = "",
-                            Name = "App3"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Desc = "",
-                            Name = "APP4"
                         });
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.CLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AppId")
+                        .HasColumnType("int")
+                        .HasColumnName("app_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Desc")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("desc");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int")
+                        .HasColumnName("module_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id")
+                        .HasName("PK_CLog");
+
+                    b.ToTable("clogs");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.Faq", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AppId")
+                        .HasColumnType("int")
+                        .HasColumnName("app_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Desc")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("desc");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int")
+                        .HasColumnName("module_id");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("question");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Faqs");
+
+                    b.ToTable("faqs");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.KBase", b =>
@@ -129,6 +199,10 @@ namespace TicketingApi.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("ClogId")
+                        .HasColumnType("int")
+                        .HasColumnName("clog_id");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(150)")
@@ -139,6 +213,10 @@ namespace TicketingApi.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("file_type");
 
+                    b.Property<int?>("KbaseId")
+                        .HasColumnType("int")
+                        .HasColumnName("kbase_id");
+
                     b.Property<int>("RelId")
                         .HasColumnType("int")
                         .HasColumnName("rel_id");
@@ -148,18 +226,24 @@ namespace TicketingApi.Migrations
                         .HasColumnType("nvarchar(5)")
                         .HasColumnName("rel_type");
 
-                    b.Property<int?>("TicketDetailsId")
-                        .HasColumnType("int");
+                    b.Property<int?>("TicketDetailId")
+                        .HasColumnType("int")
+                        .HasColumnName("ticket_detail_id");
 
-                    b.Property<int?>("TicketsId")
-                        .HasColumnType("int");
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("int")
+                        .HasColumnName("ticket_id");
 
                     b.HasKey("Id")
                         .HasName("PK_Media");
 
-                    b.HasIndex("TicketDetailsId");
+                    b.HasIndex("ClogId");
 
-                    b.HasIndex("TicketsId");
+                    b.HasIndex("KbaseId");
+
+                    b.HasIndex("TicketDetailId");
+
+                    b.HasIndex("TicketId");
 
                     b.ToTable("medias");
                 });
@@ -673,7 +757,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 585, DateTimeKind.Local).AddTicks(6271),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "aclientsatu@gmail.com",
                             FirstName = "AClient",
                             Image = "Users/aclientsatu.jpg",
@@ -684,7 +768,7 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 585, DateTimeKind.Local).AddTicks(6299),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "bclientdua@gmail.com",
                             FirstName = "BClient",
                             Image = "Users/bclientdua.jpg",
@@ -695,14 +779,14 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 585, DateTimeKind.Local).AddTicks(7131),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "cclienttiga@gmail.com",
                             FirstName = "CClient",
                             Image = "Users/cclienttiga.jpg",
                             LastName = "Tiga",
                             LoginStatus = true,
-                            Password = "CC2B6C625479F3D46DF932E9AED054E37C1690920FE318F83850AED3339CCE739FEE7E88D2415AF17929C39102920C5169E06BB9AB18227E26E772C57F063244",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "FAB00430ABE5C0764C96D1F2A274D0C873F546F43876DA1DCE234614AF80D6CF59CF5629B0003BC7D19936F69773F431EA79C970DDB7A512C5DEC70FDC524592",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         });
                 });
 
@@ -714,12 +798,23 @@ namespace TicketingApi.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(45)")
+                        .HasColumnName("color");
+
                     b.Property<string>("CreateBy")
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("created_by");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("deleted");
 
                     b.Property<string>("Desc")
                         .HasColumnType("nvarchar(150)")
@@ -739,7 +834,8 @@ namespace TicketingApi.Migrations
                         .HasColumnName("name");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
                         .HasName("PK_Teams");
@@ -775,6 +871,12 @@ namespace TicketingApi.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("deleted");
 
                     b.Property<int>("TeamId")
                         .HasColumnType("int")
@@ -887,97 +989,97 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(192),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "adminsuper@epsylonhome.com",
                             FirstName = "Admin",
                             Image = "Users/adminsuper.jpg",
                             LastName = "Super",
-                            Password = "2E2E97B8897A0383FCA237064BB03BDD6F3E2FA7C87055ACC37629517A321445C9976A98F0A7BEAEE547C7D6F61752289C771209286E92B70F79516405E56D33",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "407CEFA8AD88C93B16D48CB8303F0585C2F78B93679C6AD301C536DA16A9D1523E20E4AF705AF4EB5A843BB8076B60494B7665C11A18412265948CA475E584E9",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(3143),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "teamleadcs@epsylonhome.com",
                             FirstName = "Leader",
                             Image = "Users/teamleadcs.jpg",
                             LastName = "CS",
-                            Password = "F3E800DEF95815AA74AB4AC1FAD644CC3328AE0C4597E8E7730ABA62963FD2F8D860753A50CD2AA4BE6F5F536D65F5EC70D0E3519072B8A8D917E67710614DC2",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "DDD0453584F966303A636EF96F1035DE28ECD38996ADEA93C10871BCF3DF17F494635C3325ED63080EA907664BB53F1CF3A1A0FBC688B8F87F5E950B85BC5D17",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(3664),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "teamleaddev@epsylonhome.com",
                             FirstName = "Leader",
                             Image = "Users/teamleaddev.jpg",
                             LastName = "DEV",
-                            Password = "FB3FBB466677BE4E02DC299CE8DDD1AA1AAAB36789C34BF4A38356A6E6263B2286CDECAB90A0FDD14CCFC118BB129BC0C55583DBB493FAE68A1A8F6CDE461718",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "FBB9D3BFF4322EF2898162853C53A969250C11F81B8BFFBF6ED45CF00F2C56D1FC59D8C6C639243345C37CABBB40E14651DBD312239DC66432F3CBDC12E78FEE",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(4182),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "managercs@epsylonhome.com",
                             FirstName = "Manager",
                             Image = "Users/managercs.jpg",
                             LastName = "CS",
-                            Password = "E449AC1B80EB4633ACA3CDC1CBF48C439F5D9891DE072CB681B60CCC1B70E30BCDC5B49863E588F81C4ED99607738EC996F335A4E03C8E36259384247254F564",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "E6986E67760C1A620688ACDE9C70B820BC10F96D6F6E252B3E09911A5FFAD074E910CA1CABE6B172C6A7AF9C930D47F3A6AAC5C5F98A3C7523E06AF668ED0FE1",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(4687),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "managerdev@epsylonhome.com",
                             FirstName = "Manager",
                             Image = "Users/managerdev.jpg",
                             LastName = "DEV",
-                            Password = "3D7ADB3B7DD5E184440D74A134B9696910F5759EA9D2136A0C4AF41E0113AD7640DA782F1C88AFE5B4C8FF59F6B46A7115E8CCFBEFF20F20A87630E18497BE95",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "DC2CEF3CF54A7358E5F78F662047D2ED0ECD6DCE2BDF5750E8E17BDC570183ADB147C7DCB9E901EA8AA13D5E33BCBAF3328E26A9ECCC715A85D860AA90AEF182",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(5192),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ausercs1@epsylonhome.com",
                             FirstName = "AUser",
                             LastName = "CS1",
-                            Password = "8D812D7A01EC08A05B1A5C11C95F544729FA7A13E032C99EEC7481970191FBE10533028E1CE1B05001B361C7B17355CA113EEF147BA7C5E79F02B0E6B3F34E55",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "9D884826B8CB8D177EF68DFE5B72636C9553096B55818B4FCB0EAE5451EDEFAE449A0EE1A36ED6129EFB0342F6E62955836305E3FFE674DD66A894FC417218E7",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(7710),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "buserdev1@epsylonhome.com",
                             FirstName = "BUser",
                             LastName = "DEV1",
-                            Password = "FACE11E8472C87A9415DC657BD8546485804CAADFC4A6F1855C988BBCE76E8F66942E425A3DE3AA4099B9FE23787FD3A465AA75DA1795C5257A2BCCAE7CC0534",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "7E72CE48984272672CF610E5E6EC4118062B8CA4DF74BE35505919BBF6968DA9287024C5F22E2FCDF8BAC5C54D27C9D1A30DF5A17258866896D00809894A8BF4",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(8222),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "cusercs2@epsylonhome.com",
                             FirstName = "CUser",
                             LastName = "CS2",
-                            Password = "00E3742B77A68F33B561334C44C079F080CCDF78B1C191D94C40DB40679681BB8DF3C0155DCDA58FF44851BA5677CA58D02364067F0FE050073F30BAFC4603CA",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "EF7B9AA23F5EA170A0B95BBDDED4FAE5AEA6F2A45D905536B36EC0FFFD25E776921E364DC511C26CEA2567267E6CD237E3BB641A9BAEE9843CF45C88A7AF9E7A",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2021, 8, 20, 10, 37, 43, 578, DateTimeKind.Local).AddTicks(8727),
+                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "duserdev2@epsylonhome.com",
                             FirstName = "DUser",
                             LastName = "DEV2",
-                            Password = "DF080BCE00C6F11AD40124374366AB1A200691FED90D4FB5E1CB7DCDCF630556CF194F0265FB7ED7664DE9512FDDEF416ACA635B7BD09D135C81A02D91B0D56F",
-                            Salt = "93952087-8794-488b-a2be-500ae6e38a16"
+                            Password = "F8C8B2901079DDBE6FB140DBBB203E7A189BC6162386EBA269777A53C1833BA91256BB81AD735FEB0252945EE0013667F887D00CEA138139E4062A0847499DD4",
+                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         });
                 });
 
@@ -1161,13 +1263,21 @@ namespace TicketingApi.Migrations
 
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.Media", b =>
                 {
+                    b.HasOne("TicketingApi.Models.v1.Misc.CLog", null)
+                        .WithMany("Medias")
+                        .HasForeignKey("ClogId");
+
+                    b.HasOne("TicketingApi.Models.v1.Misc.KBase", null)
+                        .WithMany("Medias")
+                        .HasForeignKey("KbaseId");
+
                     b.HasOne("TicketingApi.Models.v1.Tickets.TicketDetail", "TicketDetails")
                         .WithMany("Medias")
-                        .HasForeignKey("TicketDetailsId");
+                        .HasForeignKey("TicketDetailId");
 
                     b.HasOne("TicketingApi.Models.v1.Tickets.Ticket", "Tickets")
                         .WithMany("Medias")
-                        .HasForeignKey("TicketsId");
+                        .HasForeignKey("TicketId");
 
                     b.Navigation("TicketDetails");
 
@@ -1325,6 +1435,16 @@ namespace TicketingApi.Migrations
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.App", b =>
                 {
                     b.Navigation("Modules");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.CLog", b =>
+                {
+                    b.Navigation("Medias");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.KBase", b =>
+                {
+                    b.Navigation("Medias");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Stat", b =>

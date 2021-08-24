@@ -36,7 +36,7 @@ namespace TicketingApi.Controllers.v1.Users
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allTeam = _context.Teams.AsNoTracking()
+          var allTeam = _context.Teams.AsNoTracking().Where(w => w.Deleted == false)
                         .Include(ur => ur.TeamMembers);
            return Ok(allTeam);
         }

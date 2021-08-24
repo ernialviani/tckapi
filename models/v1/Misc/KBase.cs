@@ -16,6 +16,8 @@ namespace TicketingApi.Models.v1.Misc
         public int AppId {get; set;}
         public int ModuleId {get; set;}
 
+        public ICollection<Media> Medias {get; set;}
+
         public DateTime? CreatedAt { get; set;}  
         public DateTime? UpdatedAt { get; set;}  
     }

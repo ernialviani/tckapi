@@ -246,6 +246,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         FileName = "Tickets/"+uploadedFile.FileName,
                         FileType = uploadedFile.FileType,
                         RelId = newTicket.Id,
+                        TicketId = newTicket.Id,
                         RelType = "T"
                     });
                 }
@@ -429,6 +430,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             FileName = "TicketDetails/"+uploadedFile.FileName,
                             FileType = uploadedFile.FileType,
                             RelId = newTd.Id,
+                            TicketDetailId = newTd.Id,
                             RelType = "TD"
                         });
                     }
@@ -841,6 +843,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             FileName = "TicketDetails/"+uploadedFile.FileName,
                             FileType = uploadedFile.FileType,
                             RelId = request.Id,
+                            TicketDetailId = request.Id,
                             RelType = "TD"
                         });
                     }

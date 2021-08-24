@@ -19,7 +19,6 @@ namespace TicketingApi.Models.v1.Tickets
          public DateTime? CreatedAt {get; set;}
          public DateTime? UpdatedAt {get; set;}
 
-         [ForeignKey("RelId") ]
          public ICollection<Media> Medias {get; set;}
 
     }
