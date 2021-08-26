@@ -29,8 +29,7 @@ namespace TicketingApi.Utils
             var filePath = Path.Combine(uploadPath, fileName);
             using (var image = Image.Load(file.OpenReadStream())){
                  image.Mutate(x => x
-                     .Resize(200, 200)
-                     .Grayscale());
+                     .Resize(200, 200));
                 image.Save(filePath);
             }
             return fileName;
