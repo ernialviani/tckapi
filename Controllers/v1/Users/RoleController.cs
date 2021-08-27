@@ -21,63 +21,56 @@ namespace TicketingApi.Controllers.v1.Users
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
-    public class TeamDetailController : ControllerBase
+    public class RoleController: ControllerBase
     {
+ 
         private readonly AppDBContext  _context;
-        public TeamDetailController(AppDBContext context )
+        public RoleController(AppDBContext context )
         {
             _context = context; 
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetTeamDeatails([FromHeader] string Authorization)
+        public IActionResult GetRoles()
         {
-           
-          var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
-      //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allTeam = _context.Teams.AsNoTracking().Where(w => w.Deleted == false)
-                        .Include(ur => ur.TeamMembers);
-           return Ok(allTeam);
+          var allRole = _context.Roles.AsNoTracking();
+           return Ok(allRole);
         }
-
 
         [HttpGet("{id}")]
          [Authorize]
-        public IActionResult GetTeamById(int id)
+        public IActionResult GetRoleById(int id)
         {
-            var teamDetail = _context.TeamMembers.AsNoTracking()
-                        .Where(e => e.Id == id)
-                        .FirstOrDefault();
-            if(teamDetail != null){
-                return Ok(teamDetail);
+            var role = _context.Roles.AsNoTracking() .Where(e => e.Id == id) .FirstOrDefault();
+            if(role != null){
+                return Ok(role);
             }
             return NotFound();
+            
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Create([FromForm]TeamMember request)
+        public IActionResult Create([FromForm]Role request)
         {
-            var exitingsTeam = _context.TeamMembers.FirstOrDefault(e => e.UserId == request.UserId);
-            if(exitingsTeam != null ) {
-                return BadRequest("User already in team");
+            var exitingsRole = _context.Roles.FirstOrDefault(e => e.Name == request.Name);
+            if(exitingsRole != null ) {
+                return BadRequest("Role already in exists");
             }
             
             var transaction =  _context.Database.BeginTransaction();
-               
             try
             {
-                TeamMember teamDetailEntity = new TeamMember()
+                Role roleEntity = new Role()
                 {   
-                    TeamId = request.TeamId,
-                    UserId = request.UserId,
+              
                 };
 
-                _context.TeamMembers.Add(teamDetailEntity);
+                _context.Roles.Add(roleEntity);
                 _context.SaveChanges();
                 transaction.Commit();
-                return Ok(teamDetailEntity);
+                return Ok();
             }
             catch (System.Exception e)
             {
@@ -86,25 +79,21 @@ namespace TicketingApi.Controllers.v1.Users
         }
 
         [HttpPost("{id}")]
-        public IActionResult PutTeam(int id,[FromForm]TeamMember request)
+        public IActionResult PutRole(int id,[FromForm]Role request)
         {
             try
             {
-                 var teamDetailExist =  _context.TeamMembers
-                        .Where(e => e.Id == id)
-                        .FirstOrDefault();
+                var roleExist =  _context.Roles .Where(e => e.Id == id) .FirstOrDefault();
                 
-                if (teamDetailExist == null) { return NotFound("TeamMember Not Found !"); }
+                if (roleExist == null) return NotFound("Role Not Found !");
 
                 var transaction =  _context.Database.BeginTransaction();
             
-                teamDetailExist.TeamId = request.TeamId;
-                teamDetailExist.UserId = request.UserId;
-          
                 _context.SaveChanges();
+    
                 transaction.Commit();
 
-                return Ok(teamDetailExist);
+                return Ok(roleExist);
             }
             catch (System.Exception e)
             {
@@ -114,16 +103,13 @@ namespace TicketingApi.Controllers.v1.Users
 
         [HttpDelete("{id}")]
         [Authorize]
-        public IActionResult DeleteTeamById(int id)
+        public IActionResult DeleteRoleById(int id)
         {
             try
             {
                var transaction = _context.Database.BeginTransaction();
-               var teamDetailExist =  _context.TeamMembers
-                        .Where(e => e.Id == id)
-                        .FirstOrDefault();
-       
-                _context.TeamMembers.Remove(teamDetailExist);
+               var roleExist =  _context.Roles .Where(e => e.Id == id) .FirstOrDefault();
+                _context.Roles.Remove(roleExist);
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok();
@@ -133,7 +119,6 @@ namespace TicketingApi.Controllers.v1.Users
                 
                 return BadRequest(e.Message);
             }
-            
         }  
     }
 }

@@ -23,5 +23,8 @@ namespace TicketingApi.Entities
         public string UserFullName {get; set;}
 
         public string ButtonLink {get; set;}
+
+        public string WelcomeEmail {get; set;}
+        public string WelcomePass {get;set;}
     }
 }

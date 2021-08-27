@@ -15,8 +15,11 @@ namespace TicketingApi.Models.v1.Misc
         public int RelId {get;set;}
         public string RelType {get; set;} //T ticket // TD ticket // F faq // C clog // K kbase
 
+        public int? TicketId {get; set;}
+        public int? TicketDetailId {get; set;}
+        public int? ClogId {get; set;}
+        public int? KbaseId {get; set;}
         public Ticket Tickets {get; set;} 
-
         public TicketDetail TicketDetails {get; set;}
     }
 }

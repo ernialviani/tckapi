@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;  
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
   
 namespace TicketingApi.Models.v1.Users
 {  
@@ -22,10 +23,14 @@ namespace TicketingApi.Models.v1.Users
         public DateTime? CreatedAt { get; set;}  
         public DateTime? UpdatedAt { get; set;}  
 
+        public Boolean Deleted {get; set;}
+
         public ICollection<UserRole> UserRoles {get; set;}
         public ICollection<UserDept> UserDepts {get; set;}
 
+        [ForeignKey("ManagerId")]
         public ICollection<Team> Teams {get; set;}
+        [ForeignKey("UserId")]
         public ICollection<TeamMember> TeamMembers {get; set;}
     }  
 } 

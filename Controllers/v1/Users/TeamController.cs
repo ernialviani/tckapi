@@ -32,18 +32,19 @@ namespace TicketingApi.Controllers.v1.Users
            
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
       //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-          var allTeam = _context.Teams.AsNoTracking()
-                        .Include(s => s.Leader)
+          var allTeam = _context.Teams.AsNoTracking().Where(w => w.Deleted == false)
+                        .Include(s => s.Manager)
                         .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
                         .Select(s => new {
-                            s.Id, s.Name, s.Desc, s.CreatedAt,
-                            Leader = new { s.Leader.Id, s.Leader.FirstName, s.Leader.LastName, s.Leader.Email, s.Leader.Image, s.Leader.Color },
+                            s.Id, s.Name, s.Desc, s.Image, s.Color, s.ManagerId, s.CreatedAt, s.UpdatedAt,
+                            Manager = new { s.Manager.Id, s.Manager.FirstName, s.Manager.LastName, s.Manager.Email, s.Manager.Image, s.Manager.Color },
                             TeamMembers = s.TeamMembers == null ? null : s.TeamMembers.Select( tm => new {
                                 tm.Id,
                                 tm.TeamId,
+                                tm.UserId,
                                 Users = new {  tm.Users.Id, tm.Users.FirstName, tm.Users.LastName, tm.Users.Email, tm.Users.Image, tm.Users.Color }
                             })
-                        });
+                        }).OrderByDescending(e => e.Id);
 
            return Ok(allTeam);
         }
@@ -67,7 +68,7 @@ namespace TicketingApi.Controllers.v1.Users
 
         [HttpPost]
         [Authorize]
-        public IActionResult Create([FromForm]Team request)
+        public IActionResult Create([FromBody]Team request, string Members)
         {
             var exitingsTeam = _context.Teams.FirstOrDefault(e => e.Name == request.Name);
             if(exitingsTeam != null ) {
@@ -75,31 +76,43 @@ namespace TicketingApi.Controllers.v1.Users
             }
             
             var transaction =  _context.Database.BeginTransaction();
-               
             try
             {
                 Team teamEntity = new Team()
                 {   
                     Name = request.Name,
                     Desc = request.Desc,
-                    LeaderId = request.LeaderId,
+                    ManagerId = request.ManagerId,
                     CreatedAt = DateTime.Now
                 };
 
                 _context.Teams.Add(teamEntity);
                 _context.SaveChanges();
+
+                 var cTeam = _context.Teams.Where(w => w.Name == request.Name).FirstOrDefault();
+                 foreach (var member in request.TeamMembers)
+                 {
+                     _context.TeamMembers.Add(new TeamMember(){
+                         TeamId = cTeam.Id,
+                         UserId = member.UserId
+                      });
+                      _context.SaveChanges();
+                 }
                 transaction.Commit();
                 return Ok(teamEntity);
             }
             catch (System.Exception e)
             {
+                transaction.Rollback();
                return BadRequest(e.Message);
             }                
         }
 
         [HttpPost("{id}")]
-        public IActionResult PutTeam(int id,[FromForm]Team request)
+        public IActionResult PutTeam(int id,[FromBody]Team request)
         {
+            var transaction =  _context.Database.BeginTransaction();
+
             try
             {
                  var teamExist =  _context.Teams
@@ -108,35 +121,28 @@ namespace TicketingApi.Controllers.v1.Users
                         .FirstOrDefault();
                 
                 if (teamExist == null) { return NotFound("Team Not Found !"); }
-
-                var transaction =  _context.Database.BeginTransaction();
-            
                 teamExist.Name = request.Name;
                 teamExist.Desc = request.Desc;
-                teamExist.LeaderId = request.LeaderId;
+                teamExist.ManagerId = request.ManagerId;
                 teamExist.UpdatedAt = DateTime.Now;
-           
                 _context.SaveChanges();
-                
-                teamExist.TeamMembers
-                .Where(eur => !request.TeamMembers.Any(mur => mur.TeamId == eur.TeamId))
-                .ToList()
-                .ForEach(eur => 
-                    teamExist.TeamMembers.Remove(eur)
-                );
 
-                request.TeamMembers
-                .Where(mur => !teamExist.TeamMembers.Any(eur => eur.TeamId == mur.TeamId))
-                .ToList()
-                .ForEach(mur => teamExist.TeamMembers.Add(new TeamMember { UserId = mur.UserId, TeamId = mur.TeamId}));
-            
+                var cTM = _context.TeamMembers.Where(w => w.TeamId == teamExist.Id).ToList();
+                var excludeInReqTM = cTM.Where(eur => !request.TeamMembers.Any(mur => mur.UserId == eur.UserId)).ToList();
+                excludeInReqTM.ForEach(eur => _context.TeamMembers.Remove(eur));
+                 _context.SaveChanges();
+
+                var excludeInCUD = request.TeamMembers.Where(mur => !cTM.Any(eur => eur.UserId == mur.UserId)).ToList();
+                excludeInCUD.ForEach(mur => _context.TeamMembers.Add(new TeamMember {TeamId = id , UserId = mur.UserId}));
+
                 _context.SaveChanges();
                 transaction.Commit();
 
-                return Ok(teamExist);
+                return Ok();
             }
             catch (System.Exception e)
             {
+                transaction.Rollback();
                 return BadRequest(e.Message);
             }
         }
@@ -145,27 +151,26 @@ namespace TicketingApi.Controllers.v1.Users
         [Authorize]
         public IActionResult DeleteTeamById(int id)
         {
+            var transaction = _context.Database.BeginTransaction();
             try
             {
-               var transaction = _context.Database.BeginTransaction();
-               var teamExist =  _context.Teams
-                        .Where(e => e.Id == id)
-                        .Include(ur => ur.TeamMembers)
-                        .FirstOrDefault();
-               
-                foreach (var itemRole in teamExist.TeamMembers)
+
+               var teamExist =  _context.Teams .Where(e => e.Id == id) .Include(ur => ur.TeamMembers) .FirstOrDefault();
+                   teamExist.Deleted = true;
+
+                var teamMembers = _context.TeamMembers .Where(e => e.TeamId == teamExist.Id);
+                foreach (var member in teamExist.TeamMembers)
                 {
-                    _context.TeamMembers.Remove(itemRole);
+                    member.Deleted = true;
                 }
 
-                _context.Teams.Remove(teamExist);
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok();
             }
             catch (System.Exception e)
             {
-                
+                transaction.Rollback();
                 return BadRequest(e.Message);
             }
             

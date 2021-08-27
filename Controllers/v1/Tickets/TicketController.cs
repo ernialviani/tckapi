@@ -123,7 +123,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                  filtered = allTicket.OrderByDescending(e => e.Id);
             }
             else{
-                 filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u)).OrderByDescending(e => e.Id);;
+                 var activeUser = _context.Users.Where(w=>w.Id == u).FirstOrDefault();
+                 filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u || w.CreatedBy == activeUser.Email )).OrderByDescending(e => e.Id);;
             }
             
            return Ok(filtered);
@@ -245,6 +246,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         FileName = "Tickets/"+uploadedFile.FileName,
                         FileType = uploadedFile.FileType,
                         RelId = newTicket.Id,
+                        TicketId = newTicket.Id,
                         RelType = "T"
                     });
                 }
@@ -428,6 +430,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             FileName = "TicketDetails/"+uploadedFile.FileName,
                             FileType = uploadedFile.FileType,
                             RelId = newTd.Id,
+                            TicketDetailId = newTd.Id,
                             RelType = "TD"
                         });
                     }
@@ -569,7 +572,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             if(cTickets.StatId < 3) { cTickets.StatId = 3; }
                            
                             var team = _context.Teams.Where(w => w.Id == assign.TeamId).FirstOrDefault();
-                            var cUser = _context.Users.Where(w => w.Id == team.LeaderId ).FirstOrDefault();
+                            var cUser = _context.Users.Where(w => w.Id == team.ManagerId ).FirstOrDefault();
                             var app = _context.Apps.Where(w => w.Id == cTickets.AppId).FirstOrDefault();
                             var appModule = _context.Modules.Where(w => w.Id == cTickets.ModuleId).FirstOrDefault();
                             var mgAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "M").FirstOrDefault();
@@ -585,7 +588,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     TicketId = assign.TicketId,
                                     TeamId = assign.TeamId,
                                     TeamAt = DateTime.Now,
-                                    UserId = team.LeaderId,
+                                    UserId = team.ManagerId,
                                     Viewed = false,
                                     AssignType = "T"
                                 });
@@ -840,6 +843,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             FileName = "TicketDetails/"+uploadedFile.FileName,
                             FileType = uploadedFile.FileType,
                             RelId = request.Id,
+                            TicketDetailId = request.Id,
                             RelType = "TD"
                         });
                     }
