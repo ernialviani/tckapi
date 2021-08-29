@@ -124,7 +124,7 @@ namespace TicketingApi.Controllers.v1.Tickets
             }
             else{
                  var activeUser = _context.Users.Where(w=>w.Id == u).FirstOrDefault();
-                 filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u || w.CreatedBy == activeUser.Email )).OrderByDescending(e => e.Id);;
+                 filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u || w.CreatedBy == activeUser.Email )).OrderByDescending(e => e.Id);
             }
             
            return Ok(filtered);
