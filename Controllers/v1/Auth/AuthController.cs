@@ -60,13 +60,15 @@ namespace TicketingApi.Controllers.v1.Authentication
                 if (existingUser != null)
                 {
                     var isPasswordVerified = CryptoUtil.VerifyPassword(user.Password, existingUser.Salt, existingUser.Password);
-                    var firstRole = existingUser.UserRoles.FirstOrDefault();
+                    var firstRole = existingUser.UserRoles.OrderBy(o => o.RoleId).FirstOrDefault();
+
                     
                     if (isPasswordVerified)
                     {
                         var claimList = new List<Claim>();
                         claimList.Add(new Claim(ClaimTypes.Email, existingUser.Email));
-                        claimList.Add(new Claim(ClaimTypes.Role, firstRole.Roles.Name ));
+                        claimList.Add(new Claim(ClaimTypes.Role, firstRole.Roles.Id.ToString()));
+                        // claimList.Add(new Claim("Department", ))
                         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
                         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                         var expireDate = DateTime.UtcNow.AddDays(30);
