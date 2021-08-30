@@ -74,7 +74,21 @@ namespace TicketingApi.Controllers.v1.Users
                         .Where(e => e.Id == id && e.Deleted == false)
                         .Include(ur => ur.UserRoles).ThenInclude(r => r.Roles)
                         .Include(ud => ud.UserDepts).ThenInclude(d => d.Departments)
-                        .FirstOrDefault();
+                        .Include(i => i.Teams).ThenInclude(ti => ti.TeamMembers)
+                        .Select(s => new {
+                           s.Id,
+                           s.FirstName,
+                           s.LastName,
+                           s.Email,
+                           s.Image,
+                           s.Color,
+                           s.UserDepts,
+                           s.UserRoles,
+                           s.CreatedAt,
+                           s.UpdatedAt,
+                           Teams = s.Teams.Select(st => new { st.Id, st.Name, st.Desc, st.ManagerId, st.TeamMembers  }).Where(w => w.ManagerId.Equals(s.Id) || w.TeamMembers.Any(a => a.UserId == s.Id) )
+                           //|| w.TeamMembers.Any(a => a.UserId == s.Id)
+                        }).FirstOrDefault();
                        
             if(user != null){
                 return Ok(user);
