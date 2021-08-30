@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj": {}
+    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj": {
+    "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
+        "projectUniqueName": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj",
         "projectName": "TicketingApi",
-        "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\TicketingApi.csproj",
+        "projectPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\TicketingApi.csproj",
         "packagesPath": "C:\\Users\\Ihsan_pc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\Api\\obj\\",
+        "outputPath": "C:\\Users\\Ihsan_pc\\Documents\\vicky\\ticketing-api\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ihsan_pc\\AppData\\Roaming\\NuGet\\NuGet.Config"
