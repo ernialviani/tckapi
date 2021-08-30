@@ -101,6 +101,67 @@ namespace TicketingApi.Migrations
                     b.ToTable("clogs");
                 });
 
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.ClientDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ClientGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Desc")
+                        .HasColumnType("text")
+                        .HasColumnName("desc");
+
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("domain");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("PK_ClientDetails");
+
+                    b.HasIndex("ClientGroupId");
+
+                    b.ToTable("client_details");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.ClientGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Desc")
+                        .HasColumnType("text")
+                        .HasColumnName("desc");
+
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("domain");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("PK_ClientGroups");
+
+                    b.ToTable("client_groups");
+                });
+
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.Faq", b =>
                 {
                     b.Property<int>("Id")
@@ -306,6 +367,57 @@ namespace TicketingApi.Migrations
                             Desc = "",
                             Name = "Others"
                         });
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.Verification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Desc")
+                        .HasColumnType("text")
+                        .HasColumnName("desc");
+
+                    b.Property<DateTime?>("ExpiredAt")
+                        .IsRequired()
+                        .HasColumnType("datetime")
+                        .HasColumnName("expired_at");
+
+                    b.Property<int?>("SenderId")
+                        .HasColumnType("int")
+                        .HasColumnName("sender_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.Property<bool?>("Verified")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("verified");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Verifications");
+
+                    b.ToTable("verifications");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Stat", b =>
@@ -669,7 +781,7 @@ namespace TicketingApi.Migrations
                         {
                             Id = 1,
                             Desc = "",
-                            Name = "SuperAdmin"
+                            Name = "Super Admin"
                         },
                         new
                         {
@@ -755,36 +867,13 @@ namespace TicketingApi.Migrations
                         new
                         {
                             Id = 1,
+                            Color = "#d9e868",
                             CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "aclientsatu@gmail.com",
                             FirstName = "AClient",
-                            Image = "Users/aclientsatu.jpg",
                             LastName = "Satu",
                             Password = "",
                             Salt = ""
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "bclientdua@gmail.com",
-                            FirstName = "BClient",
-                            Image = "Users/bclientdua.jpg",
-                            LastName = "Dua",
-                            Password = "",
-                            Salt = ""
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "cclienttiga@gmail.com",
-                            FirstName = "CClient",
-                            Image = "Users/cclienttiga.jpg",
-                            LastName = "Tiga",
-                            LoginStatus = true,
-                            Password = "FAB00430ABE5C0764C96D1F2A274D0C873F546F43876DA1DCE234614AF80D6CF59CF5629B0003BC7D19936F69773F431EA79C970DDB7A512C5DEC70FDC524592",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         });
                 });
 
@@ -844,22 +933,6 @@ namespace TicketingApi.Migrations
                         .HasDatabaseName("idx_name");
 
                     b.ToTable("teams");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Desc = "",
-                            ManagerId = 4,
-                            Name = "TEAM CS1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Desc = "",
-                            ManagerId = 5,
-                            Name = "TEAM PROG1"
-                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.TeamMember", b =>
@@ -892,32 +965,6 @@ namespace TicketingApi.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("team_members");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            TeamId = 1,
-                            UserId = 6
-                        },
-                        new
-                        {
-                            Id = 2,
-                            TeamId = 1,
-                            UserId = 8
-                        },
-                        new
-                        {
-                            Id = 3,
-                            TeamId = 2,
-                            UserId = 7
-                        },
-                        new
-                        {
-                            Id = 4,
-                            TeamId = 2,
-                            UserId = 9
-                        });
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Users.User", b =>
@@ -994,90 +1041,6 @@ namespace TicketingApi.Migrations
                             LastName = "Super",
                             Password = "407CEFA8AD88C93B16D48CB8303F0585C2F78B93679C6AD301C536DA16A9D1523E20E4AF705AF4EB5A843BB8076B60494B7665C11A18412265948CA475E584E9",
                             Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "teamleadcs@epsylonhome.com",
-                            FirstName = "Leader",
-                            Image = "Users/teamleadcs.jpg",
-                            LastName = "CS",
-                            Password = "DDD0453584F966303A636EF96F1035DE28ECD38996ADEA93C10871BCF3DF17F494635C3325ED63080EA907664BB53F1CF3A1A0FBC688B8F87F5E950B85BC5D17",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "teamleaddev@epsylonhome.com",
-                            FirstName = "Leader",
-                            Image = "Users/teamleaddev.jpg",
-                            LastName = "DEV",
-                            Password = "FBB9D3BFF4322EF2898162853C53A969250C11F81B8BFFBF6ED45CF00F2C56D1FC59D8C6C639243345C37CABBB40E14651DBD312239DC66432F3CBDC12E78FEE",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "managercs@epsylonhome.com",
-                            FirstName = "Manager",
-                            Image = "Users/managercs.jpg",
-                            LastName = "CS",
-                            Password = "E6986E67760C1A620688ACDE9C70B820BC10F96D6F6E252B3E09911A5FFAD074E910CA1CABE6B172C6A7AF9C930D47F3A6AAC5C5F98A3C7523E06AF668ED0FE1",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "managerdev@epsylonhome.com",
-                            FirstName = "Manager",
-                            Image = "Users/managerdev.jpg",
-                            LastName = "DEV",
-                            Password = "DC2CEF3CF54A7358E5F78F662047D2ED0ECD6DCE2BDF5750E8E17BDC570183ADB147C7DCB9E901EA8AA13D5E33BCBAF3328E26A9ECCC715A85D860AA90AEF182",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "ausercs1@epsylonhome.com",
-                            FirstName = "AUser",
-                            LastName = "CS1",
-                            Password = "9D884826B8CB8D177EF68DFE5B72636C9553096B55818B4FCB0EAE5451EDEFAE449A0EE1A36ED6129EFB0342F6E62955836305E3FFE674DD66A894FC417218E7",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "buserdev1@epsylonhome.com",
-                            FirstName = "BUser",
-                            LastName = "DEV1",
-                            Password = "7E72CE48984272672CF610E5E6EC4118062B8CA4DF74BE35505919BBF6968DA9287024C5F22E2FCDF8BAC5C54D27C9D1A30DF5A17258866896D00809894A8BF4",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "cusercs2@epsylonhome.com",
-                            FirstName = "CUser",
-                            LastName = "CS2",
-                            Password = "EF7B9AA23F5EA170A0B95BBDDED4FAE5AEA6F2A45D905536B36EC0FFFD25E776921E364DC511C26CEA2567267E6CD237E3BB641A9BAEE9843CF45C88A7AF9E7A",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "duserdev2@epsylonhome.com",
-                            FirstName = "DUser",
-                            LastName = "DEV2",
-                            Password = "F8C8B2901079DDBE6FB140DBBB203E7A189BC6162386EBA269777A53C1833BA91256BB81AD735FEB0252945EE0013667F887D00CEA138139E4062A0847499DD4",
-                            Salt = "a38f49ef-23ef-424b-81ed-7e55cc32e512"
                         });
                 });
 
@@ -1113,60 +1076,6 @@ namespace TicketingApi.Migrations
                             Id = 1,
                             DepartmentId = 1,
                             UserId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DepartmentId = 3,
-                            UserId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DepartmentId = 2,
-                            UserId = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DepartmentId = 3,
-                            UserId = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            DepartmentId = 2,
-                            UserId = 4
-                        },
-                        new
-                        {
-                            Id = 6,
-                            DepartmentId = 3,
-                            UserId = 5
-                        },
-                        new
-                        {
-                            Id = 7,
-                            DepartmentId = 2,
-                            UserId = 6
-                        },
-                        new
-                        {
-                            Id = 8,
-                            DepartmentId = 3,
-                            UserId = 7
-                        },
-                        new
-                        {
-                            Id = 9,
-                            DepartmentId = 2,
-                            UserId = 8
-                        },
-                        new
-                        {
-                            Id = 10,
-                            DepartmentId = 3,
-                            UserId = 9
                         });
                 });
 
@@ -1202,61 +1111,18 @@ namespace TicketingApi.Migrations
                             Id = 1,
                             RoleId = 1,
                             UserId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            RoleId = 4,
-                            UserId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            RoleId = 2,
-                            UserId = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            RoleId = 2,
-                            UserId = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            RoleId = 3,
-                            UserId = 4
-                        },
-                        new
-                        {
-                            Id = 6,
-                            RoleId = 3,
-                            UserId = 5
-                        },
-                        new
-                        {
-                            Id = 7,
-                            RoleId = 4,
-                            UserId = 6
-                        },
-                        new
-                        {
-                            Id = 8,
-                            RoleId = 4,
-                            UserId = 7
-                        },
-                        new
-                        {
-                            Id = 9,
-                            RoleId = 4,
-                            UserId = 8
-                        },
-                        new
-                        {
-                            Id = 10,
-                            RoleId = 4,
-                            UserId = 9
                         });
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.ClientDetail", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Misc.ClientGroup", "ClientGroup")
+                        .WithMany("ClientDetails")
+                        .HasForeignKey("ClientGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClientGroup");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.Media", b =>
@@ -1438,6 +1304,11 @@ namespace TicketingApi.Migrations
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.CLog", b =>
                 {
                     b.Navigation("Medias");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Misc.ClientGroup", b =>
+                {
+                    b.Navigation("ClientDetails");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.KBase", b =>

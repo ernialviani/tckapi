@@ -21,6 +21,8 @@ using TicketingApi.Utils;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+
 
 namespace TicketingApi.Controllers.v1.Tickets
 {
@@ -62,16 +64,12 @@ namespace TicketingApi.Controllers.v1.Tickets
         }
 
 
+        #region GET 
+
         [HttpGet]
         [Authorize]
-     // [AllowAnonymous]
-        //  [Authorize(Roles = RoleType.Admin)]
         public IActionResult GetTickets([FromHeader] string Authorization, [FromQuery]int u, [FromQuery]int r)
         {
-           
-      //   var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
-      //    var Role = token.Claims.First(c => c.Type == "Role").Value;
-
           var allTicket = _context.Tickets.AsNoTracking()
                         .Include(t => t.Senders)
                         .Include(t => t.Status)
@@ -183,6 +181,77 @@ namespace TicketingApi.Controllers.v1.Tickets
             }
             return NotFound();
         }
+
+
+        [HttpGet("profile-tickets")]
+        [Authorize]
+        public IActionResult GetProfileTicketByUser([FromHeader] string Authorization){
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+            var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+            var cUser = _context.Users.Where(w => w.Email == Email).FirstOrDefault();
+            try
+            {
+                var ticketAssign = _context.TicketAssigns.AsNoTracking().Where(e => e.UserId == cUser.Id);
+                List<string> ticketss = new List<string>();
+                foreach (var assign in ticketAssign)
+                {
+                    if(!ticketss.Contains(assign.TicketId.ToString())){
+                        ticketss.Add(assign.TicketId.ToString());
+                    }
+                }
+
+                var allTicket = _context.Tickets.AsNoTracking()
+                        .Include(t => t.Senders)
+                        .Include(t => t.Status)
+                        .Include(t => t.TicketDetails).ThenInclude(s => s.Users)
+                        .Include(t => t.TicketAssigns).ThenInclude(s => s.Teams).ThenInclude(s => s.TeamMembers).ThenInclude(s => s.Users)
+                        .Include(t => t.Apps)
+                        .Include(t => t.Modules)
+                        .Include(t => t.Medias)
+                    .Select(e => new {
+                        e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
+                        TicketDetails = e.TicketDetails.Select(t => new { 
+                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
+                            Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "TD"),
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }
+                        }),
+                        TicketAssigns = e.TicketAssigns.Select(t => new { 
+                            t.Id,
+                            t.AssignType, 
+                            Team = t.Teams == null ? null : new { 
+                                t.Teams.Id, 
+                                t.Teams.Name, 
+                                TeamMembers = t.Teams.TeamMembers.Select(td => new {
+                                     td.Id,
+                                     Users = new { 
+                                         UserId = td.Users.Id, 
+                                         td.Users.Email, 
+                                         FullName = td.Users.FirstName + " " + td.Users.LastName, td.Users.Image 
+                                     } 
+                                 })
+                             }, 
+                            t.TeamAt, 
+                            t.UserId,
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
+                            t.UserAt, 
+                            t.Viewed, 
+                            t.ViewedAt
+                        }),
+                        e.Status, e.Apps, e.Modules, e.TicketType,
+                        Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
+                        Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
+                        Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
+                    }).Where(w => ticketss.Contains(w.Id.ToString()));
+
+                return Ok(allTicket);
+            }
+            catch (System.Exception e)
+            {
+                  return BadRequest(e.Message);
+            }
+        }
+
+        #endregion
 
         [HttpPost]
         [Authorize]
@@ -503,7 +572,9 @@ namespace TicketingApi.Controllers.v1.Tickets
         [HttpPost]
         [Authorize]
         [Route("status-update")]
-        public IActionResult TicketStatusUpdate([FromBody]Ticket[] body) {        
+        public IActionResult TicketStatusUpdate([FromBody]Ticket[] body, [FromHeader] string Authorization) {   
+         var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+           var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;     
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
@@ -520,15 +591,15 @@ namespace TicketingApi.Controllers.v1.Tickets
                         }
                         else if(ticket.StatId == 4){
                             cTickets.PendingAt = DateTime.Now;
-                            cTickets.PendingBy = ticket.PendingBy;
+                            cTickets.PendingBy = Email;
                         }
                         else if(ticket.StatId == 5){ //solve
                             cTickets.SolvedAt = DateTime.Now;
-                            cTickets.SolvedBy = ticket.SolvedBy;
+                            cTickets.SolvedBy = Email;
                         }
                         else if(ticket.StatId == 6){
                             cTickets.RejectedAt = DateTime.Now;
-                            cTickets.RejectedBy = ticket.RejectedBy;
+                            cTickets.RejectedBy = Email;
                             cTickets.RejectedReason = ticket.RejectedReason;
                         }
                         _context.SaveChanges();

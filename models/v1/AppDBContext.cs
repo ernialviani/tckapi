@@ -28,9 +28,11 @@ namespace TicketingApi.DBContexts
         public DbSet<KBase> KBases {get; set;} 
         public DbSet<CLog> Clogs {get; set;} 
         public DbSet<Faq> Faqs {get; set;} 
+        public DbSet<ClientGroup> ClientGroups {get; set;} 
+        public DbSet<ClientDetail> ClientDetails {get; set;} 
+        public DbSet<Verification> Verification {get; set;} 
         
         //ticketing
-
         public DbSet<Stat> Stats {get; set;}
         public DbSet<Ticket> Tickets {get; set;}
         public DbSet<TicketAssign> TicketAssigns {get; set;}
@@ -69,29 +71,29 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);  
             modelBuilder.Entity<User>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);  
   
-            var salt =  CryptoUtil.GenerateSalt();
+            var salt =  "a38f49ef-23ef-424b-81ed-7e55cc32e512";
             modelBuilder.Entity<User>().HasData(
                 // admin programmer user
-                new { Id = 1, FirstName = "Admin", LastName = "Super", Email = "adminsuper@epsylonhome.com", Password = CryptoUtil.HashMultiple("adminsuper", salt), Salt=salt, Image="Users/adminsuper.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
+                new { Id = 1, FirstName = "Admin", LastName = "Super", Email = "adminsuper@epsylonhome.com", Password = "407CEFA8AD88C93B16D48CB8303F0585C2F78B93679C6AD301C536DA16A9D1523E20E4AF705AF4EB5A843BB8076B60494B7665C11A18412265948CA475E584E9", Salt=salt, Image="Users/adminsuper.jpg", CreatedAt =  new DateTime(2021, 8, 1) }
                
                 // Leader CS
-                new { Id = 2, FirstName = "Leader", LastName = "CS", Email = "teamleadcs@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleadcs", salt), Salt=salt, Image="Users/teamleadcs.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
-                // Leader Prg           
-                new { Id = 3, FirstName = "Leader", LastName = "DEV", Email = "teamleaddev@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleaddev", salt), Salt=salt,  Image="Users/teamleaddev.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
+                // new { Id = 2, FirstName = "Leader", LastName = "CS", Email = "teamleadcs@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleadcs", salt), Salt=salt, Image="Users/teamleadcs.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
+                // // Leader Prg           
+                // new { Id = 3, FirstName = "Leader", LastName = "DEV", Email = "teamleaddev@epsylonhome.com", Password = CryptoUtil.HashMultiple("teamleaddev", salt), Salt=salt,  Image="Users/teamleaddev.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
 
-                // Manager CS
-                new { Id = 4, FirstName = "Manager", LastName = "CS", Email = "managercs@epsylonhome.com", Password = CryptoUtil.HashMultiple("managercs", salt), Salt=salt, Image="Users/managercs.jpg", CreatedAt =  new DateTime(2021, 8, 1) },              
-                // Manager Prg
-                new { Id = 5, FirstName = "Manager", LastName = "DEV", Email = "managerdev@epsylonhome.com", Password = CryptoUtil.HashMultiple("managerdev", salt), Salt=salt, Image="Users/managerdev.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
+                // // Manager CS
+                // new { Id = 4, FirstName = "Manager", LastName = "CS", Email = "managercs@epsylonhome.com", Password = CryptoUtil.HashMultiple("managercs", salt), Salt=salt, Image="Users/managercs.jpg", CreatedAt =  new DateTime(2021, 8, 1) },              
+                // // Manager Prg
+                // new { Id = 5, FirstName = "Manager", LastName = "DEV", Email = "managerdev@epsylonhome.com", Password = CryptoUtil.HashMultiple("managerdev", salt), Salt=salt, Image="Users/managerdev.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
 
-                //user cs 1
-                new { Id = 6, FirstName = "AUser", LastName = "CS1", Email = "ausercs1@epsylonhome.com", Password = CryptoUtil.HashMultiple("ausercs1", salt), Salt=salt,CreatedAt =  new DateTime(2021, 8, 1) },
-                //user cs2
-                new { Id = 7, FirstName = "BUser", LastName = "DEV1", Email = "buserdev1@epsylonhome.com", Password = CryptoUtil.HashMultiple("buserdev1", salt), Salt=salt, CreatedAt =  new DateTime(2021, 8, 1) },
+                // //user cs 1
+                // new { Id = 6, FirstName = "AUser", LastName = "CS1", Email = "ausercs1@epsylonhome.com", Password = CryptoUtil.HashMultiple("ausercs1", salt), Salt=salt, Color="#32a852",  CreatedAt =  new DateTime(2021, 8, 1) },
+                // //user cs2
+                // new { Id = 7, FirstName = "BUser", LastName = "DEV1", Email = "buserdev1@epsylonhome.com", Password = CryptoUtil.HashMultiple("buserdev1", salt), Salt=salt, Color="#91ebe9", CreatedAt =  new DateTime(2021, 8, 1) },
                
-                new { Id = 8, FirstName = "CUser", LastName = "CS2", Email = "cusercs2@epsylonhome.com", Password = CryptoUtil.HashMultiple("cusercs2", salt), Salt=salt, CreatedAt =  new DateTime(2021, 8, 1) },
+                // new { Id = 8, FirstName = "CUser", LastName = "CS2", Email = "cusercs2@epsylonhome.com", Password = CryptoUtil.HashMultiple("cusercs2", salt), Salt=salt, Color="#93f595", CreatedAt =  new DateTime(2021, 8, 1) },
                
-                new { Id = 9, FirstName = "DUser", LastName = "DEV2", Email = "duserdev2@epsylonhome.com", Password = CryptoUtil.HashMultiple("duserdev2", salt), Salt=salt, CreatedAt =  new DateTime(2021, 8, 1) }
+                // new { Id = 9, FirstName = "DUser", LastName = "DEV2", Email = "duserdev2@epsylonhome.com", Password = CryptoUtil.HashMultiple("duserdev2", salt), Salt=salt, Color="#d9e868", CreatedAt =  new DateTime(2021, 8, 1) }
             );
 
             // Configure relationships  
@@ -105,7 +107,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Role>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("nvarchar(50)").IsRequired(false);
 
             modelBuilder.Entity<Role>().HasData(
-                new { Id = 1, Name = "SuperAdmin", Desc = "" },
+                new { Id = 1, Name = "Super Admin", Desc = "" },
                 new { Id = 2, Name = "Leader", Desc = "" },
                 new { Id = 3, Name = "Manager", Desc = "" },
                 new { Id = 4, Name = "User", Desc = "" }
@@ -134,19 +136,19 @@ namespace TicketingApi.DBContexts
 
              modelBuilder.Entity<UserRole>().HasData(
                 //admin
-                new { Id = 1, UserId = 1, RoleId = 1 },
-                new { Id = 2, UserId = 1, RoleId = 4 },
-                // manager
-                new { Id = 3, UserId = 2, RoleId = 2 },
-                new { Id = 4, UserId = 3, RoleId = 2 },
-                //leader
-                new { Id = 5, UserId = 4, RoleId = 3 },
-                new { Id = 6, UserId = 5, RoleId = 3 },
-                //user
-                new { Id = 7, UserId = 6, RoleId = 4 },
-                new { Id = 8, UserId = 7, RoleId = 4 },
-                new { Id = 9, UserId = 8, RoleId = 4 },
-                new { Id = 10, UserId = 9, RoleId = 4 }
+                new { Id = 1, UserId = 1, RoleId = 1 }
+                // new { Id = 2, UserId = 1, RoleId = 4 },
+                // // manager
+                // new { Id = 3, UserId = 2, RoleId = 2 },
+                // new { Id = 4, UserId = 3, RoleId = 2 },
+                // //leader
+                // new { Id = 5, UserId = 4, RoleId = 3 },
+                // new { Id = 6, UserId = 5, RoleId = 3 },
+                // //user
+                // new { Id = 7, UserId = 6, RoleId = 4 },
+                // new { Id = 8, UserId = 7, RoleId = 4 },
+                // new { Id = 9, UserId = 8, RoleId = 4 },
+                // new { Id = 10, UserId = 9, RoleId = 4 }
             );
 
 
@@ -159,19 +161,19 @@ namespace TicketingApi.DBContexts
 
             modelBuilder.Entity<UserDept>().HasData(
                 //admin
-                new { Id = 1, UserId = 1, DepartmentId = 1 },
-                new { Id = 2, UserId = 1, DepartmentId = 3 },
+                new { Id = 1, UserId = 1, DepartmentId = 1 }
+                // new { Id = 2, UserId = 1, DepartmentId = 3 },
                 //
-                new { Id = 3, UserId = 2, DepartmentId = 2 },
-                new { Id = 4, UserId = 3, DepartmentId = 3 }, 
+                // new { Id = 3, UserId = 2, DepartmentId = 2 },
+                // new { Id = 4, UserId = 3, DepartmentId = 3 }, 
                 
-                new { Id = 5, UserId = 4, DepartmentId = 2 },
-                new { Id = 6, UserId = 5, DepartmentId = 3 },
+                // new { Id = 5, UserId = 4, DepartmentId = 2 },
+                // new { Id = 6, UserId = 5, DepartmentId = 3 },
 
-                new { Id = 7, UserId = 6, DepartmentId = 2 },
-                new { Id = 8, UserId = 7, DepartmentId = 3 },
-                new { Id = 9, UserId = 8, DepartmentId = 2 },
-                new { Id = 10, UserId = 9, DepartmentId = 3 }
+                // new { Id = 7, UserId = 6, DepartmentId = 2 },
+                // new { Id = 8, UserId = 7, DepartmentId = 3 },
+                // new { Id = 9, UserId = 8, DepartmentId = 2 },
+                // new { Id = 10, UserId = 9, DepartmentId = 3 }
             );
 
             modelBuilder.Entity<Sender>().ToTable("senders");  
@@ -192,10 +194,10 @@ namespace TicketingApi.DBContexts
 
         
             modelBuilder.Entity<Sender>().HasData(
-                new { Id = 1, FirstName = "AClient", LastName = "Satu", Email = "aclientsatu@gmail.com", Password = "", Salt="", Image="Users/aclientsatu.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
-                new { Id = 2, FirstName = "BClient", LastName = "Dua", Email = "bclientdua@gmail.com", Password = "", Salt="", Image="Users/bclientdua.jpg", CreatedAt =  new DateTime(2021, 8, 1) },
-                // logedin
-                new { Id = 3, FirstName = "CClient", LastName = "Tiga", Email = "cclienttiga@gmail.com", Password = CryptoUtil.HashMultiple("cclienttiga", salt), Salt=salt, Image="Users/cclienttiga.jpg", LoginStatus=true, CreatedAt =  new DateTime(2021, 8, 1) }
+                new { Id = 1, FirstName = "AClient", LastName = "Satu", Email = "aclientsatu@gmail.com", Password = "", Salt="", Color="#d9e868" , CreatedAt =  new DateTime(2021, 8, 1) }
+                // new { Id = 2, FirstName = "BClient", LastName = "Dua", Email = "bclientdua@gmail.com", Password = "", Salt="", Color="#91ebe9", CreatedAt =  new DateTime(2021, 8, 1) },
+                // // logedin
+                // new { Id = 3, FirstName = "CClient", LastName = "Tiga", Email = "cclienttiga@gmail.com", Password = CryptoUtil.HashMultiple("cclienttiga", salt), Salt=salt, Color="#32a852", LoginStatus=true, CreatedAt =  new DateTime(2021, 8, 1) }
             );
 
 
@@ -242,10 +244,10 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Team>().Property(u => u.Deleted).HasColumnName("deleted").HasColumnType("tinyint(1)").HasDefaultValue(0).IsRequired();
             modelBuilder.Entity<Team>().Property(u => u.Color).HasColumnName("color").HasColumnType("nvarchar(45)").IsRequired(false);  
 
-            modelBuilder.Entity<Team>().HasData(
-                new { Id = 1, Name = "TEAM CS1", ManagerId=4, Desc = "" },
-                new { Id = 2, Name = "TEAM PROG1", ManagerId=5, Desc = "" }
-            );
+            // modelBuilder.Entity<Team>().HasData(
+            //     new { Id = 1, Name = "TEAM CS1", ManagerId=4, Desc = "" },
+            //     new { Id = 2, Name = "TEAM PROG1", ManagerId=5, Desc = "" }
+            // );
 
             modelBuilder.Entity<TeamMember>().ToTable("team_members");   
             modelBuilder.Entity<TeamMember>().HasKey(u => u.Id).HasName("PK_Team_Members");    
@@ -254,12 +256,12 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TeamMember>().Property(u => u.TeamId).HasColumnName("team_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<TeamMember>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
            
-            modelBuilder.Entity<TeamMember>().HasData(
-                new { Id = 1, TeamId = 1, UserId=6},
-                new { Id = 2, TeamId = 1, UserId=8},
-                new { Id = 3, TeamId = 2, UserId=7},
-                new { Id = 4, TeamId = 2, UserId=9}
-            );
+            // modelBuilder.Entity<TeamMember>().HasData(
+            //     new { Id = 1, TeamId = 1, UserId=6},
+            //     new { Id = 2, TeamId = 1, UserId=8},
+            //     new { Id = 3, TeamId = 2, UserId=7},
+            //     new { Id = 4, TeamId = 2, UserId=9}
+            // );
 
             modelBuilder.Entity<Stat>().ToTable("stats");
             modelBuilder.Entity<Stat>().HasKey(u => u.Id).HasName("PK_Stat");  
@@ -399,7 +401,33 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Faq>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Faq>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Faq>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
-       
+
+            modelBuilder.Entity<ClientGroup>().ToTable("client_groups");
+            modelBuilder.Entity<ClientGroup>().HasKey(u => u.Id).HasName("PK_ClientGroups");  
+            modelBuilder.Entity<ClientGroup>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<ClientGroup>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();   
+            modelBuilder.Entity<ClientGroup>().Property(u => u.Domain).HasColumnName("domain").HasColumnType("nvarchar(50)").IsRequired();
+            modelBuilder.Entity<ClientGroup>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
+
+            modelBuilder.Entity<ClientDetail>().ToTable("client_details");
+            modelBuilder.Entity<ClientDetail>().HasKey(u => u.Id).HasName("PK_ClientDetails");  
+            modelBuilder.Entity<ClientDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<ClientDetail>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();   
+            modelBuilder.Entity<ClientDetail>().Property(u => u.Domain).HasColumnName("domain").HasColumnType("nvarchar(50)").IsRequired();
+            modelBuilder.Entity<ClientDetail>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
+         
+            modelBuilder.Entity<Verification>().ToTable("verifications");
+            modelBuilder.Entity<Verification>().HasKey(u => u.Id).HasName("PK_Verifications");  
+            modelBuilder.Entity<Verification>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<Verification>().Property(u => u.Code).HasColumnName("code").HasColumnType("nvarchar(20)").IsRequired();  
+            modelBuilder.Entity<Verification>().Property(u => u.Verified).HasColumnName("verified").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false);
+            modelBuilder.Entity<Verification>().Property(u => u.ExpiredAt).HasColumnName("expired_at").HasColumnType("datetime").IsRequired();
+            modelBuilder.Entity<Verification>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
+            modelBuilder.Entity<Verification>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);
+            modelBuilder.Entity<Verification>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired(false);
+            modelBuilder.Entity<Verification>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
+            modelBuilder.Entity<Verification>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false); 
+        
         }  
     }  
 }  
