@@ -32,6 +32,27 @@ namespace TicketingApi.Controllers.v1.Users
         public IActionResult GetTeams([FromHeader] string Authorization)
         {
            
+          var allTeam = _context.Teams.AsNoTracking()                     
+                        .Include(s => s.Manager).ThenInclude(s => s.UserDepts)
+                        .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
+                        .Select(s => new {
+                            s.Id, s.Name, s.Desc, s.Image, s.Color, s.ManagerId, s.CreatedAt, s.UpdatedAt, s.Deleted,
+                            Manager = new { s.Manager.Id, s.Manager.FirstName, s.Manager.LastName, s.Manager.Email, s.Manager.Image, s.Manager.Color, s.Manager.UserDepts },
+                            TeamMembers = s.TeamMembers == null ? null : s.TeamMembers.Select( tm => new {
+                                tm.Id,
+                                tm.TeamId,
+                                tm.UserId,
+                                Users = new {  tm.Users.Id, tm.Users.FirstName, tm.Users.LastName, tm.Users.Email, tm.Users.Image, tm.Users.Color }
+                            })
+                        }).Where(w => w.Deleted == false).OrderByDescending(e => e.Id);
+           return Ok(allTeam);
+        }
+
+        [HttpGet("setting-teams")]
+        [Authorize]
+        public IActionResult GetSettingTeams([FromHeader] string Authorization)
+        {
+           
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
           var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
           var Role = token.Claims.First(c => c.Type == ClaimTypes.Role).Value;
@@ -89,6 +110,7 @@ namespace TicketingApi.Controllers.v1.Users
                    teams.Add(team.TeamId.ToString());
               }
           }
+          
           var allTeam = _context.Teams.AsNoTracking()                     
                         .Include(s => s.Manager).ThenInclude(s => s.UserDepts)
                         .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
@@ -101,18 +123,22 @@ namespace TicketingApi.Controllers.v1.Users
                                 tm.UserId,
                                 Users = new {  tm.Users.Id, tm.Users.FirstName, tm.Users.LastName, tm.Users.Email, tm.Users.Image, tm.Users.Color }
                             })
-                        }).Where(w => w.Deleted == false && (w.CreateBy == Email || w.ManagerId == cUser.Id || teams.Contains(w.Id.ToString()) ) );
-                        //|| groupTeam.Any(a => a.Key.ToString() == cUser.Id.ToString())
+                        });
 
-        //   IOrderedQueryable filtered = null;
-        //   if(int.Parse(Role) == 2){
-        //     filtered = allTeam.Where(w => w.Deleted == false && w.Manager.UserDepts.Any(a => ListDepts.Contains(a.DepartmentId.ToString()))).OrderByDescending(e => e.Id);
-        //   }
-        //   else {
-        //      filtered = allTeam.OrderByDescending(e => e.Id);
-        //   }
+        
+             IQueryable filtered = null;
+            if(int.Parse(Role) == 2){
+                var Depts  = _context.UserDepts.Where(w => w.UserId == cUser.Id).ToList();
+                List<string> ListDepts = new List<string>();
+                foreach (var dept in Depts) { ListDepts.Add(dept.DepartmentId.ToString()); }
+               filtered = allTeam.Where(w => w.Deleted == false && (w.CreateBy == Email || w.ManagerId == cUser.Id || teams.Contains(w.Id.ToString()) ||  w.Manager.UserDepts.Any(a => ListDepts.Contains(a.DepartmentId.ToString())) ) );
+            }
+            else{
+                filtered = allTeam.Where(w => w.Deleted == false && (w.CreateBy == Email || w.ManagerId == cUser.Id || teams.Contains(w.Id.ToString()) ) );
+            }
+          
 
-           return Ok(allTeam);
+           return Ok(filtered);
         }
 
 
@@ -137,7 +163,7 @@ namespace TicketingApi.Controllers.v1.Users
         {
             var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
             var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
-            var Role = token.Claims.First(c => c.Type == "Role").Value;
+           // var Role = token.Claims.First(c => c.Type == "Role").Value;
             var exitingsTeam = _context.Teams.FirstOrDefault(e => e.Name == request.Name);
             if(exitingsTeam != null ) {
                 return BadRequest("Team Name already in use");

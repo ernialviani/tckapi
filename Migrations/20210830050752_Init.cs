@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TicketingApi.Migrations
 {
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,6 +24,23 @@ namespace TicketingApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Apps", x => x.id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "client_groups",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    name = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    domain = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    desc = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientGroups", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -185,6 +202,28 @@ namespace TicketingApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "verifications",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    code = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    verified = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
+                    expired_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    user_id = table.Column<int>(type: "int", nullable: true),
+                    sender_id = table.Column<int>(type: "int", nullable: true),
+                    desc = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Verifications", x => x.id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "modules",
                 columns: table => new
                 {
@@ -201,6 +240,30 @@ namespace TicketingApi.Migrations
                         name: "FK_modules_apps_app_id",
                         column: x => x.app_id,
                         principalTable: "apps",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "client_details",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ClientGroupId = table.Column<int>(type: "int", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    domain = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    desc = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientDetails", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_client_details_client_groups_ClientGroupId",
+                        column: x => x.ClientGroupId,
+                        principalTable: "client_groups",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -509,8 +572,8 @@ namespace TicketingApi.Migrations
                 {
                     { 4, "", "Other" },
                     { 3, "", "Programmer" },
-                    { 2, "", "CS" },
-                    { 1, "", "Management" }
+                    { 1, "", "Management" },
+                    { 2, "", "CS" }
                 });
 
             migrationBuilder.InsertData(
@@ -518,50 +581,34 @@ namespace TicketingApi.Migrations
                 columns: new[] { "id", "desc", "name" },
                 values: new object[,]
                 {
-                    { 4, "", "User" },
+                    { 1, "", "Super Admin" },
                     { 2, "", "Leader" },
-                    { 1, "", "SuperAdmin" },
-                    { 3, "", "Manager" }
+                    { 3, "", "Manager" },
+                    { 4, "", "User" }
                 });
 
             migrationBuilder.InsertData(
                 table: "senders",
                 columns: new[] { "id", "color", "created_at", "email", "first_name", "image", "last_name", "login_status", "password", "salt", "updated_at" },
-                values: new object[,]
-                {
-                    { 3, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "cclienttiga@gmail.com", "CClient", "Users/cclienttiga.jpg", "Tiga", true, "FAB00430ABE5C0764C96D1F2A274D0C873F546F43876DA1DCE234614AF80D6CF59CF5629B0003BC7D19936F69773F431EA79C970DDB7A512C5DEC70FDC524592", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 2, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "bclientdua@gmail.com", "BClient", "Users/bclientdua.jpg", "Dua", null, "", "", null },
-                    { 1, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "aclientsatu@gmail.com", "AClient", "Users/aclientsatu.jpg", "Satu", null, "", "", null }
-                });
+                values: new object[] { 1, "#d9e868", new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "aclientsatu@gmail.com", "AClient", null, "Satu", null, "", "", null });
 
             migrationBuilder.InsertData(
                 table: "stats",
                 columns: new[] { "id", "color", "desc", "name" },
                 values: new object[,]
                 {
-                    { 6, "Grey", "bg-dark", "Reject" },
-                    { 1, "Red", "bg-danger", "New" },
                     { 5, "Green", "bg-success", "Solve" },
-                    { 2, "Sky", "bg-info", "Open" },
+                    { 6, "Grey", "bg-dark", "Reject" },
                     { 3, "Blue", "bg-primary", "In Progress" },
+                    { 2, "Sky", "bg-info", "Open" },
+                    { 1, "Red", "bg-danger", "New" },
                     { 4, "Yellow", "bg-warning", "Pending" }
                 });
 
             migrationBuilder.InsertData(
                 table: "users",
                 columns: new[] { "id", "color", "created_at", "email", "first_name", "image", "last_name", "password", "salt", "updated_at" },
-                values: new object[,]
-                {
-                    { 1, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "adminsuper@epsylonhome.com", "Admin", "Users/adminsuper.jpg", "Super", "407CEFA8AD88C93B16D48CB8303F0585C2F78B93679C6AD301C536DA16A9D1523E20E4AF705AF4EB5A843BB8076B60494B7665C11A18412265948CA475E584E9", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 2, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "teamleadcs@epsylonhome.com", "Leader", "Users/teamleadcs.jpg", "CS", "DDD0453584F966303A636EF96F1035DE28ECD38996ADEA93C10871BCF3DF17F494635C3325ED63080EA907664BB53F1CF3A1A0FBC688B8F87F5E950B85BC5D17", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 3, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "teamleaddev@epsylonhome.com", "Leader", "Users/teamleaddev.jpg", "DEV", "FBB9D3BFF4322EF2898162853C53A969250C11F81B8BFFBF6ED45CF00F2C56D1FC59D8C6C639243345C37CABBB40E14651DBD312239DC66432F3CBDC12E78FEE", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 4, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "managercs@epsylonhome.com", "Manager", "Users/managercs.jpg", "CS", "E6986E67760C1A620688ACDE9C70B820BC10F96D6F6E252B3E09911A5FFAD074E910CA1CABE6B172C6A7AF9C930D47F3A6AAC5C5F98A3C7523E06AF668ED0FE1", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 5, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "managerdev@epsylonhome.com", "Manager", "Users/managerdev.jpg", "DEV", "DC2CEF3CF54A7358E5F78F662047D2ED0ECD6DCE2BDF5750E8E17BDC570183ADB147C7DCB9E901EA8AA13D5E33BCBAF3328E26A9ECCC715A85D860AA90AEF182", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 6, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ausercs1@epsylonhome.com", "AUser", null, "CS1", "9D884826B8CB8D177EF68DFE5B72636C9553096B55818B4FCB0EAE5451EDEFAE449A0EE1A36ED6129EFB0342F6E62955836305E3FFE674DD66A894FC417218E7", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 7, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "buserdev1@epsylonhome.com", "BUser", null, "DEV1", "7E72CE48984272672CF610E5E6EC4118062B8CA4DF74BE35505919BBF6968DA9287024C5F22E2FCDF8BAC5C54D27C9D1A30DF5A17258866896D00809894A8BF4", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 8, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "cusercs2@epsylonhome.com", "CUser", null, "CS2", "EF7B9AA23F5EA170A0B95BBDDED4FAE5AEA6F2A45D905536B36EC0FFFD25E776921E364DC511C26CEA2567267E6CD237E3BB641A9BAEE9843CF45C88A7AF9E7A", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null },
-                    { 9, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "duserdev2@epsylonhome.com", "DUser", null, "DEV2", "F8C8B2901079DDBE6FB140DBBB203E7A189BC6162386EBA269777A53C1833BA91256BB81AD735FEB0252945EE0013667F887D00CEA138139E4062A0847499DD4", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null }
-                });
+                values: new object[] { 1, null, new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "adminsuper@epsylonhome.com", "Admin", "Users/adminsuper.jpg", "Super", "407CEFA8AD88C93B16D48CB8303F0585C2F78B93679C6AD301C536DA16A9D1523E20E4AF705AF4EB5A843BB8076B60494B7665C11A18412265948CA475E584E9", "a38f49ef-23ef-424b-81ed-7e55cc32e512", null });
 
             migrationBuilder.InsertData(
                 table: "modules",
@@ -575,63 +622,24 @@ namespace TicketingApi.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "teams",
-                columns: new[] { "id", "color", "created_by", "created_at", "desc", "image", "manager_id", "name", "updated_at" },
-                values: new object[,]
-                {
-                    { 2, null, null, null, "", null, 5, "TEAM PROG1", null },
-                    { 1, null, null, null, "", null, 4, "TEAM CS1", null }
-                });
-
-            migrationBuilder.InsertData(
                 table: "user_depatments",
                 columns: new[] { "id", "dept_id", "user_id" },
-                values: new object[,]
-                {
-                    { 1, 1, 1 },
-                    { 3, 2, 2 },
-                    { 9, 2, 8 },
-                    { 4, 3, 3 },
-                    { 10, 3, 9 },
-                    { 5, 2, 4 },
-                    { 8, 3, 7 },
-                    { 2, 3, 1 },
-                    { 6, 3, 5 },
-                    { 7, 2, 6 }
-                });
+                values: new object[] { 1, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "user_roles",
                 columns: new[] { "id", "role_id", "user_id" },
-                values: new object[,]
-                {
-                    { 9, 4, 8 },
-                    { 8, 4, 7 },
-                    { 7, 4, 6 },
-                    { 1, 1, 1 },
-                    { 5, 3, 4 },
-                    { 4, 2, 3 },
-                    { 3, 2, 2 },
-                    { 2, 4, 1 },
-                    { 6, 3, 5 },
-                    { 10, 4, 9 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "team_members",
-                columns: new[] { "id", "team_id", "user_id" },
-                values: new object[,]
-                {
-                    { 1, 1, 6 },
-                    { 2, 1, 8 },
-                    { 3, 2, 7 },
-                    { 4, 2, 9 }
-                });
+                values: new object[] { 1, 1, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "idx_name",
                 table: "apps",
                 column: "name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_client_details_ClientGroupId",
+                table: "client_details",
+                column: "ClientGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "idx_name",
@@ -787,6 +795,9 @@ namespace TicketingApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "client_details");
+
+            migrationBuilder.DropTable(
                 name: "faqs");
 
             migrationBuilder.DropTable(
@@ -803,6 +814,12 @@ namespace TicketingApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "user_roles");
+
+            migrationBuilder.DropTable(
+                name: "verifications");
+
+            migrationBuilder.DropTable(
+                name: "client_groups");
 
             migrationBuilder.DropTable(
                 name: "clogs");
