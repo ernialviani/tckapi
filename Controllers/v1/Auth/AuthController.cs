@@ -128,7 +128,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                 {
                     var claimList = new List<Claim>();
                     claimList.Add(new Claim(ClaimTypes.Name, existingSender.Email));
-                    claimList.Add(new Claim(ClaimTypes.Role, "role"));
+                    // claimList.Add(new Claim(ClaimTypes.Role, "role"));
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecretKey"]));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                     var expireDate = DateTime.UtcNow.AddDays(1);
@@ -147,6 +147,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                         LastName       = existingSender.LastName,
                         Email          = existingSender.Email,
                         Image          = existingSender.Image,
+                        Color          = existingSender.Color
                     });
                 }
                 else {
@@ -173,6 +174,10 @@ namespace TicketingApi.Controllers.v1.Authentication
                 sender.Email = email;
                 sender.Salt = salt;
                 sender.Password = hashedPassword;
+                sender.FirstName = request.FirstName;
+                sender.LastName = request.LastName;
+                sender.LoginStatus = true;
+                sender.Color = request.Color;
                 _context.Senders.Add(sender);
                 _context.SaveChanges();
                 return Ok();
