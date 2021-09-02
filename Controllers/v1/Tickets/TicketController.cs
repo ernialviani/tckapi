@@ -83,7 +83,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         TicketDetails = e.TicketDetails.Select(t => new { 
                             t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
                             Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "TD"),
-                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }
                         }),
                         TicketAssigns = e.TicketAssigns.Select(t => new { 
                             t.Id,
@@ -96,13 +96,15 @@ namespace TicketingApi.Controllers.v1.Tickets
                                      Users = new { 
                                          UserId = td.Users.Id, 
                                          td.Users.Email, 
-                                         FullName = td.Users.FirstName + " " + td.Users.LastName, td.Users.Image 
+                                         FullName = td.Users.FirstName + " " + td.Users.LastName, 
+                                         td.Users.Image,
+                                         td.Users.Color 
                                      } 
                                  })
                              }, 
                             t.TeamAt, 
                             t.UserId,
-                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }, 
                             t.UserAt, 
                             t.Viewed, 
                             t.ViewedAt
@@ -145,7 +147,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         TicketDetails = e.TicketDetails.Select(t => new { 
                             t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
                             Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "TD"),
-                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }
                         }),
                         TicketAssigns = e.TicketAssigns.Select(t => new { 
                             t.Id,
@@ -158,21 +160,21 @@ namespace TicketingApi.Controllers.v1.Tickets
                                      Users = new { 
                                          UserId = td.Users.Id, 
                                          td.Users.Email, 
-                                         FullName = td.Users.FirstName + " " + td.Users.LastName, td.Users.Image 
+                                         FullName = td.Users.FirstName + " " + td.Users.LastName, td.Users.Image, td.Users.Color
                                      } 
                                  })
                              }, 
                             t.TeamAt, 
                             t.UserId,
-                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }, 
                             t.UserAt, 
                             t.Viewed, 
                             t.ViewedAt
                         }),
                         e.Status, e.Apps, e.Modules, e.TicketType,
                  
-                        Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image },
-                        Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image },
+                        Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color = e.Users.Color },
+                        Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color = e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "T")
                     }).FirstOrDefault();
                        
@@ -213,7 +215,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         TicketDetails = e.TicketDetails.Select(t => new { 
                             t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
                             Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "TD"),
-                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }
                         }),
                         TicketAssigns = e.TicketAssigns.Select(t => new { 
                             t.Id,
@@ -226,13 +228,15 @@ namespace TicketingApi.Controllers.v1.Tickets
                                      Users = new { 
                                          UserId = td.Users.Id, 
                                          td.Users.Email, 
-                                         FullName = td.Users.FirstName + " " + td.Users.LastName, td.Users.Image 
+                                         FullName = td.Users.FirstName + " " + td.Users.LastName, 
+                                         td.Users.Image, 
+                                         td.Users.Color
                                      } 
                                  })
                              }, 
                             t.TeamAt, 
                             t.UserId,
-                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image }, 
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }, 
                             t.UserAt, 
                             t.Viewed, 
                             t.ViewedAt
