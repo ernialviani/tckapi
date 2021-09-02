@@ -13,12 +13,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using TicketingApi.DBContexts;
 using TicketingApi.Models.v1.Users;
+using TicketingApi.Models.v1.Misc;
 using Microsoft.AspNetCore.Hosting;
 using TicketingApi.Utils;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
+using TicketingApi.Entities;
+using TicketingApi.Utils;
 
 namespace TicketingApi.Controllers.v1.Authentication
 {
@@ -30,11 +33,14 @@ namespace TicketingApi.Controllers.v1.Authentication
          private readonly IConfiguration _configuration;
          private readonly AppDBContext  _context;
         private readonly IWebHostEnvironment _env;
+          private readonly IMailUtil _mailUtil;
 
-        public AuthController(IConfiguration configuration, AppDBContext context, IWebHostEnvironment env){
+        public AuthController(IConfiguration configuration, AppDBContext context, IWebHostEnvironment env,  IMailUtil mailUtil){
             _configuration = configuration;
             _context = context;
             _env = env;
+            _mailUtil = mailUtil;
+
         }    
 
         [AllowAnonymous]
@@ -162,29 +168,78 @@ namespace TicketingApi.Controllers.v1.Authentication
         [AllowAnonymous]
         [HttpPost]
         [Route("register")]
-        public IActionResult Register([FromBody] Sender request){
+        public IActionResult Register([FromBody] Sender request, [FromQuery] string code){
 
-            if (!_context.Senders.Any(x => x.Email == request.Email))
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                var email = request.Email;
-                var salt = CryptoUtil.GenerateSalt();
-                var password = request.Password;
-                var hashedPassword = CryptoUtil.HashMultiple(password, salt);
-                var sender = new Sender();
-                sender.Email = email;
-                sender.Salt = salt;
-                sender.Password = hashedPassword;
-                sender.FirstName = request.FirstName;
-                sender.LastName = request.LastName;
-                sender.LoginStatus = true;
-                sender.Color = request.Color;
-                _context.Senders.Add(sender);
-                _context.SaveChanges();
-                return Ok();
-            }
-            else
-            {
-                return BadRequest("Email is already in use");
+                try
+                {
+                    var cCode = _context.Verification.Where(w => w.Code == code && w.Email == request.Email).FirstOrDefault();
+                    if(cCode != null){
+                        if(cCode.ExpiredAt < DateTime.Now){ return BadRequest("Verification code expired !"); }
+                        else{ 
+                            cCode.Verified = true; 
+                            _context.SaveChanges();    
+                        }
+                    }
+                    else{
+                        return BadRequest("Verification code not found ");
+                    }
+
+                    var cSender = _context.Senders.Where(x => x.Email == request.Email).FirstOrDefault();
+                    var cClient = _context.ClientDetails.Where(w => request.Email.Contains(w.Domain));
+                    if(cClient == null) {
+                        transaction.Rollback();
+                        return BadRequest("Sorry, Your email not on our client ");
+                    }
+                    if (cSender != null)
+                    {
+                        var email = request.Email;
+                        var salt = CryptoUtil.GenerateSalt();
+                        var password = request.Password;
+                        var hashedPassword = CryptoUtil.HashMultiple(password, salt);
+                        var sender = new Sender();
+                        sender.Email = email;
+                        sender.Salt = salt;
+                        sender.Password = hashedPassword;
+                        sender.FirstName = request.FirstName;
+                        sender.LastName = request.LastName;
+                        sender.LoginStatus = true;
+                        sender.Color = request.Color;
+                        _context.Senders.Add(sender);
+                        _context.SaveChanges();
+                         transaction.Commit();
+                        return Ok();
+                    }
+                    else
+                    {
+                        if( cSender.LoginStatus == false ){
+                            var email = request.Email;
+                            var salt = CryptoUtil.GenerateSalt();
+                            var password = request.Password;
+                            var hashedPassword = CryptoUtil.HashMultiple(password, salt);
+                            cSender.Email = email;
+                            cSender.Salt = salt;
+                            cSender.Password = hashedPassword;
+                            cSender.FirstName = request.FirstName;
+                            cSender.LastName = request.LastName;
+                            cSender.LoginStatus = true;
+                            cSender.Color = request.Color;
+                            _context.SaveChanges();
+                            transaction.Commit();
+                            return Ok();
+                        }
+                        else{
+                            transaction.Rollback();
+                          return BadRequest("Email is already in use");
+                        }
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    transaction.Rollback();
+                    return BadRequest(e.Message);
+                }
             }
         }
 
@@ -221,6 +276,102 @@ namespace TicketingApi.Controllers.v1.Authentication
                     });
             }
             return NotFound();
+        }
+
+
+        public string GenerateRandom4Code(){
+            var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var Charsarr = new char[4];
+            var random = new Random();
+
+            for (int i = 0; i < Charsarr.Length; i++)
+            {
+                Charsarr[i] = characters[random.Next(characters.Length)];
+            }
+
+            var resultString = new String(Charsarr);
+     
+            return resultString;
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("login")]
+        public IActionResult verifyRegisterClientMailCode([FromBody] Verification request){ //CLIENT REGISTER
+
+            var cSender = _context.Senders.Where(v => v.Email.Equals(request.Email)).AsNoTracking().FirstOrDefault();
+            if (cSender != null)
+            {
+                if(cSender.LoginStatus == true){ return BadRequest("Email Already Exists !"); } 
+                else {
+                   
+                    string vCode = "";
+                    
+                    for (int i = 0; i < 3; i++)
+                    {
+                        vCode = GenerateRandom4Code();
+                        var verified = _context.Verification.Where(w => w.Code == vCode).FirstOrDefault();
+                        if(verified == null){ break; } 
+                    }
+                     _context.Verification.Add(new Verification {
+                        Code = vCode,
+                        Verified = false,
+                        ExpiredAt = DateTime.Now.AddMinutes(30),
+                        Email = request.Email,
+                        CreatedAt = DateTime.Now,
+                        Desc = "Register Client"
+                    });
+                    
+                    _context.SaveChanges();
+                    List<string> listMailToSender = new List<string>();
+                    listMailToSender.Add(cSender.Email);
+                    _mailUtil.SendEmailAsync(
+                        new MailType {
+                            ToEmail=listMailToSender,
+                            Subject= "Epsylon Ticketing Veification Code",
+                            Title= "Here is your confirmation code :",
+                            Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
+                            VerificationCode= vCode,
+                        }
+                    );
+
+                    return Ok();
+                }
+            }
+            else {
+                    string vCode = "";
+                    
+                    for (int i = 0; i < 3; i++)
+                    {
+                        vCode = GenerateRandom4Code();
+                        var verified = _context.Verification.Where(w => w.Code == vCode).FirstOrDefault();
+                        if(verified == null){ break; } 
+                    }
+
+                    _context.Verification.Add(new Verification {
+                        Code = vCode,
+                        Verified = false,
+                        ExpiredAt = DateTime.Now.AddMinutes(30),
+                        Email = request.Email,
+                        CreatedAt = DateTime.Now,
+                        Desc = "Register Client"
+                    });
+                    _context.SaveChanges();
+                    List<string> listMailToSender = new List<string>();
+                    listMailToSender.Add(cSender.Email);
+                    _mailUtil.SendEmailAsync(
+                        new MailType {
+                            ToEmail=listMailToSender,
+                            Subject= "Epsylon Ticketing Veification Code",
+                            Title= "Here is your confirmation code :",
+                            Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
+                            VerificationCode= vCode,
+                        }
+                    );
+                return Ok();
+            }
         }
 
 

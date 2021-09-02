@@ -432,3 +432,4 @@ X:\TICKETING\backend\bin\Debug\net5.0\appsettings_publish.json
 =======
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings.json
 >>>>>>> 2c542a52f3cd623e269b73b2d988d031e5e39e02
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings_publish.json

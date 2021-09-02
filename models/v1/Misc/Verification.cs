@@ -14,6 +14,7 @@ namespace TicketingApi.Models.v1.Misc
         public DateTime? ExpiredAt { get; set;}  
         public int? UserId {get; set;}
         public int? SenderId {get;set;}
+        public string  Email {get; set;}
         public string Desc {get; set;}
         public DateTime? CreatedAt { get; set;}  
         public DateTime? UpdatedAt { get; set;}  
