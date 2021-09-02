@@ -3,6 +3,8 @@
 /.vscode
 /obj
 appsettings.json
+appsettings_publish.json
+appsettings_Development.json
 
 
 ## Ignore Visual Studio temporary files, build results, and
