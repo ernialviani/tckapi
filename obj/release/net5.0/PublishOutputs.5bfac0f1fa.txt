@@ -1,5 +1,4 @@
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.exe
-X:\TICKETING\backend\bin\release\net5.0\publish\appsettings.Development.json
 X:\TICKETING\backend\bin\release\net5.0\publish\appsettings.json
 X:\TICKETING\backend\bin\release\net5.0\publish\db.vuerd.json
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.dll

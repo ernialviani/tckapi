@@ -1,4 +1,3 @@
-X:\TICKETING\backend\bin\release\net5.0\appsettings.Development.json
 X:\TICKETING\backend\bin\release\net5.0\appsettings.json
 X:\TICKETING\backend\bin\release\net5.0\db.vuerd.json
 X:\TICKETING\backend\bin\release\net5.0\TicketingApi.exe

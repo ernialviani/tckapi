@@ -26,5 +26,11 @@ namespace TicketingApi.Entities
 
         public string WelcomeEmail {get; set;}
         public string WelcomePass {get;set;}
+
+        //verification code
+
+        public string VerificationCode {get; set;}
+        
+
     }
 }

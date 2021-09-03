@@ -425,6 +425,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Verification>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
             modelBuilder.Entity<Verification>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);
             modelBuilder.Entity<Verification>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired(false);
+            modelBuilder.Entity<Verification>().Property(u => u.Email).HasColumnName("email").HasColumnType("nvarchar(50)").IsRequired(false);
             modelBuilder.Entity<Verification>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Verification>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false); 
         

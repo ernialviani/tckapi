@@ -366,7 +366,6 @@ C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\BouncyCastl
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\bin\Debug\net5.0\MailKit.dll
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\bin\Debug\net5.0\MimeKit.dll
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\bin\Debug\net5.0\BouncyCastle.Crypto.dll
-X:\TICKETING\backend\bin\Debug\net5.0\appsettings.Development.json
 X:\TICKETING\backend\bin\Debug\net5.0\appsettings.json
 X:\TICKETING\backend\bin\Debug\net5.0\db.vuerd.json
 X:\TICKETING\backend\bin\Debug\net5.0\TicketingApi.exe
@@ -428,7 +427,7 @@ X:\TICKETING\backend\bin\Debug\net5.0\Microsoft.AspNetCore.NodeServices.dll
 X:\TICKETING\backend\bin\Debug\net5.0\Microsoft.AspNetCore.SpaServices.dll
 X:\TICKETING\backend\bin\Debug\net5.0\Microsoft.AspNetCore.SpaServices.Extensions.dll
 <<<<<<< HEAD
-X:\TICKETING\backend\bin\Debug\net5.0\appsettings_publish.json
 =======
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings.json
 >>>>>>> 2c542a52f3cd623e269b73b2d988d031e5e39e02
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings_publish.json
