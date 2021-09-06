@@ -245,7 +245,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
                         Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
-                    }).Where(w => ticketss.Contains(w.Id.ToString()));
+                    }).Where(w => ticketss.Contains(w.Id.ToString()) || w.CreatedBy == Email);
 
                 return Ok(allTicket);
             }
