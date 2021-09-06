@@ -245,7 +245,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
                         Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
-                    }).Where(w => ticketss.Contains(w.Id.ToString()));
+                    }).Where(w => ticketss.Contains(w.Id.ToString()) || w.CreatedBy == Email);
 
                 return Ok(allTicket);
             }
@@ -284,23 +284,24 @@ namespace TicketingApi.Controllers.v1.Tickets
                     requestSender = JsonConvert.DeserializeObject<Sender>(sender);
                     var exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
                     if (exitingsSender == null){
-                    Sender newSender = new Sender() {
-                        FirstName = requestSender.FirstName,
-                        LastName = requestSender.LastName,
-                        Email = requestSender.Email,
-                        Password = "",
-                        Salt = "",
-                        LoginStatus = false,
-                        CreatedAt = DateTime.Now 
-                    };
-                    _context.Senders.Add(newSender);
-                    _context.SaveChanges();
-                    //add client user if not exist
-                    exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
-                    ticketEntity.SenderId = exitingsSender.Id;
+                        Sender newSender = new Sender() {
+                            FirstName = requestSender.FirstName,
+                            LastName = requestSender.LastName,
+                            Email = requestSender.Email,
+                            Password = "",
+                            Salt = "",
+                            LoginStatus = false,
+                            CreatedAt = DateTime.Now 
+                        };
+                        _context.Senders.Add(newSender);
+                        _context.SaveChanges();
+                        //add client user if not exist
+                        exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
+                        ticketEntity.SenderId = exitingsSender.Id;
                    }
-
-
+                   else{
+                        ticketEntity.SenderId = exitingsSender.Id;
+                   }
                 }
                 else if(request.TicketType == "I"){
                     ticketEntity.UserId = request.UserId; 
@@ -961,11 +962,50 @@ namespace TicketingApi.Controllers.v1.Tickets
             {
                 return BadRequest(e.Message);
             }
-        }  
+        } 
 
-// [Route("~/api/Delete/{fileName}")]
-// [Route("~/api/Delete/{isValid:bool}")] 
-// [Route("~/api/Delete/{fileName}/{isValid}")] 
+
+
+
+
+        ///////////////
+        // CLIENT TICKET
+        ///////////////
+
+        [HttpGet("client")]
+        [Authorize]
+        public IActionResult GetClientTickets([FromHeader] string Authorization)
+        {
+          var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+          var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;     
+          var cSender = _context.Senders.Where(w => w.Email == Email).FirstOrDefault();
+          var allTicket = _context.Tickets.AsNoTracking()
+                        .Where(w => (w.CreatedBy == Email && w.TicketType == "E") || w.SenderId == cSender.Id)
+                        .Include(t => t.Senders)
+                        .Include(t => t.Status)
+                        .Include(t => t.TicketDetails).ThenInclude(s => s.Users)
+                        .Include(t => t.Apps)
+                        .Include(t => t.Modules)
+                        .Include(t => t.Medias)
+                    .Select(e => new {
+                        e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
+                        TicketDetails = e.TicketDetails.Select(t => new { 
+                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
+                            Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "TD"),
+                            Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }
+                        }),
+                        e.Status, e.Apps, e.Modules, e.TicketType,
+                        Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
+                        Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
+                        Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
+                    }).OrderByDescending(e => e.Id).ToList();
+           return Ok(allTicket);
+        }
+
+
+
+
+
 
     }
 }

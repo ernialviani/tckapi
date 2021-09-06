@@ -309,7 +309,6 @@ C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\ob
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\obj\Debug\net5.0\ref\TicketingApi.dll
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\obj\Debug\net5.0\TicketingApi.pdb
 C:\Users\programmer3\Documents\Vicky\TICKETING\ticketing-app\TicketingApp\Api\obj\Debug\net5.0\TicketingApi.genruntimeconfig.cache
-C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings.Development.json
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\db.vuerd.json
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\TicketingApi.exe
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\TicketingApi.deps.json
@@ -430,4 +429,3 @@ X:\TICKETING\backend\bin\Debug\net5.0\Microsoft.AspNetCore.SpaServices.Extension
 =======
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings.json
 >>>>>>> 2c542a52f3cd623e269b73b2d988d031e5e39e02
-C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings_publish.json
