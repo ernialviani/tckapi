@@ -270,7 +270,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                     var cClient = _context.ClientDetails.Where(w => request.Email.Contains(w.Domain)).FirstOrDefault();
                     if(cClient == null) {
                         transaction.Rollback();
-                        return BadRequest("Sorry, Your email not on our client ");
+                        return BadRequest("Sorry, This email has no access !");
                     }
                     if (cSender == null)
                     {
