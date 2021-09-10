@@ -1033,9 +1033,10 @@ namespace TicketingApi.Controllers.v1.Tickets
            return Ok(allTicket);
         }
 
-        [HttpPost]
-        // [Authorize]
-        [AllowAnonymous]
+         [HttpPost]
+         [Authorize]
+         [Route("client")]
+        //[AllowAnonymous]
         public IActionResult ClientCreate([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file)
         {
            using (var transaction =  _context.Database.BeginTransaction())
@@ -1168,6 +1169,7 @@ namespace TicketingApi.Controllers.v1.Tickets
            } 
         }
 
+        [HttpPost]
         [Authorize]
         [Route("client/post-comment")]
         public IActionResult postClientTicketDetail( [FromForm]TicketDetail request, [FromForm] string sender, [FromForm]IList<IFormFile> file, [FromForm] string ticketAssign )

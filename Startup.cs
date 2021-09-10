@@ -80,6 +80,7 @@ namespace TicketingApi
                     ClockSkew = TimeSpan.Zero
                 };
                 jwtOption.Events = new JwtBearerEvents{
+                    
                    OnAuthenticationFailed = context =>
                     {
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))

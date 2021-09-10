@@ -31,6 +31,7 @@ namespace TicketingApi.Utils
             }
             return hashedString;
         }
+
         public static string ByteToHex(byte[] input)
         {
             var stringBuilder = new StringBuilder(string.Empty);
