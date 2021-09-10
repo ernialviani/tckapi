@@ -35,15 +35,21 @@ namespace TicketingApi.Controllers.v1.Tickets
         private readonly AppDBContext  _context;
         private readonly IFileUtil _fileUtil;
         private readonly IMailUtil _mailUtil;
+        
+        private readonly ICustomAuthUtil _customAuthUtil;
+        
         private readonly IWebHostEnvironment _env; 
-         private readonly IConfiguration _config;
-        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config )
+        private readonly IConfiguration _config;
+
+        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config, ICustomAuthUtil customAuth )
         {
             _context = context; 
             _fileUtil = fileUtil;
             _mailUtil = mailUtil;
+            _customAuthUtil = customAuth;
             _env = env;   
             _config = config;
+            
         }
 
         public string GenerateTicketNumber(){
@@ -1034,11 +1040,14 @@ namespace TicketingApi.Controllers.v1.Tickets
         }
 
          [HttpPost]
-         [Authorize]
+         [AllowAnonymous]
          [Route("client")]
         //[AllowAnonymous]
-        public IActionResult ClientCreate([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file)
+        public IActionResult ClientCreate([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file, [FromHeader] string Authorization)
         {
+        
+           if(!_customAuthUtil.AuthorizationFreeToken(Authorization)){ return Unauthorized(); }
+
            using (var transaction =  _context.Database.BeginTransaction())
            {
              try

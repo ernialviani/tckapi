@@ -74,38 +74,32 @@ namespace TicketingApi
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("JwtSettings:SecretKey").Value)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                 //   ValidIssuer = "https://localhost:5001",
-                   // ValidAudience = "https://localhost:5001",
+                    //ValidIssuer = "https://localhost:5001",
+                    //ValidAudience = "https://localhost:5001",
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
                 jwtOption.Events = new JwtBearerEvents{
-                    
                    OnAuthenticationFailed = context =>
                     {
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                         {
                             context.Response.Headers.Add("Token-Expired", "true");
-                       //     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                             //context.Response.ContentType = "application/json; charset=utf-8";
+                            //context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                            //context.Response.ContentType = "application/json; charset=utf-8";
                             //var message = context.Exception.ToString();
-                           // var result = JsonConvert.SerializeObject(new { message });
-                           // return context.Response.Body.Write(result);
-                           // return context.Response;
-                        
+                            //var result = JsonConvert.SerializeObject(new { message });
+                            //return context.Response.Body.Write(result);
+                            //return context.Response;
                         }
                         return Task.CompletedTask;
-                        //return Bad
                     }
                 };
             });
             services.AddScoped<IFileUtil, FileUtil>();
-            
+            services.AddScoped<ICustomAuthUtil, CustomAuthUtil>();
             services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailUtil, MailUtil>();
-
-           
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });
@@ -133,6 +127,16 @@ namespace TicketingApi
             
             app.UseCors("ApiCorsPolicy");
 
+            // app.Use(async (context, next) =>
+            // {
+            //     var token = context.Items.ToString();
+            //     if (!string.IsNullOrEmpty(token))
+            //     {
+            //         context.Request.Headers.Add("Authorization", "Bearer " + token);
+            //     }
+            //     await next();
+            // });
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -142,15 +146,15 @@ namespace TicketingApi
             {
                 endpoints.MapControllers();
             });
-             if (env.IsProduction())
+            if (env.IsProduction())
+            {
+                app.UseStaticFiles();
+                app.UseSpaStaticFiles();
+                app.UseSpa(spa =>
                 {
-                    app.UseStaticFiles();
-                    app.UseSpaStaticFiles();
-                    app.UseSpa(spa =>
-                    {
-                        spa.Options.DefaultPage = "/index.html";
-                    });
-                }
+                    spa.Options.DefaultPage = "/index.html";
+                });
+            }
         }
     }
 }

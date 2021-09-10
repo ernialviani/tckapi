@@ -22,6 +22,9 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 using TicketingApi.Entities;
+using Newtonsoft.Json;
+using System.Net.Http;  
+using System.Net.Http.Headers;  
 
 namespace TicketingApi.Controllers.v1.Authentication
 {
@@ -495,8 +498,23 @@ namespace TicketingApi.Controllers.v1.Authentication
             return NotFound();
         }
 
-
-
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("client/free-token")]
+        public IActionResult GetFreeToken([FromHeader] string Authorization){
+            if(string.IsNullOrEmpty(Authorization)){
+              var cookie = HttpContext.Request.Cookies;  
+              var jsonString =  JsonConvert.SerializeObject(new {
+                value = "epsylon-free-token",
+                key = "epsylon$",
+                expiredAt = DateTime.Now.AddHours(1).ToString()
+              });
+            
+              return Ok(AncDecUtil.Encrypt( "[" + jsonString +"]", "EPSYLONHOME2021$"));
+            }
+            
+            return Ok();
+        }
 
     }
 

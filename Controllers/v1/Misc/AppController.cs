@@ -28,19 +28,20 @@ namespace TicketingApi.Controllers.v1.Misc
 
          private readonly AppDBContext  _context;
         private readonly IFileUtil _fileUtil;
-        public AppController(AppDBContext context, IFileUtil fileUtil )
+        private readonly ICustomAuthUtil _customAuthUtil;
+
+        public AppController(AppDBContext context, IFileUtil fileUtil, ICustomAuthUtil authUtil )
         {
             _context = context; 
             _fileUtil = fileUtil;
+            _customAuthUtil = authUtil;
         }
 
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         public IActionResult GetApps([FromHeader] string Authorization)
         {
-           
-          var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
-      //    var Role = token.Claims.First(c => c.Type == "Role").Value;
+          if(!_customAuthUtil.AuthorizationFreeToken(Authorization)){ return Unauthorized(); }
           var allApp = _context.Apps.AsNoTracking()
                         .Include(ur => ur.Modules);
            return Ok(allApp);
