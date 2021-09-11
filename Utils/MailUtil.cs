@@ -22,7 +22,7 @@ namespace TicketingApi.Utils
         public async Task SendEmailAsync(MailType mailType)
         {
 
-            string FilePath = Directory.GetCurrentDirectory() + "\\Utils\\MailTemplate\\NewTicketHtmlTemplate.html";
+            string FilePath = Directory.GetCurrentDirectory() + "\\Media\\MailTemplate\\NewTicketHtmlTemplate.html";
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();
@@ -74,7 +74,7 @@ namespace TicketingApi.Utils
         public async Task SendEmailWelcomeAsync(MailType mailType)
         {
 
-            string FilePath = Directory.GetCurrentDirectory() + "\\Utils\\MailTemplate\\WelcomeHT.html";
+            string FilePath = Directory.GetCurrentDirectory() + "\\Medias\\MailTemplate\\WelcomeHT.html";
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();
@@ -116,7 +116,6 @@ namespace TicketingApi.Utils
             using var smtp = new SmtpClient();
            // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTlsWhenAvailable);
-           
             smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
@@ -126,7 +125,7 @@ namespace TicketingApi.Utils
         public async Task SendEmailPostCommentForClientAsync(MailType mailType)
         {
 
-            string FilePath = Directory.GetCurrentDirectory() + "\\Utils\\MailTemplate\\PostCommentForClientHT.html";
+            string FilePath = Directory.GetCurrentDirectory() + "\\Medias\\MailTemplate\\PostCommentForClientHT.html";
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();
@@ -190,7 +189,7 @@ namespace TicketingApi.Utils
 
         public async Task SendEmailPostCommentAsync(MailType mailType)
         {
-            string FilePath = Directory.GetCurrentDirectory() + "\\Utils\\MailTemplate\\PostCommentHT.html";
+            string FilePath = Directory.GetCurrentDirectory() + "\\Medias\\MailTemplate\\PostCommentHT.html";
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();
@@ -252,7 +251,7 @@ namespace TicketingApi.Utils
 
         public async Task SendEmailVerificationCodeAsync(MailType mailType)
         {
-            string FilePath = Directory.GetCurrentDirectory() + "\\Utils\\MailTemplate\\VerifiCodeHT.html";
+            string FilePath = Directory.GetCurrentDirectory() + "\\Medias\\MailTemplate\\VerifiCodeHT.html";
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();

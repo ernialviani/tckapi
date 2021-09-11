@@ -28,20 +28,19 @@ namespace TicketingApi.Controllers.v1.Misc
 
          private readonly AppDBContext  _context;
         private readonly IFileUtil _fileUtil;
-        private readonly ICustomAuthUtil _customAuthUtil;
 
-        public AppController(AppDBContext context, IFileUtil fileUtil, ICustomAuthUtil authUtil )
+        public AppController(AppDBContext context, IFileUtil fileUtil)
         {
             _context = context; 
             _fileUtil = fileUtil;
-            _customAuthUtil = authUtil;
+      
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize]
         public IActionResult GetApps([FromHeader] string Authorization)
         {
-          if(!_customAuthUtil.AuthorizationFreeToken(Authorization)){ return Unauthorized(); }
+        //   if(!_customAuthUtil.AuthorizationFreeToken(Authorization)){ return Unauthorized(); }
           var allApp = _context.Apps.AsNoTracking()
                         .Include(ur => ur.Modules);
            return Ok(allApp);

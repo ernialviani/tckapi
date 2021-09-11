@@ -1,5 +1,6 @@
 using System.Net;
 using System;
+using System.Web;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using TicketingApi.DBContexts;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using TicketingApi.Utils;
 using TicketingApi.Entities;
+using TicketingApi.Middleware;
 
 namespace TicketingApi
 {
@@ -47,7 +48,7 @@ namespace TicketingApi
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
-
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");  
             services.AddDbContextPool<AppDBContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr))); 
 
@@ -64,38 +65,6 @@ namespace TicketingApi
                     builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithExposedHeaders("Token-Expired");;
               }));
 
-            services.AddAuthentication(options => {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            })
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwtOption => {
-                jwtOption.TokenValidationParameters = new TokenValidationParameters (){
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("JwtSettings:SecretKey").Value)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    //ValidIssuer = "https://localhost:5001",
-                    //ValidAudience = "https://localhost:5001",
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-                jwtOption.Events = new JwtBearerEvents{
-                   OnAuthenticationFailed = context =>
-                    {
-                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                        {
-                            context.Response.Headers.Add("Token-Expired", "true");
-                            //context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                            //context.Response.ContentType = "application/json; charset=utf-8";
-                            //var message = context.Exception.ToString();
-                            //var result = JsonConvert.SerializeObject(new { message });
-                            //return context.Response.Body.Write(result);
-                            //return context.Response;
-                        }
-                        return Task.CompletedTask;
-                    }
-                };
-            });
             services.AddScoped<IFileUtil, FileUtil>();
             services.AddScoped<ICustomAuthUtil, CustomAuthUtil>();
             services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
@@ -137,10 +106,10 @@ namespace TicketingApi
             //     await next();
             // });
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            // app.UseAuthentication();
+            // app.UseAuthorization();
 
-           
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
