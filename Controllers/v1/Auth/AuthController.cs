@@ -273,7 +273,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                     var cClient = _context.ClientDetails.Where(w => request.Email.Contains(w.Domain)).FirstOrDefault();
                     if(cClient == null) {
                         transaction.Rollback();
-                        return BadRequest("Sorry, This email has no access !");
+                        return BadRequest("Sorry, Sorry, no access for this email address !");
                     }
                     if (cSender == null)
                     {

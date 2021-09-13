@@ -285,6 +285,12 @@ namespace TicketingApi.Controllers.v1.Tickets
 
                 if(request.TicketType == "E"){
                     requestSender = JsonConvert.DeserializeObject<Sender>(sender);
+                    var cClient = _context.ClientDetails.Where(w => requestSender.Email.Contains(w.Domain)).FirstOrDefault();
+                    if(cClient == null) {
+                        transaction.Rollback();
+                        return BadRequest("Sorry, no access for this email address !");
+                    }
+                
                     var exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
                     if (exitingsSender == null){
                         Sender newSender = new Sender() {
@@ -550,7 +556,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 expiredAt = DateTime.Now.AddDays(1).ToString()
                             });
 
-                            btnLink = "open_ticket?tcid="+ AncDecUtil.Encrypt( "[" + jsonString +"]", "EPSYLONHOME2021$", true);
+                            btnLink = "mytickets?tcid="+ AncDecUtil.Encrypt( "[" + jsonString +"]", "EPSYLONHOME2021$", true);
                         }
                         
                         _mailUtil.SendEmailPostCommentForClientAsync(
