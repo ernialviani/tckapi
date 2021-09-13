@@ -3,11 +3,13 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
+using Microsoft.AspNetCore.WebUtilities;
+
 namespace TicketingApi.Utils
 {
     public static class AncDecUtil
     {
-        public static string Encrypt(string text, string key)
+        public static string Encrypt(string text, string key, bool toURL = false)
         {
             var _key = Encoding.UTF8.GetBytes(key);
  
@@ -33,14 +35,16 @@ namespace TicketingApi.Utils
  
                         Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
                         Buffer.BlockCopy(encrypted, 0, result, iv.Length, encrypted.Length);
- 
+                        if(toURL){
+                            return Base64UrlTextEncoder.Encode(result);
+                        }
                         return Convert.ToBase64String(result);
                     }
                 }
             }
         }
  
-       public static string DecryptString(string cipherText, string keyString)
+       public static string DecryptString(string cipherText, string keyString, bool toURL = false)
        { 
             var fullCipher = Convert.FromBase64String(cipherText); 
 
@@ -67,7 +71,9 @@ namespace TicketingApi.Utils
                             }
                         }
                     }
-
+                    if(toURL){
+                        return Encoding.Default.GetString(Base64UrlTextEncoder.Decode(result));
+                    }
                     return result;
                 }
             }

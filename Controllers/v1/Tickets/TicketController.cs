@@ -36,17 +36,14 @@ namespace TicketingApi.Controllers.v1.Tickets
         private readonly IFileUtil _fileUtil;
         private readonly IMailUtil _mailUtil;
         
-        private readonly ICustomAuthUtil _customAuthUtil;
-        
         private readonly IWebHostEnvironment _env; 
         private readonly IConfiguration _config;
 
-        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config, ICustomAuthUtil customAuth )
+        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config )
         {
             _context = context; 
             _fileUtil = fileUtil;
             _mailUtil = mailUtil;
-            _customAuthUtil = customAuth;
             _env = env;   
             _config = config;
             
@@ -288,6 +285,12 @@ namespace TicketingApi.Controllers.v1.Tickets
 
                 if(request.TicketType == "E"){
                     requestSender = JsonConvert.DeserializeObject<Sender>(sender);
+                    var cClient = _context.ClientDetails.Where(w => requestSender.Email.Contains(w.Domain)).FirstOrDefault();
+                    if(cClient == null) {
+                        transaction.Rollback();
+                        return BadRequest("Sorry, no access for this email address !");
+                    }
+                
                     var exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
                     if (exitingsSender == null){
                         Sender newSender = new Sender() {
@@ -542,9 +545,23 @@ namespace TicketingApi.Controllers.v1.Tickets
                         var fSender = _context.Senders.Where(w => w.Id == cTicket.SenderId).FirstOrDefault();
                         ticketRequestFrom = fSender.Email;
                         listMailToEx.Add(ticketRequestFrom);
+
+                        //btn link config
+                        var btnLink = "";
+                        if(fSender.LoginStatus == true ) { btnLink = "mytickets?tn="+cTicket.TicketNumber; }
+                        else{
+                            var jsonString =  JsonConvert.SerializeObject(new {
+                                TicketNumber = cTicket.TicketNumber,
+                                CreatedBy= fSender.Email,
+                                expiredAt = DateTime.Now.AddDays(1).ToString()
+                            });
+
+                            btnLink = "mytickets?tcid="+ AncDecUtil.Encrypt( "[" + jsonString +"]", "EPSYLONHOME2021$", true);
+                        }
+                        
                         _mailUtil.SendEmailPostCommentForClientAsync(
                             new MailType {
-                                ToEmail= listMailTo,
+                                ToEmail= listMailToEx,
                                 Subject= "New Comment on Ticket Number " + cTicket.TicketNumber,
                                 Title= cTicket.Subject,
                                 Body= request.Comment,
@@ -553,7 +570,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 TicketModule=appModule.Name,
                                 Attachments = new List<IFormFile>(file),
                                 UserFullName = cUser.FirstName + " " + cUser.LastName,
-                                ButtonLink = _config.GetSection("HomeSite").Value + "", //todo
+                                ButtonLink = _config.GetSection("HomeSite").Value + btnLink, //todo
                             }
                         );
                     }
@@ -1039,26 +1056,29 @@ namespace TicketingApi.Controllers.v1.Tickets
            return Ok(allTicket);
         }
 
-         [HttpPost]
-         [AllowAnonymous]
-         [Route("client")]
-        //[AllowAnonymous]
-        public IActionResult ClientCreate([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file, [FromHeader] string Authorization)
+         [HttpPost("client")]
+         [Authorize]
+        public IActionResult ClientCreate([FromForm]Ticket request,[FromForm] string sender, [FromForm]IList<IFormFile> file, [FromQuery] string code )
         {
-        
-           if(!_customAuthUtil.AuthorizationFreeToken(Authorization)){ return Unauthorized(); }
-
            using (var transaction =  _context.Database.BeginTransaction())
            {
              try
               {
                 Sender requestSender = new Sender();
                 requestSender = JsonConvert.DeserializeObject<Sender>(sender);
-                var cClient = _context.ClientDetails.Where(w => requestSender.Email.Contains(w.Domain)).FirstOrDefault();
-                if(cClient == null) {
-                    transaction.Rollback();
-                    return BadRequest("Sorry, This email has no access !");
+                
+                if(!string.IsNullOrEmpty(code)){
+                    var cCode = _context.Verification.Where(w => w.Code == code && w.Email == requestSender.Email).FirstOrDefault();
+                    if(cCode != null){
+                        if(cCode.ExpiredAt < DateTime.Now){ return BadRequest("Verification code expired !"); }
+                        else{ 
+                            cCode.Verified = true; 
+                            _context.SaveChanges();    
+                        }
+                    }
+                    else{ return BadRequest("Verification code not found "); }
                 }
+              
 
                 Ticket ticketEntity = new Ticket()
                 {   
@@ -1116,8 +1136,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                 //save attachments
 
                 //ASSIGN AND MAIL CONFIG
-                 List<User> listManager = new List<User>(); 
-            
+                List<User> listManager = new List<User>(); 
                 List<string> listMailTo = new List<string>();
                 listManager = (from u in _context.Users 
                                 join ur in _context.UserRoles on u.Id equals ur.UserId
