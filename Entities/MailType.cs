@@ -29,6 +29,7 @@ namespace TicketingApi.Entities
 
         //verification code
 
+        public string DescVerificationCode {get; set;}
         public string VerificationCode {get; set;}
         
 

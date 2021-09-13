@@ -46,7 +46,13 @@ namespace TicketingApi.Utils
  
        public static string DecryptString(string cipherText, string keyString, bool toURL = false)
        { 
-            var fullCipher = Convert.FromBase64String(cipherText); 
+            var fullCipher = new byte[0];
+            if(toURL){
+                fullCipher = Base64UrlTextEncoder.Decode(cipherText);
+            }
+            else{
+                fullCipher = Convert.FromBase64String(cipherText); 
+            }
 
             var iv = new byte[16];
             var cipher = new byte[fullCipher.Length - iv.Length]; //changes here
@@ -71,9 +77,9 @@ namespace TicketingApi.Utils
                             }
                         }
                     }
-                    if(toURL){
-                        return Encoding.Default.GetString(Base64UrlTextEncoder.Decode(result));
-                    }
+                    // if(toURL){
+                    //     return Encoding.Default.GetString(Base64UrlTextEncoder.Decode(result));
+                    // }
                     return result;
                 }
             }

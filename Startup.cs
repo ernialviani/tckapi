@@ -66,7 +66,6 @@ namespace TicketingApi
               }));
 
             services.AddScoped<IFileUtil, FileUtil>();
-            services.AddScoped<ICustomAuthUtil, CustomAuthUtil>();
             services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailUtil, MailUtil>();
             services.AddSwaggerGen(c =>

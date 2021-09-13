@@ -82,9 +82,13 @@ namespace TicketingApi.Middleware
                             context.Items["FreeToken"] = token;
                         }
                     }
+                    else{
+                        context.Items["ErrorMessage"] = e.Message;
+                    }
                 }
                 catch (System.Exception ex)
                 {
+                    context.Items["ErrorMessage"] = ex.Message;
                      // do nothing if jwt validation fails
                      // account is not attached to context so request won't have access to secure routes
                 }

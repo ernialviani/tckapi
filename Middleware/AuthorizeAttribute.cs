@@ -21,5 +21,8 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         if(context.HttpContext.Items["TokenType"] == null){
             context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
         }
+        else if(context.HttpContext.Items["ErrorMessage"] != null){
+            context.Result = new JsonResult(new { message = context.HttpContext.Items["ErrorMessage"] }) { StatusCode = StatusCodes.Status500InternalServerError };
+        }
     }
 }

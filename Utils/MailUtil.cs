@@ -134,6 +134,15 @@ namespace TicketingApi.Utils
             MailText = MailText.Replace("$user", mailType.UserFullName);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
+            if(!string.IsNullOrEmpty(mailType.VerificationCode)){
+                MailText = MailText.Replace("$verifycode", mailType.VerificationCode);
+                MailText = MailText.Replace("$descverifycode", mailType.DescVerificationCode);
+            }
+            else{
+                MailText = MailText.Replace("$verifycode", "");
+                MailText = MailText.Replace("$descverifycode", "");
+            }
+
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
             foreach (var to in mailType.ToEmail) {

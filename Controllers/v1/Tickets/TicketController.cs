@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using TicketingApi.DBContexts;
 using Microsoft.EntityFrameworkCore;
 using TicketingApi.Models.v1.Tickets;
+using TicketingApi.Controllers.v1.Authentication;
 using TicketingApi.Models.v1.Users;
 using TicketingApi.Models.v1.Misc;
 using System.IdentityModel.Tokens.Jwt;
@@ -64,6 +65,18 @@ namespace TicketingApi.Controllers.v1.Tickets
                 newNumber = nowDate+"1";
             }
             return newNumber;
+        }
+
+        public string GenerateRandom4Code(){
+            var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var Charsarr = new char[4];
+            var random = new Random();
+            for (int i = 0; i < Charsarr.Length; i++)
+            {
+                Charsarr[i] = characters[random.Next(characters.Length)];
+            }
+            var resultString = new String(Charsarr);
+            return resultString;
         }
 
 
@@ -548,15 +561,19 @@ namespace TicketingApi.Controllers.v1.Tickets
 
                         //btn link config
                         var btnLink = "";
+                        var sCode = "";
                         if(fSender.LoginStatus == true ) { btnLink = "mytickets?tn="+cTicket.TicketNumber; }
                         else{
+
+                            sCode = GenerateRandom4Code();
                             var jsonString =  JsonConvert.SerializeObject(new {
                                 TicketNumber = cTicket.TicketNumber,
                                 CreatedBy= fSender.Email,
-                                expiredAt = DateTime.Now.AddDays(1).ToString()
+                                SecurityCode = sCode,
+                                ExpiredAt = DateTime.Now.AddDays(1).ToString()
                             });
 
-                            btnLink = "mytickets?tcid="+ AncDecUtil.Encrypt( "[" + jsonString +"]", "EPSYLONHOME2021$", true);
+                            btnLink = "mytickets?tcid="+ AncDecUtil.Encrypt(jsonString, "EPSYLONHOME2021$", true);
                         }
                         
                         _mailUtil.SendEmailPostCommentForClientAsync(
@@ -570,7 +587,9 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 TicketModule=appModule.Name,
                                 Attachments = new List<IFormFile>(file),
                                 UserFullName = cUser.FirstName + " " + cUser.LastName,
-                                ButtonLink = _config.GetSection("HomeSite").Value + btnLink, //todo
+                                VerificationCode = "Code : " + sCode,
+                                DescVerificationCode= string.IsNullOrEmpty(sCode) ? "":" Use the code for access ticket page.",
+                                ButtonLink = _config.GetSection("HomeSite").Value + btnLink
                             }
                         );
                     }
@@ -997,16 +1016,30 @@ namespace TicketingApi.Controllers.v1.Tickets
 
 
 
-        ///////////////
-        // CLIENT TICKET
-        ///////////////
+        ///////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////// CLIENT TICKET
+        //////////////////////////////////////////////////////////////////////////
 
         [HttpGet("client")]
         [Authorize]
-        public IActionResult GetClientTickets([FromHeader] string Authorization)
+        public IActionResult GetClientTickets([FromHeader] string Authorization, [FromHeader] string TicketToken)
         {
-          var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
-          var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;     
+
+          var Email = "";
+
+          if(!string.IsNullOrEmpty(TicketToken)){ 
+            var tokenPlain = AncDecUtil.DecryptString(TicketToken.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+            var property = new { CreatedBy = "", TicketNumber= "" };
+            var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+            if(tokenJson != null){
+                Email = tokenJson.CreatedBy;
+            }
+          }
+          else{ // client login true
+             var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+             Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;     
+          }
+ 
           var cSender = _context.Senders.Where(w => w.Email == Email).FirstOrDefault();
           var allTicket = _context.Tickets.AsNoTracking()
                         .Where(w => (w.CreatedBy == Email && w.TicketType == "E") || w.SenderId == cSender.Id)
@@ -1200,7 +1233,7 @@ namespace TicketingApi.Controllers.v1.Tickets
         [HttpPost]
         [Authorize]
         [Route("client/post-comment")]
-        public IActionResult postClientTicketDetail( [FromForm]TicketDetail request, [FromForm] string sender, [FromForm]IList<IFormFile> file, [FromForm] string ticketAssign )
+        public IActionResult PostClientTicketDetail( [FromForm]TicketDetail request, [FromForm] string sender, [FromForm]IList<IFormFile> file, [FromForm] string ticketAssign )
         {
             using (var transaction =  _context.Database.BeginTransaction())
             {
@@ -1268,6 +1301,19 @@ namespace TicketingApi.Controllers.v1.Tickets
             }
         }
 
+        [HttpGet("client/open-ticket-verify/{code}") ]
+        [Authorize]
+        public IActionResult VerifyOpenTicket (int code, [FromHeader] string Authorization, [FromHeader] string TicketToken){
+            if(!string.IsNullOrEmpty(TicketToken)){ 
+                var tokenPlain = AncDecUtil.DecryptString(TicketToken.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+                var property = new { CreatedBy = "", TicketNumber= "", SecurityCode=""  };
+                var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+                if(tokenJson != null && tokenJson.SecurityCode == code.ToString()){
+                    return Ok("True");
+                }
+            }
+            return BadRequest("Incorrect verification code ");
+        }
 
 
 
