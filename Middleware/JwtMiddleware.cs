@@ -1,32 +1,33 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
-using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Configuration;
+
 using TicketingApi.Models;
 using TicketingApi.Entities;
 using TicketingApi.DBContexts;
-using Microsoft.EntityFrameworkCore;
 using TicketingApi.Utils;
 using Newtonsoft.Json;
-using System.Security.Claims;
 
 namespace TicketingApi.Middleware
 {
     public class JwtMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly AppSettings _appSettings;
-        //private readonly AppDBContext  _context;
+        private readonly IConfiguration _configuration;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
+        public JwtMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
-            _appSettings = appSettings.Value;
+            _configuration = configuration;
         }
 
         public async Task Invoke(HttpContext context, AppDBContext dataContext)
@@ -44,7 +45,7 @@ namespace TicketingApi.Middleware
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:SecretKey"]);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -61,13 +62,13 @@ namespace TicketingApi.Middleware
                 // attach account to context on successful jwt validation
                 var user = await dataContext.Users.Where(w => w.Email == email).AsNoTracking().FirstOrDefaultAsync();
                 if(user != null){
-                 context.Items["TokenType"] = "loged-user";
-                 context.Items["Email"] = user.Email;
+                    context.Items["TokenType"] = "loged-user";
+                    context.Items["Email"] = user.Email;
                 }
                 else{
-                 var sender = await dataContext.Senders.Where(w => w.Email == email).AsNoTracking().FirstOrDefaultAsync();
-                 context.Items["TokenType"] = "loged-sender";
-                 context.Items["Email"] = sender.Email; 
+                    var sender = await dataContext.Senders.Where(w => w.Email == email).AsNoTracking().FirstOrDefaultAsync();
+                    context.Items["TokenType"] = "loged-sender";
+                    context.Items["Email"] = sender.Email; 
                 }
             }
             catch(Exception e)

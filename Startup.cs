@@ -48,7 +48,6 @@ namespace TicketingApi
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");  
             services.AddDbContextPool<AppDBContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr))); 
 
@@ -72,8 +71,8 @@ namespace TicketingApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });
             });
-             if (Environment.IsProduction())
-             {
+            if (Environment.IsProduction())
+            {
                 services.AddSpaStaticFiles(configuration =>
                 configuration.RootPath ="ClientApp");
             }
