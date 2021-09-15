@@ -49,36 +49,25 @@ namespace TicketingApi.Controllers.v1.Tickets
             _config = config;
             
         }
-        // public string GenerateRandom4Code(){
-        //     var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        //     var Charsarr = new char[4];
-        //     var random = new Random();
-        //     for (int i = 0; i < Charsarr.Length; i++)
-        //     {
-        //         Charsarr[i] = characters[random.Next(characters.Length)];
-        //     }
-        //     var resultString = new String(Charsarr);
-        //     return resultString;
-        // }
-
+       
         public string GenerateTicketNumber(){
             string newNumber = "";
             int lastTicket = 0;
             int lastnumber = 0;
-            string nowDate = DateTime.Today.ToString().Substring(0, 10).Replace("-", "").Replace("/", "");
+            string nowDate = DateTime.Today.ToString("yyMMdd");
+
             var lastTicketNumber = _context.Tickets.OrderByDescending(x => x.Id).FirstOrDefault(w => w.TicketNumber.Contains(nowDate));
             if(lastTicketNumber != null){
-                lastnumber = Convert.ToInt32(lastTicketNumber.TicketNumber.Substring(8));
+                lastnumber = Convert.ToInt32(lastTicketNumber.TicketNumber.Substring(6));
                 lastTicket =  lastnumber + 1;
-                newNumber =  nowDate + Convert.ToString(lastTicket);
+                newNumber =  nowDate + lastTicket.ToString("D4");
             }
             else{
-                newNumber = nowDate+"1";
+                int first = 1;
+                newNumber = nowDate + first.ToString("D4");
             }
             return newNumber;
         }
-
-        
 
         #region GET 
 
@@ -587,7 +576,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 TicketModule=appModule.Name,
                                 Attachments = new List<IFormFile>(file),
                                 UserFullName = cUser.FirstName + " " + cUser.LastName,
-                                VerificationCode = "Code : " + sCode,
+                                VerificationCode = string.IsNullOrEmpty(sCode) ? "" : "Code : " + sCode,
                                 DescVerificationCode= string.IsNullOrEmpty(sCode) ? "":" Use the code for access ticket page.",
                                 ButtonLink = _config.GetSection("HomeSite").Value + btnLink
                             }
@@ -671,11 +660,14 @@ namespace TicketingApi.Controllers.v1.Tickets
         [HttpPost]
         [Authorize]
         [Route("ticket-assign")]
-        public IActionResult TicketAssign([FromBody]TicketAssign[] body){
+        public IActionResult TicketAssign([FromBody]TicketAssign[] body, [FromHeader] string Authorization){
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+                    var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+                    var authUser = _context.Users.Where(w => w.Email == Email).FirstOrDefault();
                     foreach (var assign in body)
                     {
                         var cTickets = _context.Tickets.Where(w => w.Id == assign.TicketId).FirstOrDefault();
@@ -750,7 +742,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                         TicketModule=appModule.Name,
                                         Attachments = null,
                                         AttachmentsString = LFile,
-                                        UserFullName = " ",
+                                        UserFullName = authUser.FirstName + " " + authUser.LastName,
                                         ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         
                                     }
@@ -765,7 +757,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             var app = _context.Apps.Where(w => w.Id == cTickets.AppId).FirstOrDefault();
                             var appModule = _context.Modules.Where(w => w.Id == cTickets.ModuleId).FirstOrDefault();
                             var mgAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "M").FirstOrDefault();
-                            if (mgAssign.Viewed == false) {
+                            if (mgAssign != null  && mgAssign.Viewed == false) {
                                 mgAssign.Viewed = true;
                                 mgAssign.ViewedAt = DateTime.Now;
                             }
@@ -813,7 +805,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                             TicketModule = appModule.Name,
                                             Attachments = null,
                                             AttachmentsString = LFile,
-                                            UserFullName = " ",
+                                            UserFullName = authUser.FirstName + " " + authUser.LastName,
                                             ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         }
                                     );
