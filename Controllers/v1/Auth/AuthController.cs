@@ -158,18 +158,6 @@ namespace TicketingApi.Controllers.v1.Authentication
             return NotFound();
         }
 
-        public string GenerateRandom4Code(){
-            var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var Charsarr = new char[4];
-            var random = new Random();
-            for (int i = 0; i < Charsarr.Length; i++)
-            {
-                Charsarr[i] = characters[random.Next(characters.Length)];
-            }
-            var resultString = new String(Charsarr);
-            return resultString;
-        }
-
         [AllowAnonymous]
         [HttpPost]
         [Route("client/reg-mail-verify")]
@@ -185,7 +173,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                     
                     for (int i = 0; i < 3; i++)
                     {
-                        vCode = GenerateRandom4Code();
+                        vCode = _mailUtil.GenerateRandom4Code();
                         var verified = _context.Verification.Where(w => w.Code == vCode).FirstOrDefault();
                         if(verified == null){ break; } 
                     }
@@ -219,7 +207,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                     
                     for (int i = 0; i < 3; i++)
                     {
-                        vCode = GenerateRandom4Code();
+                        vCode = _mailUtil.GenerateRandom4Code();
                         var verified = _context.Verification.Where(w => w.Code == vCode).FirstOrDefault();
                         if(verified == null){ break; } 
                     }
@@ -386,7 +374,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                 
                 for (int i = 0; i < 3; i++)
                 {
-                    vCode = GenerateRandom4Code();
+                    vCode = _mailUtil.GenerateRandom4Code();
                     var verified = _context.Verification.Where(w => w.Code == vCode).FirstOrDefault();
                     if(verified == null){ break; } 
                 }
@@ -516,52 +504,7 @@ namespace TicketingApi.Controllers.v1.Authentication
             return Ok();
         }
 
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("client/create-ticket-verify")]
-        public IActionResult verifyCreateTicketClientMailCode([FromBody] Verification request){ //CLIENT MAIL CODE
-           
-            var cClient = _context.ClientDetails.Where(w => request.Email.Contains(w.Domain)).FirstOrDefault();
-            if(cClient == null) {
-                return BadRequest("Sorry, This email has no access !");
-            }
-             else
-            {
-                string vCode = "";
-                for (int i = 0; i < 3; i++)
-                {
-                    vCode = GenerateRandom4Code();
-                    var verified = _context.Verification.Where(w => w.Code == vCode).FirstOrDefault();
-                    if(verified == null){ break; } 
-                }
-                _context.Verification.Add(new Verification {
-                    Code = vCode,
-                    Verified = false,
-                    ExpiredAt = DateTime.Now.AddMinutes(30),
-                    Email = request.Email,
-                    CreatedAt = DateTime.Now,
-                    Desc = "Create Ticket Client"
-                });
-                
-                _context.SaveChanges();
-                List<string> listMailToSender = new List<string>();
-                listMailToSender.Add(request.Email);
-                _mailUtil.SendEmailVerificationCodeAsync(
-                    new MailType {
-                        ToEmail=listMailToSender,
-                        Subject= "Epsylon Ticketing Veification Code",
-                        Title= "Here is your confirmation code :",
-                        Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
-                        VerificationCode=vCode,
-                    }
-                );
-
-                return Ok();
-            }
-       
-        }
-
-
+      
 
     }
 

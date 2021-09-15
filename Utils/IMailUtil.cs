@@ -8,6 +8,7 @@ namespace TicketingApi.Utils
 {
     public interface IMailUtil
     {
+        string GenerateRandom4Code();
         Task SendEmailAsync(MailType mailType);
         Task SendEmailWelcomeAsync(MailType mailType);
         Task SendEmailPostCommentAsync(MailType mailType);
