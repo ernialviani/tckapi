@@ -49,6 +49,17 @@ namespace TicketingApi.Controllers.v1.Tickets
             _config = config;
             
         }
+        // public string GenerateRandom4Code(){
+        //     var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        //     var Charsarr = new char[4];
+        //     var random = new Random();
+        //     for (int i = 0; i < Charsarr.Length; i++)
+        //     {
+        //         Charsarr[i] = characters[random.Next(characters.Length)];
+        //     }
+        //     var resultString = new String(Charsarr);
+        //     return resultString;
+        // }
 
         public string GenerateTicketNumber(){
             string newNumber = "";
@@ -67,18 +78,7 @@ namespace TicketingApi.Controllers.v1.Tickets
             return newNumber;
         }
 
-        public string GenerateRandom4Code(){
-            var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var Charsarr = new char[4];
-            var random = new Random();
-            for (int i = 0; i < Charsarr.Length; i++)
-            {
-                Charsarr[i] = characters[random.Next(characters.Length)];
-            }
-            var resultString = new String(Charsarr);
-            return resultString;
-        }
-
+        
 
         #region GET 
 
@@ -565,7 +565,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         if(fSender.LoginStatus == true ) { btnLink = "mytickets?tn="+cTicket.TicketNumber; }
                         else{
 
-                            sCode = GenerateRandom4Code();
+                            sCode = _mailUtil.GenerateRandom4Code();
                             var jsonString =  JsonConvert.SerializeObject(new {
                                 TicketNumber = cTicket.TicketNumber,
                                 CreatedBy= fSender.Email,
@@ -1026,6 +1026,7 @@ namespace TicketingApi.Controllers.v1.Tickets
         {
 
           var Email = "";
+          var TicketNumber = "";
 
           if(!string.IsNullOrEmpty(TicketToken)){ 
             var tokenPlain = AncDecUtil.DecryptString(TicketToken.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
@@ -1033,6 +1034,7 @@ namespace TicketingApi.Controllers.v1.Tickets
             var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
             if(tokenJson != null){
                 Email = tokenJson.CreatedBy;
+                TicketNumber=tokenJson.TicketNumber;
             }
           }
           else{ // client login true
@@ -1085,8 +1087,17 @@ namespace TicketingApi.Controllers.v1.Tickets
                         Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
                         Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
-                    }).OrderByDescending(e => e.Id).ToList();
-           return Ok(allTicket);
+                    });//.OrderByDescending(e => e.Id).ToList();
+                IOrderedQueryable filtered = null;
+                if(string.IsNullOrEmpty(TicketNumber)){ 
+                     filtered = allTicket.OrderByDescending(e => e.Id);
+                }
+                else{
+                     filtered = allTicket.Where(w => w.TicketNumber == TicketNumber).OrderByDescending(e => e.Id);
+                }
+                return Ok(filtered);
+            
+          // return Ok(allTicket);
         }
 
          [HttpPost("client")]
@@ -1301,15 +1312,63 @@ namespace TicketingApi.Controllers.v1.Tickets
             }
         }
 
-        [HttpGet("client/open-ticket-verify/{code}") ]
         [Authorize]
-        public IActionResult VerifyOpenTicket (int code, [FromHeader] string Authorization, [FromHeader] string TicketToken){
+        [HttpPost]
+        [Route("client/create-ticket-verify")]
+        public IActionResult verifyCreateTicketClientMailCode([FromBody] Verification request){ //CLIENT MAIL CODE
+           
+            var cClient = _context.ClientDetails.Where(w => request.Email.Contains(w.Domain)).FirstOrDefault();
+            if(cClient == null) {
+                return BadRequest("Sorry, This email has no access !");
+            }
+             else
+            {
+                string vCode = "";
+                for (int i = 0; i < 3; i++)
+                {
+                    vCode = _mailUtil.GenerateRandom4Code();
+                    var verified = _context.Verification.Where(w => w.Code == vCode).FirstOrDefault();
+                    if(verified == null){ break; } 
+                }
+                _context.Verification.Add(new Verification {
+                    Code = vCode,
+                    Verified = false,
+                    ExpiredAt = DateTime.Now.AddMinutes(30),
+                    Email = request.Email,
+                    CreatedAt = DateTime.Now,
+                    Desc = "Create Ticket Client"
+                });
+                
+                _context.SaveChanges();
+                List<string> listMailToSender = new List<string>();
+                listMailToSender.Add(request.Email);
+                _mailUtil.SendEmailVerificationCodeAsync(
+                    new MailType {
+                        ToEmail=listMailToSender,
+                        Subject= "Epsylon Ticketing Veification Code",
+                        Title= "Here is your confirmation code :",
+                        Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
+                        VerificationCode=vCode,
+                    }
+                );
+
+                return Ok();
+            }
+       
+        }
+
+
+
+
+        [HttpGet("client/open-ticket-verify") ]
+        [Authorize]
+        public IActionResult VerifyOpenTicket ([FromHeader] string Authorization, [FromHeader] string TicketToken, [FromQuery] string code ){
             if(!string.IsNullOrEmpty(TicketToken)){ 
                 var tokenPlain = AncDecUtil.DecryptString(TicketToken.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
                 var property = new { CreatedBy = "", TicketNumber= "", SecurityCode=""  };
                 var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
                 if(tokenJson != null && tokenJson.SecurityCode == code.ToString()){
-                    return Ok("True");
+                    return Ok(true);
                 }
             }
             return BadRequest("Incorrect verification code ");
