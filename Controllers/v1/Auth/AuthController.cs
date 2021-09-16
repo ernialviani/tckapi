@@ -3,28 +3,31 @@ using System.Net;
 using System.Net.Mime;
 using System;
 using System.IO;
-using System.Collections.Generic;
+using System.Text;
 using System.Linq;
+using System.Security.Claims;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+
 using System.Threading.Tasks;
+using System.Net.Http.Headers; 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using TicketingApi.DBContexts;
 using TicketingApi.Models.v1.Users;
 using TicketingApi.Models.v1.Misc;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
+
 using TicketingApi.Utils;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 using TicketingApi.Entities;
 using Newtonsoft.Json;
-using System.Net.Http;  
-using System.Net.Http.Headers;  
+ 
 
 namespace TicketingApi.Controllers.v1.Authentication
 {
@@ -36,14 +39,13 @@ namespace TicketingApi.Controllers.v1.Authentication
          private readonly IConfiguration _configuration;
          private readonly AppDBContext  _context;
         private readonly IWebHostEnvironment _env;
-          private readonly IMailUtil _mailUtil;
+        private readonly IMailUtil _mailUtil;
 
         public AuthController(IConfiguration configuration, AppDBContext context, IWebHostEnvironment env,  IMailUtil mailUtil){
             _configuration = configuration;
             _context = context;
             _env = env;
             _mailUtil = mailUtil;
-
         }    
 
         [AllowAnonymous]
@@ -497,10 +499,8 @@ namespace TicketingApi.Controllers.v1.Authentication
                 key = "epsylon$",
                 expiredAt = DateTime.Now.AddHours(1).ToString()
               });
-            
               return Ok(AncDecUtil.Encrypt( "[" + jsonString +"]", "EPSYLONHOME2021$"));
             }
-            
             return Ok();
         }
 

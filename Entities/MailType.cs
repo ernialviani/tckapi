@@ -10,6 +10,7 @@ namespace TicketingApi.Entities
         public List<string> CCMail {get;set;}
         public string Subject { get; set; }
 
+        public string TicketNumber { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
 

@@ -49,36 +49,25 @@ namespace TicketingApi.Controllers.v1.Tickets
             _config = config;
             
         }
-        // public string GenerateRandom4Code(){
-        //     var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        //     var Charsarr = new char[4];
-        //     var random = new Random();
-        //     for (int i = 0; i < Charsarr.Length; i++)
-        //     {
-        //         Charsarr[i] = characters[random.Next(characters.Length)];
-        //     }
-        //     var resultString = new String(Charsarr);
-        //     return resultString;
-        // }
-
+       
         public string GenerateTicketNumber(){
             string newNumber = "";
             int lastTicket = 0;
             int lastnumber = 0;
-            string nowDate = DateTime.Today.ToString().Substring(0, 10).Replace("-", "").Replace("/", "");
+            string nowDate = DateTime.Today.ToString("yyMMdd");
+
             var lastTicketNumber = _context.Tickets.OrderByDescending(x => x.Id).FirstOrDefault(w => w.TicketNumber.Contains(nowDate));
             if(lastTicketNumber != null){
-                lastnumber = Convert.ToInt32(lastTicketNumber.TicketNumber.Substring(8));
+                lastnumber = Convert.ToInt32(lastTicketNumber.TicketNumber.Substring(6));
                 lastTicket =  lastnumber + 1;
-                newNumber =  nowDate + Convert.ToString(lastTicket);
+                newNumber =  nowDate + lastTicket.ToString("D4");
             }
             else{
-                newNumber = nowDate+"1";
+                int first = 1;
+                newNumber = nowDate + first.ToString("D4");
             }
             return newNumber;
         }
-
-        
 
         #region GET 
 
@@ -138,9 +127,12 @@ namespace TicketingApi.Controllers.v1.Tickets
             if(r == 1){ 
                  filtered = allTicket.OrderByDescending(e => e.Id);
             }
-            else{
+            else if(u > 0 ){
                  var activeUser = _context.Users.Where(w=>w.Id == u).FirstOrDefault();
                  filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u || w.CreatedBy == activeUser.Email )).OrderByDescending(e => e.Id);
+            }
+            else{
+                filtered = allTicket.OrderByDescending(e => e.Id);
             }
             
            return Ok(filtered);
@@ -363,7 +355,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 .Include(i => i.UserRoles)
                                 .Include(i => i.UserDepts)
                                 .Where(w => w.UserRoles.Any(a => a.RoleId.Equals(2)) 
-                                && w.UserDepts.Any(a => a.DepartmentId.Equals(2)) )
+                                && w.UserDepts.Any(a => a.DepartmentId.Equals(2)) && w.Deleted == false )
                                 .ToList();
 
                     foreach (var mg in listManager) {
@@ -381,6 +373,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         new MailType {
                             ToEmail=listMailTo,
                             Subject= "New Ticket Number " + newTicket.TicketNumber,
+                            TicketNumber= newTicket.TicketNumber,
                             Title= request.Subject,
                             Body= request.Comment,
                             TicketFrom= requestSender.Email,
@@ -397,6 +390,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         new MailType {
                             ToEmail=listMailToSender,
                             Subject= "New Ticket Number " + newTicket.TicketNumber,
+                            TicketNumber=newTicket.TicketNumber,
                             Title= request.Subject,
                             Body= request.Comment,
                             TicketFrom= requestSender.Email,
@@ -412,7 +406,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     listManager = (from u in _context.Users 
                                     join ur in _context.UserRoles on u.Id equals ur.UserId
                                     join ud in _context.UserDepts on u.Id equals ud.UserId
-                                    where (ur.RoleId == 2 && ud.DepartmentId == 3)
+                                    where (ur.RoleId == 2 && ud.DepartmentId == 3 && u.Deleted == false)
                                     select u 
                                     ).ToList();
 
@@ -549,7 +543,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     List<string> listMailToEx = new List<string>();
                     var ticketRequestFrom = "";
                     if(cTicket.TicketType == "I"){
-                        var fUser = _context.Users.Where(w => w.Id == cTicket.UserId).FirstOrDefault();
+                        var fUser = _context.Users.Where(w => w.Id == cTicket.UserId && w.Deleted == false).FirstOrDefault();
                         ticketRequestFrom = fUser.Email; 
                         listMailTo.Add(ticketRequestFrom);
 
@@ -587,7 +581,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 TicketModule=appModule.Name,
                                 Attachments = new List<IFormFile>(file),
                                 UserFullName = cUser.FirstName + " " + cUser.LastName,
-                                VerificationCode = "Code : " + sCode,
+                                VerificationCode = string.IsNullOrEmpty(sCode) ? "" : "Code : " + sCode,
                                 DescVerificationCode= string.IsNullOrEmpty(sCode) ? "":" Use the code for access ticket page.",
                                 ButtonLink = _config.GetSection("HomeSite").Value + btnLink
                             }
@@ -598,6 +592,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         new MailType {
                             ToEmail= listMailTo,
                             Subject= "New Comment on Ticket Number " + cTicket.TicketNumber,
+                            TicketNumber=cTicket.TicketNumber,
                             Title= cTicket.Subject,
                             Body= request.Comment,
                             TicketFrom= ticketRequestFrom,
@@ -671,11 +666,14 @@ namespace TicketingApi.Controllers.v1.Tickets
         [HttpPost]
         [Authorize]
         [Route("ticket-assign")]
-        public IActionResult TicketAssign([FromBody]TicketAssign[] body){
+        public IActionResult TicketAssign([FromBody]TicketAssign[] body, [FromHeader] string Authorization){
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+                    var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+                    var authUser = _context.Users.Where(w => w.Email == Email).FirstOrDefault();
                     foreach (var assign in body)
                     {
                         var cTickets = _context.Tickets.Where(w => w.Id == assign.TicketId).FirstOrDefault();
@@ -696,7 +694,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             if(cTickets.StatId < 3) { cTickets.StatId = 3; }
                            
                             var team = _context.Teams.Where(w => w.Id == assign.TeamId).FirstOrDefault();
-                            var cUser = _context.Users.Where(w => w.Id == team.ManagerId ).FirstOrDefault();
+                            var cUser = _context.Users.Where(w => w.Id == team.ManagerId && w.Deleted == false).FirstOrDefault();
                             var app = _context.Apps.Where(w => w.Id == cTickets.AppId).FirstOrDefault();
                             var appModule = _context.Modules.Where(w => w.Id == cTickets.ModuleId).FirstOrDefault();
                             var mgAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "M").FirstOrDefault();
@@ -742,7 +740,8 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 _mailUtil.SendEmailPostCommentAsync(
                                     new MailType {
                                         ToEmail= ListToMail,
-                                        Subject= "Ticket Number " + cTickets.TicketNumber + " has been assign to your team.",
+                                        Subject= "Ticket need team response [" + cTickets.TicketNumber +"]",
+                                        TicketNumber=cTickets.TicketNumber,
                                         Title= cTickets.Subject,
                                         Body= cTickets.Comment,
                                         TicketFrom= ticketRequestFrom,
@@ -750,11 +749,13 @@ namespace TicketingApi.Controllers.v1.Tickets
                                         TicketModule=appModule.Name,
                                         Attachments = null,
                                         AttachmentsString = LFile,
-                                        UserFullName = " ",
+                                        UserFullName = authUser.FirstName + " " + authUser.LastName,
                                         ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         
                                     }
+                                    
                                 );
+                                
                             }
                         }
                         else
@@ -765,7 +766,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             var app = _context.Apps.Where(w => w.Id == cTickets.AppId).FirstOrDefault();
                             var appModule = _context.Modules.Where(w => w.Id == cTickets.ModuleId).FirstOrDefault();
                             var mgAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "M").FirstOrDefault();
-                            if (mgAssign.Viewed == false) {
+                            if (mgAssign != null  && mgAssign.Viewed == false) {
                                 mgAssign.Viewed = true;
                                 mgAssign.ViewedAt = DateTime.Now;
                             }
@@ -805,15 +806,16 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     _mailUtil.SendEmailPostCommentAsync(
                                         new MailType {
                                             ToEmail = ListToMail,
-                                            Subject = "Ticket Number " + cTickets.TicketNumber + " has been assign to you.",
+                                            Subject = "Ticket need response [" + cTickets.TicketNumber +"]",
                                             Title = cTickets.Subject,
                                             Body = cTickets.Comment,
+                                            TicketNumber = cTickets.TicketNumber,
                                             TicketFrom = ticketRequestFrom,
                                             TicketApp = app.Name,
                                             TicketModule = appModule.Name,
                                             Attachments = null,
                                             AttachmentsString = LFile,
-                                            UserFullName = " ",
+                                            UserFullName = authUser.FirstName + " " + authUser.LastName,
                                             ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         }
                                     );
@@ -1289,6 +1291,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         new MailType {
                             ToEmail= listMailTo,
                             Subject= "New Comment on Ticket Number " + cTicket.TicketNumber,
+                            TicketNumber=cTicket.TicketNumber,
                             Title= cTicket.Subject,
                             Body= request.Comment,
                             TicketFrom= requestSender.Email,
