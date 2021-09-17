@@ -82,7 +82,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                         // claimList.Add(new Claim("Department", ))
                         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
                         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                        var expireDate = DateTime.UtcNow.AddDays(30);
+                        var expireDate = DateTime.UtcNow.AddDays(365);
                         var timeStamp = DateUtil.ConvertToTimeStamp(expireDate);
                         var token = new JwtSecurityToken(
                             claims: claimList,
@@ -194,9 +194,9 @@ namespace TicketingApi.Controllers.v1.Authentication
                     _mailUtil.SendEmailVerificationCodeAsync(
                         new MailType {
                             ToEmail=listMailToSender,
-                            Subject= "Epsylon Ticketing Veification Code",
+                            Subject= "Epsylon Ticketing Verification Code",
                             Title= "Here is your confirmation code :",
-                            Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
+                            Body= "All you have to do is copy the code and paste it to your form to complate the email verification process.",
                             VerificationCode=vCode,
                         }
                     );

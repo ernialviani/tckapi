@@ -318,7 +318,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TicketDetail>().Property(u => u.TicketId).HasColumnName("ticket_id").HasColumnType("int").IsRequired();   
             modelBuilder.Entity<TicketDetail>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);   
             modelBuilder.Entity<TicketDetail>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("text").IsRequired();
-            modelBuilder.Entity<TicketDetail>().Property(u => u.Flag).HasColumnName("flag").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false);
+            modelBuilder.Entity<TicketDetail>().Property(u => u.Flag).HasColumnName("flag").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false); 
+            modelBuilder.Entity<TicketDetail>().Property(u => u.Private).HasColumnName("private").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false); 
             modelBuilder.Entity<TicketDetail>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<TicketDetail>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
 

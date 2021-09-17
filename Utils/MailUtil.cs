@@ -37,11 +37,11 @@ namespace TicketingApi.Utils
         public async Task SendEmailAsync(MailType mailType)
         {
 
-            string FilePath = Directory.GetCurrentDirectory() + "\\Media\\MailTemplate\\NewTicketHtmlTemplate.html";
+            string FilePath = Directory.GetCurrentDirectory() + "\\Medias\\MailTemplate\\NewTicketHtmlTemplate.html";
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();
-            MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
+            MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body).Replace("$number", mailType.TicketNumber);
             MailText = MailText.Replace("$from", mailType.TicketFrom).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
@@ -79,9 +79,12 @@ namespace TicketingApi.Utils
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
            // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+            
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTlsWhenAvailable);
            
             smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+            var isAuth = smtp.IsAuthenticated;
+            var isconnect = smtp.IsConnected;
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }
@@ -132,6 +135,8 @@ namespace TicketingApi.Utils
            // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTlsWhenAvailable);
             smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+            var isAuth = smtp.IsAuthenticated;
+            var isconnect = smtp.IsConnected;
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }
@@ -146,7 +151,7 @@ namespace TicketingApi.Utils
             str.Close();
             MailText = MailText.Replace("$title", mailType.Title).Replace("$from", mailType.TicketFrom);
             MailText = MailText.Replace("$body", mailType.Body).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
-            MailText = MailText.Replace("$user", mailType.UserFullName);
+            MailText = MailText.Replace("$user", mailType.UserFullName).Replace("$number", mailType.TicketNumber);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
             if(!string.IsNullOrEmpty(mailType.VerificationCode)){
@@ -207,6 +212,8 @@ namespace TicketingApi.Utils
            // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTlsWhenAvailable);
             smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+            var isAuth = smtp.IsAuthenticated;
+            var isconnect = smtp.IsConnected;
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }
@@ -221,7 +228,7 @@ namespace TicketingApi.Utils
                     str.Close();
                     MailText = MailText.Replace("$title", mailType.Title).Replace("$from", mailType.TicketFrom);
                     MailText = MailText.Replace("$body", mailType.Body).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
-                    MailText = MailText.Replace("$user", mailType.UserFullName);
+                    MailText = MailText.Replace("$user", mailType.UserFullName).Replace("$number", mailType.TicketNumber);
                     MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
                     var email = new MimeMessage();
                     email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
@@ -269,6 +276,8 @@ namespace TicketingApi.Utils
                 // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
                     smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTlsWhenAvailable);
                     smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+                    var isAuth = smtp.IsAuthenticated;
+                     var isconnect = smtp.IsConnected;
                     await smtp.SendAsync(email);
                     smtp.Disconnect(true);
             }

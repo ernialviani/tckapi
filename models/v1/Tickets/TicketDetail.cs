@@ -12,7 +12,11 @@ namespace TicketingApi.Models.v1.Tickets
         public int TicketId {get; set;}
          public int? UserId {get; set;}
          public string Comment {get; set;}
-         public bool Flag {get; set;}
+         public bool Flag {get; set;} // solved purpose
+
+         public bool Private {get; set;}
+
+         
 
         public User Users {get; set;}
 
