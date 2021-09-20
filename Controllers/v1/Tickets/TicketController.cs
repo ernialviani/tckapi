@@ -86,7 +86,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     .Select(e => new {
                         e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
                         TicketDetails = e.TicketDetails.Select(t => new { 
-                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
+                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, t.Private,
                             Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "TD"),
                             Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }
                         }),
@@ -153,7 +153,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     .Select(e => new {
                         e.Id, e.TicketNumber, e.Subject, e.Comment, e.PendingBy, e.PendingAt, e.SolvedBy, e.SolvedAt, e.RejectedBy, e.RejectedReason, e.RejectedAt, e.CreatedBy, e.CreatedAt, e.UpdatedAt,
                         TicketDetails = e.TicketDetails.Select(t => new { 
-                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, 
+                            t.Id, t.Comment, t.Flag, t.CreatedAt, t.UpdatedAt, t.Private,
                             Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelType == "TD"),
                             Users = t.Users == null ? null : new { UserId = t.Users.Id, t.Users.Email, FullName = t.Users.FirstName + " " + t.Users.LastName, t.Users.Image, t.Users.Color }
                         }),
