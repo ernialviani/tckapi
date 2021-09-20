@@ -1,6 +1,7 @@
 using TicketingApi.Models.v1.Users;  
 using TicketingApi.Models.v1.Misc;
 using TicketingApi.Models.v1.Tickets;
+using TicketingApi.Models.v1.CLogs;
 using Microsoft.EntityFrameworkCore;  
 using System;  
 using System.Collections.Generic;  
@@ -26,7 +27,13 @@ namespace TicketingApi.DBContexts
         public  DbSet<TeamMember> TeamMembers {get; set;}
         public  DbSet<Media> Medias {get; set;}
         public DbSet<KBase> KBases {get; set;} 
-        public DbSet<CLog> Clogs {get; set;} 
+
+        public DbSet<CLog> CLogs {get; set;} 
+        public DbSet<CLogDetail> CLogDetails {get; set;} 
+        public DbSet<CLogType> ClogTypes {get; set;} 
+
+
+        
         public DbSet<Faq> Faqs {get; set;} 
         public DbSet<ClientGroup> ClientGroups {get; set;} 
         public DbSet<ClientDetail> ClientDetails {get; set;} 
@@ -359,7 +366,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Media>().Property(u => u.RelType).HasColumnName("rel_type").HasColumnType("nvarchar(5)").IsRequired();
             modelBuilder.Entity<Media>().Property(u => u.TicketId).HasColumnName("ticket_id").HasColumnType("int").IsRequired(false);
             modelBuilder.Entity<Media>().Property(u => u.TicketDetailId).HasColumnName("ticket_detail_id").HasColumnType("int").IsRequired(false);
-            modelBuilder.Entity<Media>().Property(u => u.ClogId).HasColumnName("clog_id").HasColumnType("int").IsRequired(false);
+            modelBuilder.Entity<Media>().Property(u => u.CLogDetailId).HasColumnName("clog_detail_id").HasColumnType("int").IsRequired(false);
             modelBuilder.Entity<Media>().Property(u => u.KbaseId).HasColumnName("kbase_id").HasColumnType("int").IsRequired(false);
             modelBuilder.Entity<Media>().Ignore(u => u.File);
 
@@ -384,13 +391,34 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<CLog>().ToTable("clogs");
             modelBuilder.Entity<CLog>().HasKey(u => u.Id).HasName("PK_CLog");  
             modelBuilder.Entity<CLog>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
-            modelBuilder.Entity<CLog>().Property(u => u.Version).HasColumnName("version").HasColumnType("nvarchar(20)").IsRequired();   
-            modelBuilder.Entity<CLog>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired();   
+            modelBuilder.Entity<CLog>().Property(u => u.Version).HasColumnName("version").HasColumnType("nvarchar(100)").IsRequired();   
+            modelBuilder.Entity<CLog>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
             modelBuilder.Entity<CLog>().Property(u => u.AppId).HasColumnName("app_id").HasColumnType("int").IsRequired();
-            modelBuilder.Entity<CLog>().Property(u => u.ModuleId).HasColumnName("module_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<CLog>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<CLog>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<CLog>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
+
+            modelBuilder.Entity<CLogDetail>().ToTable("clog_details");
+            modelBuilder.Entity<CLogDetail>().HasKey(u => u.Id).HasName("PK_CLog_Detail");  
+            modelBuilder.Entity<CLogDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<CLogDetail>().Property(u => u.Title).HasColumnName("title").HasColumnType("nvarchar(200)").IsRequired();   
+            modelBuilder.Entity<CLogDetail>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
+            modelBuilder.Entity<CLogDetail>().Property(u => u.CLogId).HasColumnName("clog_id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<CLogDetail>().Property(u => u.ModuleId).HasColumnName("module_id").HasColumnType("int").IsRequired(false);
+            modelBuilder.Entity<CLogDetail>().Property(u => u.CLogTypeId).HasColumnName("clog_type_id").HasColumnType("int").IsRequired();
+
+            modelBuilder.Entity<CLogType>().ToTable("clog_type");
+            modelBuilder.Entity<CLogType>().HasKey(u => u.Id).HasName("PK_CLog_Type");  
+            modelBuilder.Entity<CLogType>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<CLogType>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(20)").IsRequired();   
+            modelBuilder.Entity<CLogType>().Property(u => u.Color).HasColumnName("color").HasColumnType("nvarchar(20)").IsRequired();   
+            modelBuilder.Entity<CLogType>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);
+            modelBuilder.Entity<CLogType>().HasData(
+                new { Id = 1, Name="New", Color="Blue"},
+                new { Id = 2, Name="Fix", Color="Orange"},
+                new { Id = 3, Name="Enhance", Color="Green" }
+  
+            );
 
             modelBuilder.Entity<Faq>().ToTable("faqs");
             modelBuilder.Entity<Faq>().HasKey(u => u.Id).HasName("PK_Faqs");  

@@ -1,10 +1,14 @@
+using System.Collections;
 using System;  
 using System.Collections.Generic;  
 using System.Linq;  
 using System.Threading.Tasks;  
 using Microsoft.AspNetCore.Http;
+using TicketingApi.Models.v1.Users;
+using TicketingApi.Models.v1.Misc;
 
-namespace TicketingApi.Models.v1.Misc
+
+namespace TicketingApi.Models.v1.CLogs
 {
     public class CLog
     {
@@ -14,12 +18,14 @@ namespace TicketingApi.Models.v1.Misc
 
         public int UserId {get; set;}
         public int AppId {get; set;}
-        public int ModuleId {get; set;}
-
-        public ICollection<Media> Medias {get; set;}
-
+     
         public DateTime? CreatedAt { get; set;}  
         public DateTime? UpdatedAt { get; set;}  
+
+        public User Users {get; set;}
+        public App Apps {get; set;}
+
+        public ICollection<CLogDetail> CLogDetails {get; set;}
         
     }
 }

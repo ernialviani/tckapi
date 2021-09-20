@@ -41,7 +41,8 @@ namespace TicketingApi.Utils
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();
-            MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body).Replace("$number", mailType.TicketNumber);
+            MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
+            MailText = MailText.Replace("$number", mailType.TicketNumber);
             MailText = MailText.Replace("$from", mailType.TicketFrom).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
