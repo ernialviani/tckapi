@@ -55,5 +55,14 @@ namespace TicketingApi.Controllers.v1.CLog
 
            return Ok(allLogs);
         }
+
+
+        [HttpGet("type")]
+        [Authorize]
+        public IActionResult GetClogType()
+        {
+          var cLogType = _context.ClogTypes.AsNoTracking();
+           return Ok(cLogType);
+        }
     }
 }
