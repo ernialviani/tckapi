@@ -48,8 +48,8 @@ namespace TicketingApi.Controllers.v1.CLog
                         e.Id, e.Version, e.Desc, e.Apps,  e.CreatedAt, e.UpdatedAt,
                         Users =  new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
                         CLogDetails = e.CLogDetails.Select(t => new { 
-                            t.Title, t.Desc, t.CLogId, t.CLogTypeId, t.CLogTypes, t.Modules,
-                            Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "CL"),
+                            t.Id, t.Title, t.Desc, t.CLogId, t.CLogTypeId, t.CLogTypes, t.Modules,
+                            Medias = t.Medias == null ? null : t.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == t.Id && w.RelType == "CLD"),
                         })
                     });
 
