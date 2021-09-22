@@ -5,6 +5,8 @@ namespace TicketingApi.Entities
 {
     public class MailType
     {
+
+        public string HomeSite {get;set;}
         public List<string> ToEmail { get; set; }
 
         public List<string> CCMail {get;set;}

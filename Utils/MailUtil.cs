@@ -44,6 +44,7 @@ namespace TicketingApi.Utils
             MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
             MailText = MailText.Replace("$number", mailType.TicketNumber);
             MailText = MailText.Replace("$from", mailType.TicketFrom).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
+            MailText = MailText.Replace("$homesite_", mailType.HomeSite);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
             var email = new MimeMessage();
@@ -98,6 +99,7 @@ namespace TicketingApi.Utils
             string MailText = str.ReadToEnd();
             str.Close();
             MailText = MailText.Replace("$name", mailType.UserFullName).Replace("$email", mailType.WelcomeEmail).Replace("$pass", mailType.WelcomePass);
+            MailText = MailText.Replace("$homesite_", mailType.HomeSite);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
             var email = new MimeMessage();
@@ -152,6 +154,7 @@ namespace TicketingApi.Utils
             str.Close();
             MailText = MailText.Replace("$title", mailType.Title).Replace("$from", mailType.TicketFrom);
             MailText = MailText.Replace("$body", mailType.Body).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
+            MailText = MailText.Replace("$homesite_", mailType.HomeSite);
             MailText = MailText.Replace("$user", mailType.UserFullName).Replace("$number", mailType.TicketNumber);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
 
@@ -230,6 +233,7 @@ namespace TicketingApi.Utils
                     MailText = MailText.Replace("$title", mailType.Title).Replace("$from", mailType.TicketFrom);
                     MailText = MailText.Replace("$body", mailType.Body).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
                     MailText = MailText.Replace("$user", mailType.UserFullName).Replace("$number", mailType.TicketNumber);
+                    MailText = MailText.Replace("$homesite_", mailType.HomeSite);
                     MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
                     var email = new MimeMessage();
                     email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
@@ -299,6 +303,7 @@ namespace TicketingApi.Utils
             string MailText = str.ReadToEnd();
             str.Close();
             MailText = MailText.Replace("$title", mailType.Title).Replace("$body", mailType.Body);
+            MailText = MailText.Replace("$homesite_", mailType.HomeSite);
             MailText = MailText.Replace("$code", mailType.VerificationCode);
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);

@@ -197,6 +197,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                             Subject= "Epsylon Ticketing Verification Code",
                             Title= "Here is your confirmation code :",
                             Body= "All you have to do is copy the code and paste it to your form to complate the email verification process.",
+                            HomeSite = _configuration.GetSection("HomeSite").Value,
                             VerificationCode=vCode,
                         }
                     );
@@ -231,6 +232,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                             Subject= "Epsylon Ticketing Veification Code",
                             Title= "Here is your confirmation code :",
                             Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
+                            HomeSite = _configuration.GetSection("HomeSite").Value,
                             VerificationCode= vCode,
                         }
                     );
@@ -398,6 +400,7 @@ namespace TicketingApi.Controllers.v1.Authentication
                         Subject= "Epsylon Ticketing Veification Code",
                         Title= "Here is your confirmation code :",
                         Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
+                        HomeSite = _configuration.GetSection("HomeSite").Value,
                         VerificationCode=vCode,
                     }
                 );

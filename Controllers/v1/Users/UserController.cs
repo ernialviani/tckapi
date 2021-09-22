@@ -152,6 +152,7 @@ namespace TicketingApi.Controllers.v1.Users
                             UserFullName = request.FirstName + " " + request.LastName,
                             WelcomeEmail = request.Email,
                             WelcomePass = request.Password,
+                            HomeSite = _config.GetSection("HomeSite").Value,
                             ButtonLink =  _config.GetSection("HomeSite").Value + "admin/login",
                         }
                     );

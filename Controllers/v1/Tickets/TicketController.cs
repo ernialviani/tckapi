@@ -380,6 +380,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketApp= app.Name,
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
+                            HomeSite = _config.GetSection("HomeSite").Value,
                            // ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
                             ButtonLink =  _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
                         }
@@ -397,6 +398,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketApp= app.Name,
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
+                            HomeSite = _config.GetSection("HomeSite").Value,
                             ButtonLink = _config.GetSection("HomeSite").Value + "ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
@@ -425,12 +427,14 @@ namespace TicketingApi.Controllers.v1.Tickets
                         new MailType {
                             ToEmail=listMailTo,
                             Subject= "New Ticket Number " + newTicket.TicketNumber,
+                            TicketNumber=newTicket.TicketNumber,
                             Title= request.Subject,
                             Body= request.Comment,
                             TicketFrom= request.CreatedBy,
                             TicketApp= app.Name,
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
+                            HomeSite = _config.GetSection("HomeSite").Value,
                             ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
                         }
                     );
@@ -585,6 +589,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     UserFullName = cUser.FirstName + " " + cUser.LastName,
                                     VerificationCode = string.IsNullOrEmpty(sCode) ? "" : "Code : " + sCode,
                                     DescVerificationCode= string.IsNullOrEmpty(sCode) ? "":" Use the code for access ticket page.",
+                                    HomeSite = _config.GetSection("HomeSite").Value,
                                     ButtonLink = _config.GetSection("HomeSite").Value + btnLink
                                 }
                             );
@@ -603,6 +608,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
                             UserFullName = cUser.FirstName + " " + cUser.LastName,
+                            HomeSite = _config.GetSection("HomeSite").Value,
                             ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTicket.Id +"&open=true",
                         }
                     );
@@ -753,6 +759,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                         Attachments = null,
                                         AttachmentsString = LFile,
                                         UserFullName = authUser.FirstName + " " + authUser.LastName,
+                                        HomeSite = _config.GetSection("HomeSite").Value,
                                         ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         
                                     }
@@ -819,6 +826,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                             Attachments = null,
                                             AttachmentsString = LFile,
                                             UserFullName = authUser.FirstName + " " + authUser.LastName,
+                                            HomeSite = _config.GetSection("HomeSite").Value,
                                             ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTickets.Id +"&open=true",
                                         }
                                     );
@@ -1215,7 +1223,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         TicketApp= app.Name,
                         TicketModule=appModule.Name,
                         Attachments = new List<IFormFile>(file),
-                        // ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
+                        HomeSite = _config.GetSection("HomeSite").Value,
                         ButtonLink =  _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
                     }
                 );
@@ -1232,6 +1240,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         TicketApp= app.Name,
                         TicketModule=appModule.Name,
                         Attachments = new List<IFormFile>(file),
+                        HomeSite = _config.GetSection("HomeSite").Value,
                         ButtonLink = _config.GetSection("HomeSite").Value + "ticket?tid="+ newTicket.Id +"&open=true",
                     }
                 );
@@ -1302,6 +1311,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             TicketModule=appModule.Name,
                             Attachments = new List<IFormFile>(file),
                             UserFullName = requestSender.FirstName + " " + requestSender.LastName,
+                            HomeSite = _config.GetSection("HomeSite").Value,
                             ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTicket.Id +"&open=true",
                         }
                     );
@@ -1354,6 +1364,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         Subject= "Epsylon Ticketing Veification Code",
                         Title= "Here is your confirmation code :",
                         Body= "All you have to do is copy the code and paste it to your form to complate the email verification process",
+                        HomeSite = _config.GetSection("HomeSite").Value,
                         VerificationCode=vCode,
                     }
                 );
