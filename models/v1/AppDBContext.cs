@@ -406,6 +406,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<CLogDetail>().Property(u => u.CLogId).HasColumnName("clog_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<CLogDetail>().Property(u => u.ModuleId).HasColumnName("module_id").HasColumnType("int").IsRequired(false);
             modelBuilder.Entity<CLogDetail>().Property(u => u.CLogTypeId).HasColumnName("clog_type_id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<CLogDetail>().Ignore(u => u.ImageName);
+
 
             modelBuilder.Entity<CLogType>().ToTable("clog_type");
             modelBuilder.Entity<CLogType>().HasKey(u => u.Id).HasName("PK_CLog_Type");  
@@ -444,6 +446,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<ClientDetail>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();   
             modelBuilder.Entity<ClientDetail>().Property(u => u.Domain).HasColumnName("domain").HasColumnType("nvarchar(50)").IsRequired();
             modelBuilder.Entity<ClientDetail>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
+
          
             modelBuilder.Entity<Verification>().ToTable("verifications");
             modelBuilder.Entity<Verification>().HasKey(u => u.Id).HasName("PK_Verifications");  
