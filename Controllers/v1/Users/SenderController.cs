@@ -173,7 +173,7 @@ namespace TicketingApi.Controllers.v1.Users
                var senderExist =  _context.Senders .Where(e => e.Id == id) .FirstOrDefault();
                 var isRemovedImage = false;
                 if(String.IsNullOrEmpty(senderExist.Image) == false){
-                    isRemovedImage = _fileUtil.Remove("Senders/"+senderExist.Image);
+                    isRemovedImage = _fileUtil.Remove(senderExist.Image);
                 }
                
                 _context.Senders.Remove(senderExist);

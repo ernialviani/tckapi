@@ -931,14 +931,14 @@ namespace TicketingApi.Controllers.v1.Tickets
                 var mediasExist = _context.Medias.Where(e => e.RelId == id && e.RelType == "T");
 
                 foreach (var item in mediasExist) {
-                    var isRemoved = _fileUtil.Remove("Tickets/"+item.FileName);
+                    var isRemoved = _fileUtil.Remove(item.FileName);
                     if(isRemoved) _context.Medias.Remove(item);
                 }
       
                 foreach (var itemDetail in ticketExist.TicketDetails) {
                     var mediaDetailExist = _context.Medias.Where(e => e.RelId == id && e.RelType == "TD");
                     foreach (var item in mediasExist) {
-                        var isRemoved = _fileUtil.Remove("Tickets/"+item.FileName);
+                        var isRemoved = _fileUtil.Remove(item.FileName);
                         if(isRemoved) _context.Medias.Remove(item);
                     }
                     _context.TicketDetails.Remove(itemDetail);

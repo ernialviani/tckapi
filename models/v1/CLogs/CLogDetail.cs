@@ -17,5 +17,8 @@ namespace TicketingApi.Models.v1.CLogs
         public CLogType CLogTypes {get;set;}
         public Module Modules {get;set;}
         public ICollection<Media> Medias {get; set;}
+        
+        //post purpose
+        public ICollection<string> ImageName {get;set;}
     }
 }
