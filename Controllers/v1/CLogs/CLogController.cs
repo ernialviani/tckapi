@@ -184,8 +184,8 @@ namespace TicketingApi.Controllers.v1.CLogs
 
                         foreach (var cMedia in cMedias)
                         {
-                             var existImg = cReqCLogDetail.ImageName.Any(a => a.Contains(cMedia.FileName));
-                             if(!existImg){
+                             var doRemove = cReqCLogDetail.ImageName.Any(a => cMedia.FileName.Contains(a));
+                             if(!doRemove){
                                 var isRemoved = _fileUtil.Remove(cMedia.FileName);
                                 if(isRemoved) _context.Medias.Remove(cMedia);
                             }
