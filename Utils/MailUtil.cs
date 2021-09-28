@@ -1,4 +1,7 @@
 
+using Microsoft.VisualBasic;
+using System.Linq;
+using System.Collections.Immutable;
 using System.Data.SqlTypes;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -12,7 +15,8 @@ using System.Threading.Tasks;
 using System;
 using System.Text;
 using HtmlAgilityPack;
-
+using System.Drawing;
+using System.Collections.Generic;
 
 namespace TicketingApi.Utils
 {
@@ -34,52 +38,35 @@ namespace TicketingApi.Utils
             var resultString = new String(Charsarr);
             return resultString;
         }
+        public string GetAllImgTags(BodyBuilder bodyBuilder)
+        {
+            HtmlDocument document = new HtmlDocument(); //Install-Package HtmlAgilityPack
+            document.LoadHtml(bodyBuilder.HtmlBody);
+            var imgList = document.DocumentNode.Descendants("img").ToList().Where(x =>
+            {
+                string src = x.GetAttributeValue("src", null) ?? "";
+                return !string.IsNullOrEmpty(src) && !src.Contains("static/media");
+            }).ToList();
 
-        // public Image LoadImage()
-        // {
-        //     byte[] bytes = Convert.FromBase64String("R0lGODlhAQABAIAAAAAAAAAAACH5BAAAAAAALAAAAAABAAEAAAICTAEAOw==");
-        //     Image image;
-        //     using (MemoryStream ms = new MemoryStream(bytes))
-        //     {
-        //         image = Image.FromStream(ms);
-        //     }
-        //     return image;
-        // }
+            foreach(var item in imgList)
+            {
+                string currentSrcValue = item.GetAttributeValue("src", null);
+                string[] splitSrc = Strings.Split(currentSrcValue, "base64,");
+                byte[] imageData = Convert.FromBase64String(splitSrc[1]);  
+                var contentType = new ContentType ("image", "jpeg");
+                var contentId = MimeKit.Utils.MimeUtils.GenerateMessageId();
+                var image = (MimePart) bodyBuilder.LinkedResources.Add(contentId, imageData, contentType);
+                image.ContentTransferEncoding = ContentEncoding.Base64;
+                image.ContentId = contentId;
+                item.SetAttributeValue ("src", "cid:" + contentId);
+                item.SetAttributeValue ("width", "300px");
+                bodyBuilder.LinkedResources.Add(contentId, new MemoryStream(imageData));
+            }
 
-        // public string GetAllImgTags(BodyBuilder bodyBuilder)
-        // {
-        //     HtmlDocument document = new HtmlDocument(); //Install-Package HtmlAgilityPack
-
-        //     document.LoadHtml(bodyBuilder.HtmlBody);
-
-        //     var imgList = document.DocumentNode.Descendants("img").Where(x =>
-        //     {
-        //         string src = x.GetAttributeValue("src", null) ?? "";
-        //         return !string.IsNullOrEmpty(src);
-        //     }).ToList();
-
-        //     foreach(var item in imgList)
-        //     {
-        //         string currentSrcValue = item.GetAttributeValue("src", null);
-        //         var file = Path.Combine(_env.WebRootPath,"images", currentSrcValue);
-        //         if (File.Exists(file))
-        //         {                    
-        //             byte[] imageData = System.IO.File.ReadAllBytes(file);
-        //             var contentType = new ContentType ("image", "jpeg");
-        //             var contentId = MimeKit.Utils.MimeUtils.GenerateMessageId();
-        //             var image = (MimePart) bodyBuilder.LinkedResources.Add (file, contentType);
-        //             image.ContentTransferEncoding = ContentEncoding.Base64;
-        //             image.ContentId = contentId;
-
-        //             item.SetAttributeValue ("src", "cid:" + contentId);
-        //             bodyBuilder.LinkedResources.Add(contentId, new MemoryStream(imageData));
-        //         }
-        //     }
-
-        //     bodyBuilder.HtmlBody = document.DocumentNode.OuterHtml;
-        //     string result = document.DocumentNode.OuterHtml;
-        //     return result;
-        // }
+            bodyBuilder.HtmlBody = document.DocumentNode.OuterHtml;
+            string result = document.DocumentNode.OuterHtml;
+            return result;
+        }
 
         
 
@@ -110,6 +97,7 @@ namespace TicketingApi.Utils
             
             email.Subject = mailType.Subject;
             var builder = new BodyBuilder();
+ 
             if (mailType.Attachments != null)
             {
                 byte[] fileBytes;
@@ -127,6 +115,7 @@ namespace TicketingApi.Utils
                 }
             }
             builder.HtmlBody = MailText;
+            GetAllImgTags(builder);
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
            // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
@@ -260,6 +249,7 @@ namespace TicketingApi.Utils
                 }
             }
             builder.HtmlBody = MailText;
+            GetAllImgTags(builder);
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
            // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
@@ -325,6 +315,7 @@ namespace TicketingApi.Utils
                         }
                     }
                     builder.HtmlBody = MailText;
+                      GetAllImgTags(builder);
                     email.Body = builder.ToMessageBody();
                     using var smtp = new SmtpClient();
                 // smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);

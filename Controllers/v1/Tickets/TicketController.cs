@@ -706,19 +706,40 @@ namespace TicketingApi.Controllers.v1.Tickets
                             if(cTickets.StatId < 3) { cTickets.StatId = 3; }
                            
                             var team = _context.Teams.Where(w => w.Id == assign.TeamId).FirstOrDefault();
+                            var teamMember = _context.TeamMembers.Where(w => w.TeamId == team.Id).ToList();
                             var cUser = _context.Users.Where(w => w.Id == team.ManagerId && w.Deleted == false).FirstOrDefault();
                             var app = _context.Apps.Where(w => w.Id == cTickets.AppId).FirstOrDefault();
                             var appModule = _context.Modules.Where(w => w.Id == cTickets.ModuleId).FirstOrDefault();
                             var mgAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "M").FirstOrDefault();
                           
-                            if (mgAssign.Viewed == false)  {
+                            if (mgAssign != null && mgAssign.Viewed == false)  {
                                 mgAssign.Viewed = true;
                                 mgAssign.ViewedAt = DateTime.Now;
                             }
 
                             var tAssign = _context.TicketAssigns.Where(w => w.TicketId == assign.TicketId && w.AssignType == "T" && w.TeamId == assign.TeamId ).FirstOrDefault();
                             if(tAssign == null) {
-                                 _context.TicketAssigns.Add(new TicketAssign(){
+                            
+                                
+                                List<string> ListToMail = new List<string>();
+                                ListToMail.Add(cUser.Email);
+                                foreach (var member in teamMember)
+                                {
+                                    _context.TicketAssigns.Add(new TicketAssign(){
+                                            TicketId = assign.TicketId,
+                                            UserId = member.UserId,
+                                            UserAt = DateTime.Now,
+                                            Viewed = false,
+                                            AssignType = "U"
+                                    });
+
+                                    var userMember = _context.Users.Where(w => w.Id == member.UserId && w.Deleted == false).FirstOrDefault();
+                                    if(userMember != null){
+                                      ListToMail.Add(userMember.Email);
+                                    }
+                                }
+
+                                _context.TicketAssigns.Add(new TicketAssign(){
                                     TicketId = assign.TicketId,
                                     TeamId = assign.TeamId,
                                     TeamAt = DateTime.Now,
@@ -726,9 +747,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     Viewed = false,
                                     AssignType = "T"
                                 });
-
-                                List<string> ListToMail = new List<string>();
-                                ListToMail.Add(cUser.Email);
 
                                 List<string> LFile = new List<string>();
                                 var medias = _context.Medias.Where(w => w.RelId == assign.TicketId && w.RelType == "T").ToList();

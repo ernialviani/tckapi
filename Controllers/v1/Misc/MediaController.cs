@@ -18,6 +18,8 @@ using System.IdentityModel.Tokens.Jwt;
 using TicketingApi.Entities;
 using TicketingApi.Utils;
 using Microsoft.AspNetCore.Hosting;
+using System.Security.Claims;
+using Newtonsoft.Json;
 
 namespace TicketingApi.Controllers.v1.Misc
 {
@@ -96,12 +98,32 @@ namespace TicketingApi.Controllers.v1.Misc
 
         [AllowAnonymous]
         [HttpGet("clog/{id}")]
-        public IActionResult GetClogImage(int id){
-            var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "CLD").FirstOrDefault();
-            var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
-            var filePath = Path.Combine(uploadPath,  existingMedia.FileName);
-            byte[] b = System.IO.File.ReadAllBytes(filePath);
-            return File(b, "image/jpeg");
+        public IActionResult GetClogImage(int id, [FromQuery] string tid, [FromQuery] string ttype){
+          string Email = "";
+          if(!string.IsNullOrEmpty(tid)){ 
+            if(string.IsNullOrEmpty(ttype)){
+                 var token = new JwtSecurityTokenHandler().ReadJwtToken(tid.Replace("Bearer ", ""));
+                  Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;   
+            }
+            else{
+                var tokenPlain = AncDecUtil.DecryptString(tid.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+                var property = new { CreatedBy = "" };
+                var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+                if(tokenJson != null){
+                    Email = tokenJson.CreatedBy;
+                }
+            }
+  
+          }
+
+           if(string.IsNullOrEmpty(Email)) { return Unauthorized(); }
+           else if( _context.Users.Where(w => w.Email == Email).FirstOrDefault() == null ) { return Unauthorized(); }
+           var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "CLD").FirstOrDefault();
+
+           var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
+           var filePath = Path.Combine(uploadPath,  existingMedia.FileName);
+           byte[] b = System.IO.File.ReadAllBytes(filePath);
+           return File(b, "image/jpeg");
         }
 
         [AllowAnonymous]

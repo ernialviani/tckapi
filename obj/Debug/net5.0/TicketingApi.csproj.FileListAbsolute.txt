@@ -429,3 +429,7 @@ X:\TICKETING\backend\bin\Debug\net5.0\Microsoft.AspNetCore.SpaServices.Extension
 =======
 C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\Api\bin\Debug\net5.0\appsettings.json
 >>>>>>> 2c542a52f3cd623e269b73b2d988d031e5e39e02
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\HtmlAgilityPack.dll
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\System.Drawing.Common.dll
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\Ihsan_pc\Documents\vicky\ticketing-api\api\bin\Debug\net5.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
