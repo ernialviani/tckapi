@@ -11,6 +11,7 @@ using System.Web;
 using System.Threading.Tasks;
 using System;
 using System.Text;
+using HtmlAgilityPack;
 
 
 namespace TicketingApi.Utils
@@ -33,6 +34,54 @@ namespace TicketingApi.Utils
             var resultString = new String(Charsarr);
             return resultString;
         }
+
+        // public Image LoadImage()
+        // {
+        //     byte[] bytes = Convert.FromBase64String("R0lGODlhAQABAIAAAAAAAAAAACH5BAAAAAAALAAAAAABAAEAAAICTAEAOw==");
+        //     Image image;
+        //     using (MemoryStream ms = new MemoryStream(bytes))
+        //     {
+        //         image = Image.FromStream(ms);
+        //     }
+        //     return image;
+        // }
+
+        // public string GetAllImgTags(BodyBuilder bodyBuilder)
+        // {
+        //     HtmlDocument document = new HtmlDocument(); //Install-Package HtmlAgilityPack
+
+        //     document.LoadHtml(bodyBuilder.HtmlBody);
+
+        //     var imgList = document.DocumentNode.Descendants("img").Where(x =>
+        //     {
+        //         string src = x.GetAttributeValue("src", null) ?? "";
+        //         return !string.IsNullOrEmpty(src);
+        //     }).ToList();
+
+        //     foreach(var item in imgList)
+        //     {
+        //         string currentSrcValue = item.GetAttributeValue("src", null);
+        //         var file = Path.Combine(_env.WebRootPath,"images", currentSrcValue);
+        //         if (File.Exists(file))
+        //         {                    
+        //             byte[] imageData = System.IO.File.ReadAllBytes(file);
+        //             var contentType = new ContentType ("image", "jpeg");
+        //             var contentId = MimeKit.Utils.MimeUtils.GenerateMessageId();
+        //             var image = (MimePart) bodyBuilder.LinkedResources.Add (file, contentType);
+        //             image.ContentTransferEncoding = ContentEncoding.Base64;
+        //             image.ContentId = contentId;
+
+        //             item.SetAttributeValue ("src", "cid:" + contentId);
+        //             bodyBuilder.LinkedResources.Add(contentId, new MemoryStream(imageData));
+        //         }
+        //     }
+
+        //     bodyBuilder.HtmlBody = document.DocumentNode.OuterHtml;
+        //     string result = document.DocumentNode.OuterHtml;
+        //     return result;
+        // }
+
+        
 
         public async Task SendEmailAsync(MailType mailType)
         {

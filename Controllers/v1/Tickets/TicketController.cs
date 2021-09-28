@@ -494,7 +494,7 @@ namespace TicketingApi.Controllers.v1.Tickets
             using (var transaction =  _context.Database.BeginTransaction())
             {
                 try {
-                    var cTicket =  _context.Tickets .Where(e => e.Id == request.TicketId) .FirstOrDefault();
+                    var cTicket =  _context.Tickets .Where(e => e.Id == request.TicketId).FirstOrDefault();
                     if (cTicket == null) { return NotFound("ticket Not Found !"); }
                     
                     Sender requestSender = JsonConvert.DeserializeObject<Sender>(sender);
@@ -518,6 +518,9 @@ namespace TicketingApi.Controllers.v1.Tickets
                     else if(cTicket.TicketType == "I"){
                         if(cTicket.CreatedBy != requestUser.Email){
                             td.UserId = requestUser.Id;
+                            if(cTicket.StatId < 3){ //auto update state form open to in progress: input mba anik 27/09/2021
+                                cTicket.StatId = 3;
+                            }
                         }
                     }
 

@@ -293,7 +293,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Ticket>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<Ticket>().Property(u => u.TicketNumber).HasColumnName("ticket_number").HasColumnType("nvarchar(50)").IsRequired();   
             modelBuilder.Entity<Ticket>().Property(u => u.Subject).HasColumnName("subject").HasColumnType("text").IsRequired();   
-            modelBuilder.Entity<Ticket>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("text").IsRequired();
+            modelBuilder.Entity<Ticket>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("longtext").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.AppId).HasColumnName("app_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.ModuleId).HasColumnName("module_id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Ticket>().Property(u => u.StatId).HasColumnName("stat_id").HasColumnType("int").IsRequired();
@@ -324,7 +324,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<TicketDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<TicketDetail>().Property(u => u.TicketId).HasColumnName("ticket_id").HasColumnType("int").IsRequired();   
             modelBuilder.Entity<TicketDetail>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);   
-            modelBuilder.Entity<TicketDetail>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("text").IsRequired();
+            modelBuilder.Entity<TicketDetail>().Property(u => u.Comment).HasColumnName("comment").HasColumnType("longtext").IsRequired();
             modelBuilder.Entity<TicketDetail>().Property(u => u.Flag).HasColumnName("flag").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false); 
             modelBuilder.Entity<TicketDetail>().Property(u => u.Private).HasColumnName("private").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false); 
             modelBuilder.Entity<TicketDetail>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);

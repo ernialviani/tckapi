@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "RZcQoi2FuN8cyJbu00n21nsz9O+LbO9v1QAlj6fh9glpldGj71paBsHyjwS0bf7RRH+yIRZ+tN6Q6Mzb0d07QA==",
+  "dgSpecHash": "aShnkUxOSBWG9TKAKh1iGMPW6CIeIIS8ImBaQHo/FjlqNTDt4wHGEYxMhyWgGQ+wSaPmU7xYz4Ojq5Zkw+AaTw==",
   "success": true,
   "projectFilePath": "X:\\TICKETING\\backend\\TicketingApi.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\programmer3\\.nuget\\packages\\htmlagilitypack\\1.11.36\\htmlagilitypack.1.11.36.nupkg.sha512",
     "C:\\Users\\programmer3\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\programmer3\\.nuget\\packages\\mailkit\\2.13.0\\mailkit.2.13.0.nupkg.sha512",
     "C:\\Users\\programmer3\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.6\\microsoft.aspnetcore.authentication.jwtbearer.5.0.6.nupkg.sha512",
