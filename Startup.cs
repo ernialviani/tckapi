@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using TicketingApi.Utils;
 using TicketingApi.Entities;
 using TicketingApi.Middleware;
+using TicketingApi.Hubs;
 
 namespace TicketingApi
 {
@@ -43,6 +44,7 @@ namespace TicketingApi
         {
            // Encoding.RegisterProvider(CodePagesProvider.Instance);
             Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            services.AddSignalR();
             services.AddControllers() .AddNewtonsoftJson(o => 
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -59,10 +61,11 @@ namespace TicketingApi
             });
 
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
-             {
+            {
                     builder.WithOrigins("http://localhost:3000");
                     builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithExposedHeaders("Token-Expired");;
-              }));
+            }));
+
 
             services.AddScoped<IFileUtil, FileUtil>();
             services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
@@ -111,6 +114,7 @@ namespace TicketingApi
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<NotifyHub>("/hubs/notification");
                 endpoints.MapControllers();
             });
             if (env.IsProduction())
