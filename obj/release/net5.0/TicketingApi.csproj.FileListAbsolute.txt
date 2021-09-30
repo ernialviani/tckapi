@@ -116,3 +116,7 @@ X:\TICKETING\backend\bin\Release\net5.0\Microsoft.AspNetCore.NodeServices.dll
 X:\TICKETING\backend\bin\Release\net5.0\Microsoft.AspNetCore.SpaServices.dll
 X:\TICKETING\backend\bin\Release\net5.0\Microsoft.AspNetCore.SpaServices.Extensions.dll
 >>>>>>> 9e3586cada7c1491e45dcc251fab27e690bdad94
+X:\TICKETING\backend\bin\release\net5.0\HtmlAgilityPack.dll
+X:\TICKETING\backend\bin\release\net5.0\System.Drawing.Common.dll
+X:\TICKETING\backend\bin\release\net5.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+X:\TICKETING\backend\bin\release\net5.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll

@@ -4,6 +4,7 @@ X:\TICKETING\backend\bin\release\net5.0\publish\db.vuerd.json
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.runtimeconfig.json
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.pdb
+X:\TICKETING\backend\bin\release\net5.0\publish\HtmlAgilityPack.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\MailKit.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.AspNetCore.JsonPatch.dll
@@ -33,5 +34,8 @@ X:\TICKETING\backend\bin\release\net5.0\publish\Swashbuckle.AspNetCore.Swagger.d
 X:\TICKETING\backend\bin\release\net5.0\publish\Swashbuckle.AspNetCore.SwaggerGen.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Swashbuckle.AspNetCore.SwaggerUI.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\System.Diagnostics.DiagnosticSource.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\System.Drawing.Common.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\System.IdentityModel.Tokens.Jwt.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.deps.json

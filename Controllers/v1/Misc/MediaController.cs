@@ -60,9 +60,6 @@ namespace TicketingApi.Controllers.v1.Misc
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath, existingUser.Image);
             byte[] b = System.IO.File.ReadAllBytes(filePath);   
-  //            return Ok(File(b, "Application/octet-stream", Path.GetFileName(filePath)));
-          //  var type = b.GetType();
-          // userImage = "data:image/png;base64," + Convert.ToBase64String(b);
             return File(b, "image/jpeg");
         //    return Ok(userImage);
         }
@@ -85,15 +82,11 @@ namespace TicketingApi.Controllers.v1.Misc
         [AllowAnonymous]
         [HttpGet("ticket-detail/{id}")]
         public IActionResult GetTicketDetailImage(int id){
-          //  var userImage = "";
             var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "TD").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName);
             byte[] b = System.IO.File.ReadAllBytes(filePath);
-          // var type = b.GetType();
-           //userImage = "data:image/png;base64," + Convert.ToBase64String(b);
             return File(b, "image/jpeg");
-          //  return Ok(File(b, "text/plain", Path.GetFileName(filePath)));
         }
 
         [AllowAnonymous]
