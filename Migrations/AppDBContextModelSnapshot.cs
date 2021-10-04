@@ -198,7 +198,8 @@ namespace TicketingApi.Migrations
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ClientGroupId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("client_group_id");
 
                     b.Property<string>("Desc")
                         .HasColumnType("text")
@@ -520,11 +521,6 @@ namespace TicketingApi.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ConnectionId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("connection_id");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
@@ -536,6 +532,13 @@ namespace TicketingApi.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("longtext")
                         .HasColumnName("message");
+
+                    b.Property<int>("NotifRegisterId")
+                        .HasColumnType("int")
+                        .HasColumnName("notif_register_id");
+
+                    b.Property<string>("NtfData")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("NtfType")
                         .HasColumnType("nvarchar(50)")
@@ -550,12 +553,7 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.Property<bool?>("Viewed")
-                        .IsRequired()
+                    b.Property<bool>("Viewed")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false)
@@ -563,6 +561,8 @@ namespace TicketingApi.Migrations
 
                     b.HasKey("Id")
                         .HasName("PK_Notifs");
+
+                    b.HasIndex("NotifRegisterId");
 
                     b.ToTable("notifs");
                 });
@@ -587,6 +587,11 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("FcmToken")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("fcm_token");
+
                     b.Property<string>("Os")
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("os");
@@ -595,25 +600,22 @@ namespace TicketingApi.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("os_version");
 
+                    b.Property<int?>("SenderId")
+                        .HasColumnType("int")
+                        .HasColumnName("sender_id");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
-                    b.Property<string>("UserMail")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("user_email");
-
-                    b.Property<string>("UserToken")
-                        .HasColumnType("longtext")
-                        .HasColumnName("user_token");
-
                     b.HasKey("Id")
                         .HasName("PK_Notif_registers");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("notif_registers");
                 });
@@ -1405,6 +1407,24 @@ namespace TicketingApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TicketingApi.Models.v1.Notifications.Notif", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Notifications.NotifRegister", null)
+                        .WithMany("Notifs")
+                        .HasForeignKey("NotifRegisterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Notifications.NotifRegister", b =>
+                {
+                    b.HasOne("TicketingApi.Models.v1.Users.User", "Users")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Ticket", b =>
                 {
                     b.HasOne("TicketingApi.Models.v1.Misc.App", "Apps")
@@ -1572,6 +1592,11 @@ namespace TicketingApi.Migrations
             modelBuilder.Entity("TicketingApi.Models.v1.Misc.KBase", b =>
                 {
                     b.Navigation("Medias");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Notifications.NotifRegister", b =>
+                {
+                    b.Navigation("Notifs");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Stat", b =>

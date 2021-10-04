@@ -17,6 +17,8 @@ using System.IdentityModel.Tokens.Jwt;
 using TicketingApi.Entities;
 using TicketingApi.Utils;
 using Newtonsoft.Json;
+using System.Security.Claims;
+
 
 namespace TicketingApi.Controllers.v1.Notifications
 {
@@ -42,13 +44,12 @@ namespace TicketingApi.Controllers.v1.Notifications
             {
                 _context.NotifRegisters.Add(new NotifRegister{
                     UserId = request.UserId,
-                    UserMail = request.UserMail,
-                    UserToken = request.UserToken,
+                    FcmToken = request.FcmToken,
                     Os = request.Os,
                     OsVersion = request.OsVersion,
                     Browser = request.Browser,
                     BrowserVersion = request.BrowserVersion,
-                    CreatedAt = new DateTime()
+                    CreatedAt = DateTime.Now
                 });
                 _context.SaveChanges();
                 transaction.Commit();
@@ -65,7 +66,17 @@ namespace TicketingApi.Controllers.v1.Notifications
         public IActionResult GetNotifys([FromHeader] string Authorization)
         {
           var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
-          var allNotify = _context.Notifs.AsNoTracking();
+          var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+          var cUser = _context.Users.Where(w => w.Email == Email).FirstOrDefault();
+          var allNotify = _context.NotifRegisters.AsNoTracking().Where(w => w.UserId == cUser.Id)
+                            .Include(i => i.Users)
+                            .Include(i => i.Notifs)
+                            .Select(s => new{
+                                s.Id, s.UserId, s.SenderId, s.Os, s.OsVersion, s.Browser, s.BrowserVersion,
+                                s.FcmToken, s.CreatedAt, s.UpdatedAt,
+                                Users = s.Users == null ? null : new { UserId = s.Users.Id, s.Users.Email, FullName = s.Users.FirstName + " " + s.Users.LastName, s.Users.Image, s.Users.Color },
+                                Notifs = s.Notifs == null ? null :  s.Notifs.Select(n => new { n.Id, n.NtfType, n.Title, n.Message, n.Viewed, n.Link, n.NtfData, n.CreatedAt, n.UpdatedAt }).Where(w => w.Viewed == false)
+                            }).OrderByDescending(o => o.Id);
           return Ok(allNotify);
         }
 
@@ -97,7 +108,6 @@ namespace TicketingApi.Controllers.v1.Notifications
                 Notif notifEntity = new Notif()
                 {   
                     Title = request.Title,
-                    UserId = request.UserId,
                     CreatedAt = DateTime.Now
                 };
                 _context.Notifs.Add(notifEntity);
@@ -116,21 +126,14 @@ namespace TicketingApi.Controllers.v1.Notifications
         {
             try
             {
-                 var notifExist =  _context.Notifs
-                        .Where(e => e.Id == id)
-                        .FirstOrDefault();
-                
+                var notifExist =  _context.Notifs.Where(e => e.Id == id).FirstOrDefault();
                 if (notifExist == null)
                 {
                     return NotFound("Notify Not Found !");
                 }
-
                 var transaction =  _context.Database.BeginTransaction();
-            
-                    notifExist.Title = request.Title;
-                    notifExist.UserId = request.UserId;
-                    notifExist.UpdatedAt = DateTime.Now;
-             
+                notifExist.Viewed = true;
+                notifExist.UpdatedAt = DateTime.Now;
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok(notifExist);
