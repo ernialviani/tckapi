@@ -26,6 +26,8 @@ using TicketingApi.Utils;
 using TicketingApi.Entities;
 using TicketingApi.Middleware;
 using TicketingApi.Hubs;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin;
 
 namespace TicketingApi
 {
@@ -42,9 +44,17 @@ namespace TicketingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var path = Environment.ContentRootPath;
+             path = path + "\\ticketing-ntf-adminsdk.json";
            // Encoding.RegisterProvider(CodePagesProvider.Instance);
             Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             services.AddSignalR();
+            services.AddHttpClient();
+            FirebaseApp.Create(new AppOptions()
+            {
+                // Credential = GoogleCredential.GetApplicationDefault()
+                Credential = GoogleCredential.FromFile(path)
+            });
             services.AddControllers() .AddNewtonsoftJson(o => 
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -70,6 +80,7 @@ namespace TicketingApi
             services.AddScoped<IFileUtil, FileUtil>();
             services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailUtil, MailUtil>();
+            services.AddTransient<IFcmRequestUtil, FcmRequestUtil>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });

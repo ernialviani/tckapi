@@ -39,14 +39,16 @@ namespace TicketingApi.Controllers.v1.Tickets
         
         private readonly IWebHostEnvironment _env; 
         private readonly IConfiguration _config;
+        private readonly IFcmRequestUtil _fcm;
 
-        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config )
+        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config, IFcmRequestUtil fcm)
         {
             _context = context; 
             _fileUtil = fileUtil;
             _mailUtil = mailUtil;
             _env = env;   
             _config = config;
+            _fcm = fcm;
         }
        
         public string GenerateTicketNumber(){
@@ -357,8 +359,8 @@ namespace TicketingApi.Controllers.v1.Tickets
 
                 //ASSIGN AND MAIL CONFIG
                  List<User> listManager = new List<User>(); 
+                 List<string> listMailTo = new List<string>();
                  if(request.TicketType == "E"){
-                    List<string> listMailTo = new List<string>();
                     // listManager = (from u in _context.Users 
                     //                 join ur in _context.UserRoles on u.Id equals ur.UserId
                     //                 join ud in _context.UserDepts on u.Id equals ud.UserId
@@ -418,7 +420,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                     );
                  }
                  else if(request.TicketType == "I"){
-                    List<string> listMailTo = new List<string>();
                     listManager = (from u in _context.Users 
                                     join ur in _context.UserRoles on u.Id equals ur.UserId
                                     join ud in _context.UserDepts on u.Id equals ud.UserId
@@ -453,6 +454,14 @@ namespace TicketingApi.Controllers.v1.Tickets
                         }
                     );
                  }
+                  
+                 _fcm.SendMultipleNotify(new NotifSetting{
+                     Users = listManager,
+                     Title = "New Ticket",
+                     Message = "New Ticket Number " + newTicket.TicketNumber,
+                     LinkAction = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
+                     NotifType = NotifType.TICKET_CREATE
+                 });
                 _context.SaveChanges();
                 transaction.Commit();
                 return Ok(ticketEntity);
