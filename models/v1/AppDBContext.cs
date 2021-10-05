@@ -2,6 +2,7 @@ using TicketingApi.Models.v1.Users;
 using TicketingApi.Models.v1.Misc;
 using TicketingApi.Models.v1.Tickets;
 using TicketingApi.Models.v1.CLogs;
+using TicketingApi.Models.v1.Notifications;
 using Microsoft.EntityFrameworkCore;  
 using System;  
 using System.Collections.Generic;  
@@ -44,7 +45,12 @@ namespace TicketingApi.DBContexts
         public DbSet<Ticket> Tickets {get; set;}
         public DbSet<TicketAssign> TicketAssigns {get; set;}
         public DbSet<TicketDetail> TicketDetails {get; set;}
-     
+
+        //NOTIF
+        public DbSet<Notif> Notifs {get; set;}
+        public DbSet<NotifRegister> NotifRegisters {get; set;}
+        public DbSet<SignalrConnection> SignalrConnections {get; set;}
+
 
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)  
         {   
@@ -443,6 +449,7 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<ClientDetail>().ToTable("client_details");
             modelBuilder.Entity<ClientDetail>().HasKey(u => u.Id).HasName("PK_ClientDetails");  
             modelBuilder.Entity<ClientDetail>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<ClientDetail>().Property(u => u.ClientGroupId).HasColumnName("client_group_id").HasColumnType("int").IsRequired();  
             modelBuilder.Entity<ClientDetail>().Property(u => u.Name).HasColumnName("name").HasColumnType("nvarchar(50)").IsRequired();   
             modelBuilder.Entity<ClientDetail>().Property(u => u.Domain).HasColumnName("domain").HasColumnType("nvarchar(50)").IsRequired();
             modelBuilder.Entity<ClientDetail>().Property(u => u.Desc).HasColumnName("desc").HasColumnType("text").IsRequired(false);   
@@ -461,6 +468,39 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Verification>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Verification>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false); 
         
+            modelBuilder.Entity<NotifRegister>().ToTable("notif_registers");
+            modelBuilder.Entity<NotifRegister>().HasKey(u => u.Id).HasName("PK_Notif_registers");  
+            modelBuilder.Entity<NotifRegister>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<NotifRegister>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);  
+            modelBuilder.Entity<NotifRegister>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired(false);  
+            modelBuilder.Entity<NotifRegister>().Property(u => u.FcmToken).HasColumnName("fcm_token").HasColumnType("text").IsRequired();  
+            modelBuilder.Entity<NotifRegister>().Property(u => u.Os).HasColumnName("os").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<NotifRegister>().Property(u => u.OsVersion).HasColumnName("os_version").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<NotifRegister>().Property(u => u.Browser).HasColumnName("browser").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<NotifRegister>().Property(u => u.BrowserVersion).HasColumnName("browser_version").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<NotifRegister>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
+            modelBuilder.Entity<NotifRegister>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false); 
+            
+            modelBuilder.Entity<Notif>().ToTable("notifs");
+            modelBuilder.Entity<Notif>().HasKey(u => u.Id).HasName("PK_Notifs");  
+            modelBuilder.Entity<Notif>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<Notif>().Property(u => u.NotifRegisterId).HasColumnName("notif_register_id").HasColumnType("int").IsRequired();  
+            modelBuilder.Entity<Notif>().Property(u => u.Viewed).HasColumnName("viewed").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false);
+            modelBuilder.Entity<Notif>().Property(u => u.Title).HasColumnName("title").HasColumnType("text").IsRequired();
+            modelBuilder.Entity<Notif>().Property(u => u.Message).HasColumnName("message").HasColumnType("longtext").IsRequired(false);   
+            modelBuilder.Entity<Notif>().Property(u => u.Link).HasColumnName("link").HasColumnType("text").IsRequired(false);
+            modelBuilder.Entity<Notif>().Property(u => u.NtfType).HasColumnName("ntf_type").HasColumnType("nvarchar(50)").IsRequired(false);
+            modelBuilder.Entity<Notif>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
+            modelBuilder.Entity<Notif>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
+
+            modelBuilder.Entity<SignalrConnection>().ToTable("signalr_connections");
+            modelBuilder.Entity<SignalrConnection>().HasKey(u => u.Id).HasName("PK_Singnalr_connection");  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.ConnectionId).HasColumnName("connection_id").HasColumnType("text").IsRequired();  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.Connected).HasColumnName("connected").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false);
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
         }  
     }  
 }  
