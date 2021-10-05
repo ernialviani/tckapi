@@ -569,7 +569,11 @@ namespace TicketingApi.Controllers.v1.Tickets
                         if (requestUser.Email != assign.Users.Email)
                         {
                           listMailTo.Add(assign.Users.Email);
-                          listRecaiverNotif.Add(new User{ Id=assign.Users.Id });
+
+                          var assignedUser = _context.Users.AsNoTracking().Where(w => w.Email == assign.Users.Email).FirstOrDefault();
+                          if(assignedUser != null){
+                              listRecaiverNotif.Add(assignedUser);
+                          }
                         }
                     }
 
@@ -578,9 +582,10 @@ namespace TicketingApi.Controllers.v1.Tickets
                     if(cTicket.TicketType == "I"){
                         var fUser = _context.Users.Where(w => w.Id == cTicket.UserId && w.Deleted == false).FirstOrDefault();
                         ticketRequestFrom = fUser.Email; 
-                        listMailTo.Add(ticketRequestFrom);
-                        listRecaiverNotif.Add(new User{ Id=fUser.Id});
-
+                        if(ticketRequestFrom != requestUser.Email){
+                            listMailTo.Add(ticketRequestFrom);
+                            listRecaiverNotif.Add(fUser);
+                        }
                     }
                     else if(cTicket.TicketType == "E"){
                         var fSender = _context.Senders.Where(w => w.Id == cTicket.SenderId).FirstOrDefault();
@@ -1389,8 +1394,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                 return BadRequest(e.Message);
             }
         } 
-
-
 
         ///////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////// CLIENT TICKET

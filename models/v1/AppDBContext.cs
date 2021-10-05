@@ -49,10 +49,8 @@ namespace TicketingApi.DBContexts
         //NOTIF
         public DbSet<Notif> Notifs {get; set;}
         public DbSet<NotifRegister> NotifRegisters {get; set;}
+        public DbSet<SignalrConnection> SignalrConnections {get; set;}
 
-
-
-     
 
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)  
         {   
@@ -494,6 +492,15 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<Notif>().Property(u => u.NtfType).HasColumnName("ntf_type").HasColumnType("nvarchar(50)").IsRequired(false);
             modelBuilder.Entity<Notif>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<Notif>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
+
+            modelBuilder.Entity<SignalrConnection>().ToTable("signalr_connections");
+            modelBuilder.Entity<SignalrConnection>().HasKey(u => u.Id).HasName("PK_Singnalr_connection");  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.ConnectionId).HasColumnName("connection_id").HasColumnType("text").IsRequired();  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.Connected).HasColumnName("connected").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false);
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
         }  
     }  
 }  

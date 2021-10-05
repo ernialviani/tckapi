@@ -10,8 +10,8 @@ using TicketingApi.DBContexts;
 namespace TicketingApi.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20211003105131_notif_table")]
-    partial class notif_table
+    [Migration("20211005065641_config_fcm_and_signalr")]
+    partial class config_fcm_and_signalr
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -620,6 +620,44 @@ namespace TicketingApi.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("notif_registers");
+                });
+
+            modelBuilder.Entity("TicketingApi.Models.v1.Notifications.SignalrConnection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool?>("Connected")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("connected");
+
+                    b.Property<string>("ConnectionId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("connection_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Singnalr_connection");
+
+                    b.ToTable("signalr_connections");
                 });
 
             modelBuilder.Entity("TicketingApi.Models.v1.Tickets.Stat", b =>
