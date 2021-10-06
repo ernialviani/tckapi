@@ -61,6 +61,8 @@ namespace TicketingApi
             });
 
             string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");  
+            services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
+
             services.AddDbContextPool<AppDBContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr))); 
 
             services.AddApiVersioning(options => {
@@ -76,11 +78,10 @@ namespace TicketingApi
                     builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithExposedHeaders("Token-Expired");;
             }));
 
-
             services.AddScoped<IFileUtil, FileUtil>();
-            services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailUtil, MailUtil>();
             services.AddTransient<IFcmRequestUtil, FcmRequestUtil>();
+            services.AddTransient<IHubUtil, HubUtil>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });
@@ -125,7 +126,7 @@ namespace TicketingApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<NotifyHub>("/hubs/notification");
+                endpoints.MapHub<HubConnection>("/hubs");
                 endpoints.MapControllers();
             });
             if (env.IsProduction())

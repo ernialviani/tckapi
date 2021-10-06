@@ -16,6 +16,9 @@ using TicketingApi.Models.v1.Tickets;
 using TicketingApi.Controllers.v1.Authentication;
 using TicketingApi.Models.v1.Users;
 using TicketingApi.Models.v1.Misc;
+using TicketingApi.Models.v1.Notifications;  
+using TicketingApi.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using System.IdentityModel.Tokens.Jwt;
 using TicketingApi.Entities;
 using TicketingApi.Utils;
@@ -40,8 +43,10 @@ namespace TicketingApi.Controllers.v1.Tickets
         private readonly IWebHostEnvironment _env; 
         private readonly IConfiguration _config;
         private readonly IFcmRequestUtil _fcm;
+        private readonly IHubUtil _hub;
+  
 
-        public TicketController(AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env,  IConfiguration config, IFcmRequestUtil fcm)
+        public TicketController( AppDBContext context, IFileUtil fileUtil, IMailUtil mailUtil, IWebHostEnvironment env, IConfiguration config, IFcmRequestUtil fcm, IHubUtil hub )
         {
             _context = context; 
             _fileUtil = fileUtil;
@@ -49,6 +54,7 @@ namespace TicketingApi.Controllers.v1.Tickets
             _env = env;   
             _config = config;
             _fcm = fcm;
+            _hub = hub;
         }
        
         public string GenerateTicketNumber(){
@@ -454,7 +460,11 @@ namespace TicketingApi.Controllers.v1.Tickets
                         }
                     );
                  }
-                  
+                 _context.SaveChanges();
+                 transaction.Commit();
+                 
+                 _hub.SendTicketHub(listLeader, request.CreatedBy, newTicket.Id, "{type:'CREATE_TICKET'}");
+
                  _fcm.SendMultipleNotify(new NotifSetting{
                      Users = listLeader,
                      Title = "New Ticket Number " + newTicket.TicketNumber,
@@ -462,8 +472,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                      LinkAction = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ newTicket.Id +"&open=true",
                      NotifType = NotifType.TICKET_CREATE
                  });
-                _context.SaveChanges();
-                transaction.Commit();
+         
                 return Ok(ticketEntity);
             }   
             catch (System.Exception e) {
@@ -481,7 +490,7 @@ namespace TicketingApi.Controllers.v1.Tickets
             using (var transaction =  _context.Database.BeginTransaction())
             {
                 try {
-                    var ticketExist =  _context.Tickets .Where(e => e.Id == id) .FirstOrDefault();
+                    var ticketExist =  _context.Tickets.Where(e => e.Id == id).FirstOrDefault();
                     if (ticketExist == null) { return NotFound("ticket Not Found !"); }
             
                     ticketExist.Subject = request.Subject;
