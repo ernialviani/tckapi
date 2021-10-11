@@ -644,11 +644,15 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<int?>("SenderId")
+                        .HasColumnType("int")
+                        .HasColumnName("sender_id");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 

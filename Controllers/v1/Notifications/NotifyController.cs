@@ -75,7 +75,7 @@ namespace TicketingApi.Controllers.v1.Notifications
                                 s.Id, s.UserId, s.SenderId, s.Os, s.OsVersion, s.Browser, s.BrowserVersion,
                                 s.FcmToken, s.CreatedAt, s.UpdatedAt,
                                 Users = s.Users == null ? null : new { UserId = s.Users.Id, s.Users.Email, FullName = s.Users.FirstName + " " + s.Users.LastName, s.Users.Image, s.Users.Color },
-                                Notifs = s.Notifs == null ? null :  s.Notifs.Select(n => new { n.Id, n.NtfType, n.Title, n.Message, n.Viewed, n.Link, n.NtfData, n.CreatedAt, n.UpdatedAt }).Where(w => w.Viewed == false)
+                                Notifs = s.Notifs == null ? null :  s.Notifs.Select(n => new { n.Id, n.NotifRegisterId, n.NtfType, n.Title, n.Message, n.Viewed, n.Link, n.NtfData, n.CreatedAt, n.UpdatedAt }).Where(w => w.Viewed == false)
                             }).OrderByDescending(o => o.Id);
           return Ok(allNotify);
         }
@@ -121,26 +121,62 @@ namespace TicketingApi.Controllers.v1.Notifications
             }                
         }
 
-        [HttpPost("{id}")]
-        public IActionResult PutNotify(int id,[FromForm]Notif request)
+        [HttpPut]
+        [Authorize]
+        public IActionResult PutNotify([FromBody]Notif request, [FromHeader] string Authorization )
         {
+            var transaction = _context.Database.BeginTransaction();
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+            var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+            var cUser = _context.Users.Where(w => w.Email == Email).FirstOrDefault();
+            var allRegistered = _context.NotifRegisters.Where(w => w.UserId == cUser.Id).ToList();
             try
             {
-                var notifExist =  _context.Notifs.Where(e => e.Id == id).FirstOrDefault();
-                if (notifExist == null)
+                var allNotifs = _context.Notifs.AsEnumerable().Where(w => allRegistered.Any(a => a.Id == w.NotifRegisterId)).ToList();
+                foreach (var notif in allNotifs)
                 {
-                    return NotFound("Notify Not Found !");
+                    if(notif.Title == request.Title && notif.NtfType == request.NtfType){
+                        notif.Viewed = true;
+                        notif.UpdatedAt = DateTime.Now;
+                    }
                 }
-                var transaction =  _context.Database.BeginTransaction();
-                notifExist.Viewed = true;
-                notifExist.UpdatedAt = DateTime.Now;
                 _context.SaveChanges();
                 transaction.Commit();
-                return Ok(notifExist);
+                return Ok();
             }
             catch (System.Exception e)
             {
+                transaction.Rollback();
                 return BadRequest(e.Message);
+            }
+        }
+
+        
+        [HttpPost("mark-all-read")]
+        [Authorize]
+        public IActionResult MarkAllRead([FromHeader] string Authorization)
+        {
+            var transaction = _context.Database.BeginTransaction();
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(Authorization.Replace("Bearer ", ""));
+            var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+            var cUser = _context.Users.Where(w => w.Email == Email).FirstOrDefault();
+            var allRegistered = _context.NotifRegisters.Where(w => w.UserId == cUser.Id);
+            try
+            {
+                var allNotifs = _context.Notifs.Where(w => allRegistered.Any(a => a.Id == w.Id));
+                foreach (var notif in allNotifs)
+                {
+                    notif.Viewed = true;
+                    notif.UpdatedAt = DateTime.Now;
+                }
+                _context.SaveChanges();
+                transaction.Commit();
+                return Ok();
+            }
+            catch (System.Exception)
+            {
+                transaction.Rollback();
+                return BadRequest();
             }
         }
 

@@ -12,7 +12,8 @@ namespace TicketingApi.Models.v1.Notifications
     {
         public int Id {get; set;}
         public string ConnectionId {get;set;}
-        public int UserId {get;set;}
+        public int? UserId {get;set;}
+        public int? SenderId {get;set;}
         public Boolean? Connected {get;set;} 
         public DateTime? CreatedAt { get; set;}  
         public DateTime? UpdatedAt { get; set;}  

@@ -1,9 +1,17 @@
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.exe
 X:\TICKETING\backend\bin\release\net5.0\publish\appsettings.json
 X:\TICKETING\backend\bin\release\net5.0\publish\db.vuerd.json
+X:\TICKETING\backend\bin\release\net5.0\publish\ticketing-ntf-adminsdk.json
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.runtimeconfig.json
 X:\TICKETING\backend\bin\release\net5.0\publish\TicketingApi.pdb
+X:\TICKETING\backend\bin\release\net5.0\publish\FirebaseAdmin.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\Google.Api.Gax.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\Google.Api.Gax.Rest.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\Google.Apis.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\Google.Apis.Auth.PlatformServices.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\Google.Apis.Auth.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\Google.Apis.Core.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\HtmlAgilityPack.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\MailKit.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.AspNetCore.Authentication.JwtBearer.dll
@@ -13,6 +21,7 @@ X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.AspNetCore.Mvc.Version
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.AspNetCore.NodeServices.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.AspNetCore.SpaServices.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.AspNetCore.SpaServices.Extensions.dll
+X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.Bcl.AsyncInterfaces.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.EntityFrameworkCore.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.EntityFrameworkCore.Abstractions.dll
 X:\TICKETING\backend\bin\release\net5.0\publish\Microsoft.EntityFrameworkCore.Relational.dll

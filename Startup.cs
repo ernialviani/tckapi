@@ -44,23 +44,26 @@ namespace TicketingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var path = Environment.ContentRootPath;
-             path = path + "\\ticketing-ntf-adminsdk.json";
-           // Encoding.RegisterProvider(CodePagesProvider.Instance);
+        
             Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             services.AddSignalR();
             services.AddHttpClient();
-            FirebaseApp.Create(new AppOptions()
-            {
-                // Credential = GoogleCredential.GetApplicationDefault()
-                Credential = GoogleCredential.FromFile(path)
-            });
+
+            // var path = Environment.ContentRootPath;
+            // path = path + "\\ticketing-ntf-adminsdk.json";
+            // FirebaseApp.Create(new AppOptions()
+            // {
+            //     Credential = GoogleCredential.FromFile(path)
+            // });
+            
             services.AddControllers() .AddNewtonsoftJson(o => 
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
             string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");  
+            services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
+
             services.AddDbContextPool<AppDBContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr))); 
 
             services.AddApiVersioning(options => {
@@ -76,11 +79,10 @@ namespace TicketingApi
                     builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithExposedHeaders("Token-Expired");;
             }));
 
-
             services.AddScoped<IFileUtil, FileUtil>();
-            services.Configure<MailSetting>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailUtil, MailUtil>();
             services.AddTransient<IFcmRequestUtil, FcmRequestUtil>();
+            services.AddTransient<IHubUtil, HubUtil>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ticketing Api", Version = "v1" });
@@ -125,7 +127,7 @@ namespace TicketingApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<NotifyHub>("/hubs/notification");
+                endpoints.MapHub<HubConnection>("/hubs");
                 endpoints.MapControllers();
             });
             if (env.IsProduction())

@@ -10,8 +10,8 @@ using TicketingApi.DBContexts;
 namespace TicketingApi.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20211005065641_config_fcm_and_signalr")]
-    partial class config_fcm_and_signalr
+    [Migration("20211007061217_config_fcm_signalr")]
+    partial class config_fcm_signalr
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -646,11 +646,15 @@ namespace TicketingApi.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<int?>("SenderId")
+                        .HasColumnType("int")
+                        .HasColumnName("sender_id");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
