@@ -67,21 +67,52 @@ namespace TicketingApi.Controllers.v1.Misc
         [AllowAnonymous]
         [HttpGet("ticket/{id}")]
         //TODO
-        public IActionResult GetTicketImage(int id){
-          //  var userImage = "";
+        public IActionResult GetTicketImage(int id, [FromQuery] string tid, [FromQuery] string ttype){
+            string Email = "";
+            if(!string.IsNullOrEmpty(tid)){ 
+              if(string.IsNullOrEmpty(ttype)){
+                  var token = new JwtSecurityTokenHandler().ReadJwtToken(tid.Replace("Bearer ", ""));
+                    Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;   
+              }
+              else{
+                  var tokenPlain = AncDecUtil.DecryptString(tid.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+                  var property = new { CreatedBy = "" };
+                  var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+                  if(tokenJson != null){
+                      Email = tokenJson.CreatedBy;
+                  }
+              }
+            }
+
+            if(string.IsNullOrEmpty(Email)) { return Unauthorized(); }
             var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "T").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName);
             byte[] b = System.IO.File.ReadAllBytes(filePath);
-          // var type = b.GetType();
-           //userImage = "data:image/png;base64," + Convert.ToBase64String(b);
             return File(b, "image/jpeg");
-          //  return Ok(File(b, "text/plain", Path.GetFileName(filePath)));
         }
 
         [AllowAnonymous]
         [HttpGet("ticket-detail/{id}")]
-        public IActionResult GetTicketDetailImage(int id){
+        public IActionResult GetTicketDetailImage(int id, [FromQuery] string tid, [FromQuery] string ttype){
+            string Email = "";
+            if(!string.IsNullOrEmpty(tid)){ 
+              if(string.IsNullOrEmpty(ttype)){
+                  var token = new JwtSecurityTokenHandler().ReadJwtToken(tid.Replace("Bearer ", ""));
+                    Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;   
+              }
+              else{
+                  var tokenPlain = AncDecUtil.DecryptString(tid.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+                  var property = new { CreatedBy = "" };
+                  var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+                  if(tokenJson != null){
+                      Email = tokenJson.CreatedBy;
+                  }
+              }
+            }
+
+            if(string.IsNullOrEmpty(Email)) { return Unauthorized(); }
+            else if( _context.Users.Where(w => w.Email == Email).FirstOrDefault() == null ) { return Unauthorized(); }
             var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "TD").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName);
@@ -92,22 +123,21 @@ namespace TicketingApi.Controllers.v1.Misc
         [AllowAnonymous]
         [HttpGet("clog/{id}")]
         public IActionResult GetClogImage(int id, [FromQuery] string tid, [FromQuery] string ttype){
-          string Email = "";
-          if(!string.IsNullOrEmpty(tid)){ 
-            if(string.IsNullOrEmpty(ttype)){
-                 var token = new JwtSecurityTokenHandler().ReadJwtToken(tid.Replace("Bearer ", ""));
-                  Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;   
+            string Email = "";
+            if(!string.IsNullOrEmpty(tid)){ 
+              if(string.IsNullOrEmpty(ttype)){
+                  var token = new JwtSecurityTokenHandler().ReadJwtToken(tid.Replace("Bearer ", ""));
+                    Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;   
+              }
+              else{
+                  var tokenPlain = AncDecUtil.DecryptString(tid.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+                  var property = new { CreatedBy = "" };
+                  var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+                  if(tokenJson != null){
+                      Email = tokenJson.CreatedBy;
+                  }
+              }
             }
-            else{
-                var tokenPlain = AncDecUtil.DecryptString(tid.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
-                var property = new { CreatedBy = "" };
-                var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
-                if(tokenJson != null){
-                    Email = tokenJson.CreatedBy;
-                }
-            }
-  
-          }
 
            if(string.IsNullOrEmpty(Email)) { return Unauthorized(); }
            else if( _context.Users.Where(w => w.Email == Email).FirstOrDefault() == null ) { return Unauthorized(); }
@@ -121,8 +151,24 @@ namespace TicketingApi.Controllers.v1.Misc
 
         [AllowAnonymous]
         [HttpGet("ticket/download/{id}")]
-        public IActionResult GetDownloadTicketFile(int id){
-          //  var userImage = "";
+        public IActionResult GetDownloadTicketFile(int id, [FromQuery] string tid, [FromQuery] string ttype){
+            string Email = "";
+            if(!string.IsNullOrEmpty(tid)){ 
+              if(string.IsNullOrEmpty(ttype)){
+                  var token = new JwtSecurityTokenHandler().ReadJwtToken(tid.Replace("Bearer ", ""));
+                    Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;   
+              }
+              else{
+                  var tokenPlain = AncDecUtil.DecryptString(tid.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+                  var property = new { CreatedBy = "" };
+                  var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+                  if(tokenJson != null){
+                      Email = tokenJson.CreatedBy;
+                  }
+              }
+            }
+
+            if(string.IsNullOrEmpty(Email)) { return Unauthorized(); }
             var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "T").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName );
@@ -140,8 +186,24 @@ namespace TicketingApi.Controllers.v1.Misc
         [AllowAnonymous]
         [HttpGet("ticket-detail/download/{id}")]
         //TODO
-        public IActionResult GetDownloadTicketDetailFile(int id){
-          //  var userImage = "";
+        public IActionResult GetDownloadTicketDetailFile(int id, [FromQuery] string tid, [FromQuery] string ttype){
+            string Email = "";
+            if(!string.IsNullOrEmpty(tid)){ 
+              if(string.IsNullOrEmpty(ttype)){
+                  var token = new JwtSecurityTokenHandler().ReadJwtToken(tid.Replace("Bearer ", ""));
+                    Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;   
+              }
+              else{
+                  var tokenPlain = AncDecUtil.DecryptString(tid.Replace("Bearer ", ""), "EPSYLONHOME2021$", true);
+                  var property = new { CreatedBy = "" };
+                  var tokenJson = JsonConvert.DeserializeAnonymousType(tokenPlain, property);
+                  if(tokenJson != null){
+                      Email = tokenJson.CreatedBy;
+                  }
+              }
+            }
+
+            if(string.IsNullOrEmpty(Email)) { return Unauthorized(); }
             var existingMedia = _context.Medias.Where(e => e.Id == id && e.RelType == "TD").FirstOrDefault();
             var uploadPath = Path.Combine(_env.ContentRootPath, "Medias/");
             var filePath = Path.Combine(uploadPath,  existingMedia.FileName );

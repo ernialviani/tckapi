@@ -12,6 +12,7 @@ namespace TicketingApi.Utils
 {
     public interface IHubUtil{
         Task SendTicketHub(List<User> users, string excludedUser, int TicketId, string Message);
+        Task SendTicketHubClient(Sender sender, string Message);
     }
 
     public class HubUtil : IHubUtil
@@ -46,6 +47,22 @@ namespace TicketingApi.Utils
             }
            
         }
-        
+
+        public async Task SendTicketHubClient(Sender sender, string Message)
+        {
+            try
+            {
+                if(sender.LoginStatus == true){
+                    var listConnectionId = _context.SignalrConnections.AsEnumerable().Where(w => w.Connected == true && w.SenderId == sender.Id).Select(s => s.ConnectionId).ToList<string>();
+                    await _hub.Clients.Clients(listConnectionId).SendAsync("ReceiveTickeClienttHub", Message); 
+                }
+            }
+            catch (System.Exception e)
+            {
+                throw;
+            }
+           
+        }
+
     }
 }

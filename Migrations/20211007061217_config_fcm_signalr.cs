@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TicketingApi.Migrations
 {
-    public partial class config_fcm_and_signalr : Migration
+    public partial class config_fcm_signalr : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -59,7 +59,8 @@ namespace TicketingApi.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     connection_id = table.Column<string>(type: "text", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<int>(type: "int", nullable: true),
+                    sender_id = table.Column<int>(type: "int", nullable: true),
                     connected = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true)

@@ -24,13 +24,17 @@ namespace TicketingApi.Hubs
               var httpContext = Context.GetHttpContext();
               var token = new JwtSecurityTokenHandler().ReadJwtToken(httpContext.Request.Query["token"]);
               var Email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+              
               var cUser = _context.Users.Where(w => w.Email == Email).FirstOrDefault();
+            
+              var cSender = _context.Senders.Where(w => w.Email == Email).FirstOrDefault();  
 
               var connections = _context.SignalrConnections.Where(w => w.UserId == cUser.Id).ToList();
               var transaction = _context.Database.BeginTransaction();
               if(connections == null) {
                   _context.SignalrConnections.Add(new SignalrConnection{
-                      UserId = cUser.Id,
+                      UserId = cUser == null ? null : cUser.Id,
+                      SenderId = cSender == null ? null : cSender.Id,
                       ConnectionId = Context.ConnectionId,
                       Connected = true,
                       CreatedAt = DateTime.Now
@@ -41,10 +45,11 @@ namespace TicketingApi.Hubs
                   var disconnectedConnection = _context.SignalrConnections.Where(w => w.UserId == cUser.Id && w.Connected == false).FirstOrDefault();
                   if(disconnectedConnection == null){
                     _context.SignalrConnections.Add(new SignalrConnection{
-                        UserId = cUser.Id,
+                        UserId = cUser == null ? null : cUser.Id,
+                        SenderId = cSender == null ? null : cSender.Id,
                         ConnectionId = Context.ConnectionId,
                         Connected = true,
-                         CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.Now
                      });
                   }
                   else{

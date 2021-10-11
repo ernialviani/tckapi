@@ -83,7 +83,7 @@ namespace TicketingApi.Utils
                             Body = notif.Message,
                         },
                         // FcmOptions = new WebpushFcmOptions(){
-                        //     // Link = notif.LinkAction
+                        //     // Link = notif.LinkAction //:: Https SSL requirement 
                         // }  
                     }
                 };

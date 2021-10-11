@@ -44,17 +44,18 @@ namespace TicketingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var path = Environment.ContentRootPath;
-             path = path + "\\ticketing-ntf-adminsdk.json";
-           // Encoding.RegisterProvider(CodePagesProvider.Instance);
+        
             Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             services.AddSignalR();
             services.AddHttpClient();
-            FirebaseApp.Create(new AppOptions()
-            {
-                // Credential = GoogleCredential.GetApplicationDefault()
-                Credential = GoogleCredential.FromFile(path)
-            });
+
+            // var path = Environment.ContentRootPath;
+            // path = path + "\\ticketing-ntf-adminsdk.json";
+            // FirebaseApp.Create(new AppOptions()
+            // {
+            //     Credential = GoogleCredential.FromFile(path)
+            // });
+            
             services.AddControllers() .AddNewtonsoftJson(o => 
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;

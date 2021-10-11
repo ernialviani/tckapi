@@ -20,6 +20,15 @@ using System.Collections.Generic;
 
 namespace TicketingApi.Utils
 {
+    public interface IMailUtil
+    {
+        string GenerateRandom4Code();
+        Task SendEmailAsync(MailType mailType);
+        Task SendEmailWelcomeAsync(MailType mailType);
+        Task SendEmailPostCommentAsync(MailType mailType);
+        Task SendEmailPostCommentForClientAsync(MailType mailType);
+        Task SendEmailVerificationCodeAsync(MailType mailType);
+    }
     public class MailUtil: IMailUtil
     {
         private readonly MailSetting _mailSettings;
@@ -68,7 +77,6 @@ namespace TicketingApi.Utils
             return result;
         }
 
-        
 
         public async Task SendEmailAsync(MailType mailType)
         {
@@ -82,6 +90,15 @@ namespace TicketingApi.Utils
             MailText = MailText.Replace("$from", mailType.TicketFrom).Replace("$app", mailType.TicketApp).Replace("$module", mailType.TicketModule);
             MailText = MailText.Replace("$homesite_", mailType.HomeSite);
             MailText = MailText.Replace("$linkbutton", mailType.ButtonLink);
+
+            if(!string.IsNullOrEmpty(mailType.VerificationCode)){
+                MailText = MailText.Replace("$verifycode", mailType.VerificationCode);
+                MailText = MailText.Replace("$descverifycode", mailType.DescVerificationCode);
+            }
+            else{
+                MailText = MailText.Replace("$verifycode", "");
+                MailText = MailText.Replace("$descverifycode", "");
+            }
 
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);

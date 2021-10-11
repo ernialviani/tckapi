@@ -497,7 +497,8 @@ namespace TicketingApi.DBContexts
             modelBuilder.Entity<SignalrConnection>().HasKey(u => u.Id).HasName("PK_Singnalr_connection");  
             modelBuilder.Entity<SignalrConnection>().Property(u => u.Id).HasColumnName("id").HasColumnType("int").UseMySqlIdentityColumn().IsRequired();  
             modelBuilder.Entity<SignalrConnection>().Property(u => u.ConnectionId).HasColumnName("connection_id").HasColumnType("text").IsRequired();  
-            modelBuilder.Entity<SignalrConnection>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired();  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.UserId).HasColumnName("user_id").HasColumnType("int").IsRequired(false);  
+            modelBuilder.Entity<SignalrConnection>().Property(u => u.SenderId).HasColumnName("sender_id").HasColumnType("int").IsRequired(false);  
             modelBuilder.Entity<SignalrConnection>().Property(u => u.Connected).HasColumnName("connected").HasColumnType("tinyint(1)").IsRequired().HasDefaultValue(false);
             modelBuilder.Entity<SignalrConnection>().Property(u => u.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").IsRequired(false);
             modelBuilder.Entity<SignalrConnection>().Property(u => u.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").IsRequired(false);
