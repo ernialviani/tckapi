@@ -1,5 +1,6 @@
 using TicketingApi.Models.v1.Users;  
 using TicketingApi.Models.v1.Misc;
+using TicketingApi.Models.v1.Faqs;
 using TicketingApi.Models.v1.Tickets;
 using TicketingApi.Models.v1.CLogs;
 using TicketingApi.Models.v1.Notifications;
