@@ -79,6 +79,60 @@ namespace TicketingApi.Controllers.v1.Faqs
             }                
         }
 
+        [HttpPost("put")]
+        [Authorize]
+        public IActionResult Put([FromForm]string request, [FromForm] int app, [FromForm] int module, [FromForm] int user, [FromHeader] string Authorization )
+        {
+            var transaction =  _context.Database.BeginTransaction();
+            try
+            {
+                    var faqByApp = _context.Faqs.Where(w => w.AppId == app && w.ModuleId == module).ToList();
+                    IList<Faq> reqFaqList =  JsonConvert.DeserializeObject<IList<Faq>>(request);
+                    foreach (var faq in reqFaqList)
+                    {
+                        var cFaq = _context.Faqs.Where(w => w.Id == faq.Id).FirstOrDefault();
+                        if(cFaq != null){
+                            cFaq.UserId = user;
+                            cFaq.AppId = app;
+                            cFaq.ModuleId = module;
+                            cFaq.Question = faq.Question;
+                            cFaq.Desc = faq.Desc;
+                            cFaq.UpdatedAt = DateTime.Now;
+                            _context.SaveChanges();
+                        }
+                    }
+                    //delete FaqDetails
+                    var sDeleted = faqByApp.Where(eur => !reqFaqList.Any(mur => mur.Id == eur.Id)).ToList(); 
+                    sDeleted.ForEach(eur => {
+                        _context.Faqs.Remove(eur);
+                    }); 
+                    _context.SaveChanges();
+
+                    //add FaqDetails
+                    var sAdd = reqFaqList.Where(mur => !faqByApp.Any(eur => eur.Id == mur.Id)).ToList();
+                    sAdd.ForEach(mur => 
+                    {
+                        _context.Faqs.Add(new Faq {
+                            AppId = app,
+                            ModuleId = module,
+                            UserId = user,
+                            Question = mur.Question,
+                            Desc = mur.Desc,
+                            CreatedAt = DateTime.Now
+                         });
+                         _context.SaveChanges();
+                    });
+                _context.SaveChanges();
+                 transaction.Commit();
+                return Ok();
+            }
+            catch (System.Exception e)
+            {
+                transaction.Rollback();
+               return BadRequest(e.Message);
+            }                
+        }
+
 
     }
 }
