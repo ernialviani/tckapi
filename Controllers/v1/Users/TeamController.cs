@@ -126,7 +126,7 @@ namespace TicketingApi.Controllers.v1.Users
                         });
 
         
-             IQueryable filtered = null;
+            IQueryable filtered = null;
             if(int.Parse(Role) == 2){
                 var Depts  = _context.UserDepts.Where(w => w.UserId == cUser.Id).ToList();
                 List<string> ListDepts = new List<string>();
@@ -137,7 +137,6 @@ namespace TicketingApi.Controllers.v1.Users
                 filtered = allTeam.Where(w => w.Deleted == false && (w.CreateBy == Email || w.ManagerId == cUser.Id || teams.Contains(w.Id.ToString()) ) );
             }
           
-
            return Ok(filtered);
         }
 

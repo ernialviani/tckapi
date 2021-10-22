@@ -8,6 +8,8 @@ appsettings_publish.json
 appsettings_Development.json
 bin/
 obj/
+obj/*
+/obj/
 
 
 ## Ignore Visual Studio temporary files, build results, and
