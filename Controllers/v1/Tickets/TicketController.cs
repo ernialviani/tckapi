@@ -130,12 +130,48 @@ namespace TicketingApi.Controllers.v1.Tickets
                     });
 
             IOrderedQueryable filtered = null;
-            if(r == 1){ 
+            if(r == 1){ //get all for superadmin
                  filtered = allTicket.OrderByDescending(e => e.Id);
             }
             else if(u > 0 ){
-                 var activeUser = _context.Users.Where(w=>w.Id == u).FirstOrDefault();
-                 filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u || w.CreatedBy == activeUser.Email )).OrderByDescending(e => e.Id);
+                List<User> imOnTeam = new List<User>();
+                List<string> teamMebers = new List<string>();
+                List<string> teams = new List<string>();
+                
+                var activeUser = _context.Users.AsNoTracking().Where(w=>w.Id == u).FirstOrDefault();
+                
+                var asTeamMember = _context.TeamMembers.AsNoTracking().Where(w => w.UserId == activeUser.Id).ToList();
+                var asTeamMng = _context.Teams.AsNoTracking().Where(w => w.ManagerId == activeUser.Id).ToList();
+
+                foreach (var team in asTeamMember)
+                {
+                    if(!teams.Contains(team.TeamId.ToString())){
+                        teams.Add(team.TeamId.ToString());
+                    }
+                }
+
+                foreach (var team in asTeamMng)
+                {
+                    if(!teams.Contains(team.Id.ToString())){
+                        teams.Add(team.Id.ToString());
+                    }
+                }
+                var breakTeams = _context.Teams.AsNoTracking()
+                            .Include(i => i.TeamMembers).ThenInclude(ti => ti.Users)
+                            .Include(i => i.Manager)
+                            .AsEnumerable()
+                            .Where(w => teams.Any( a => a.Contains(w.Id.ToString() ) ) ).ToList();
+                
+                foreach (var team in breakTeams)
+                {
+                    imOnTeam.Add(team.Manager);
+                    foreach (var member in team.TeamMembers)
+                    {
+                        imOnTeam.Add(member.Users);
+                    }
+                }
+
+                filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u) || w.CreatedBy == activeUser.Email || imOnTeam.Any(a => a.Email == w.CreatedBy)).OrderByDescending(e => e.Id);
             }
             else{
                 filtered = allTicket.OrderByDescending(e => e.Id);
@@ -325,10 +361,9 @@ namespace TicketingApi.Controllers.v1.Tickets
                             Domain = grC.Domain
                          });
                         }
-                   
                     }
                 
-                     exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
+                    exitingsSender = _context.Senders.AsNoTracking().Where(e => e.Email == requestSender.Email).FirstOrDefault();
                     if (exitingsSender == null){
                         Sender newSender = new Sender() {
                             FirstName = requestSender.FirstName,
@@ -377,6 +412,46 @@ namespace TicketingApi.Controllers.v1.Tickets
                 //ASSIGN AND MAIL CONFIG
                  List<User> listLeader = new List<User>(); 
                  List<string> listMailTo = new List<string>();
+                 List<string> listCcTo = new List<string>();
+
+                //mail cc to  team manager & team members )
+                var createdByUser = _context.Users.AsNoTracking().Where(w => w.Email == request.CreatedBy).FirstOrDefault();
+                if(createdByUser != null){
+                    var groupTeam = _context.TeamMembers.Where(w => w.UserId == createdByUser.Id).ToList();
+                    List<string> teams = new List<string>();
+                    foreach (var t in groupTeam)
+                    {
+                        if(!teams.Contains(t.TeamId.ToString())){
+                            teams.Add(t.TeamId.ToString());
+                        }
+                    }
+         
+                    var td = _context.Teams.AsNoTracking()                     
+                        .Include(s => s.Manager)
+                        .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
+                        .Select(s => new {
+                            s.Id, s.Name, s.Desc, s.Image, s.Color, s.ManagerId, s.CreatedAt, s.UpdatedAt, s.Deleted, s.CreateBy,
+                            Manager = new { s.Manager.Id, s.Manager.FirstName, s.Manager.LastName, s.Manager.Email, s.Manager.Image, s.Manager.Color, s.Manager.UserDepts },
+                            s.TeamMembers
+                        }).Where(w => w.Deleted == false && teams.Contains(w.Id.ToString()))
+                        .ToList();
+                    
+                    foreach (var d in td)
+                    {
+                        if(d.Manager.Email != createdByUser.Email){
+                            listCcTo.Add(d.Manager.Email);
+                        }
+                   
+                        foreach (var m in d.TeamMembers)
+                        {
+                            if(m.Users.Email != createdByUser.Email){
+                                  listCcTo.Add(m.Users.Email);
+                            }
+                       
+                        }
+                    }
+                }
+
                  if(request.TicketType == "E"){
                     // listLeader = (from u in _context.Users 
                     //                 join ur in _context.UserRoles on u.Id equals ur.UserId
@@ -388,7 +463,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 .Include(i => i.UserRoles)
                                 .Include(i => i.UserDepts)
                                 .Where(w => w.UserRoles.Any(a => a.RoleId.Equals(2)) 
-                                && w.UserDepts.Any(a => a.DepartmentId.Equals(2)) && w.Deleted == false )
+                                 && w.UserDepts.Any(a => a.DepartmentId.Equals(2)) && w.Deleted == false )
                                 .ToList();
 
                     foreach (var mg in listLeader) {
@@ -401,10 +476,12 @@ namespace TicketingApi.Controllers.v1.Tickets
                         });
                         listMailTo.Add(mg.Email);
                     }
+                                      
 
                     _mailUtil.SendEmailAsync(
                         new MailType {
                             ToEmail=listMailTo,
+                            CCMail = listCcTo,
                             Subject= "New Ticket Number " + newTicket.TicketNumber,
                             TicketNumber= newTicket.TicketNumber,
                             Title= request.Subject,
@@ -459,6 +536,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     _mailUtil.SendEmailAsync(
                         new MailType {
                             ToEmail=listMailTo,
+                            CCMail = listCcTo,
                             Subject= "[New] " + request.Subject,
                             TicketNumber=newTicket.TicketNumber,
                             Title= request.Subject,
@@ -656,7 +734,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     _mailUtil.SendEmailPostCommentAsync(
                         new MailType {
                             ToEmail= listMailTo,
-                            Subject= "[Reponse] "+ cTicket.Subject,
+                            Subject= "[Response] "+ cTicket.Subject,
                             TicketNumber=cTicket.TicketNumber,
                             Title= cTicket.Subject,
                             Body= request.Comment,
@@ -706,6 +784,46 @@ namespace TicketingApi.Controllers.v1.Tickets
                     {
                         var cTicket = _context.Tickets.Where(w => w.Id == ticket.Id).FirstOrDefault();
                         List<User> listRecipNotif = new List<User>();
+                        List<string> listCcTo = new List<string>();
+
+
+
+                        // mail cc to  team manager & team members 
+                        var createdByUser = _context.Users.AsNoTracking().Where(w => w.Email == cTicket.CreatedBy).FirstOrDefault();
+                        if(createdByUser != null){
+                            var groupTeam = _context.TeamMembers.Where(w => w.UserId == createdByUser.Id).ToList();
+                            List<string> teams = new List<string>();
+                            foreach (var t in groupTeam)
+                            {
+                                if(!teams.Contains(t.TeamId.ToString())){
+                                    teams.Add(t.TeamId.ToString());
+                                }
+                            }
+                
+                            var td = _context.Teams.AsNoTracking()                     
+                                .Include(s => s.Manager)
+                                .Include(ur => ur.TeamMembers).ThenInclude(s => s.Users)
+                                .Select(s => new {
+                                    s.Id, s.Name, s.Desc, s.Image, s.Color, s.ManagerId, s.CreatedAt, s.UpdatedAt, s.Deleted, s.CreateBy,
+                                    Manager = new { s.Manager.Id, s.Manager.FirstName, s.Manager.LastName, s.Manager.Email, s.Manager.Image, s.Manager.Color, s.Manager.UserDepts },
+                                    s.TeamMembers
+                                }).Where(w => w.Deleted == false && teams.Contains(w.Id.ToString()))
+                                .ToList();
+                            
+                            foreach (var d in td)
+                            {
+                                listCcTo.Add(d.Manager.Email);
+                                var mng = _context.Users.AsNoTracking().Where(w => w.Deleted == false && w.Email == d.Manager.Email).FirstOrDefault();
+                                if(mng != null ) { listRecipNotif.Add(mng); }
+                                foreach (var m in d.TeamMembers)
+                                {
+                                    listCcTo.Add(m.Users.Email);
+                                    listRecipNotif.Add(m.Users);
+                                }
+                            }
+                        }
+
+
 
                         if(cTicket.StatId == 5 || cTicket.StatId == 6){ //solved and rejected handler
                             FailedUpdate.Add(cTicket);
@@ -742,6 +860,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             MailSetting.TicketApp= app.Name;
                             MailSetting.TicketModule=appModule.Name;
                             MailSetting.Attachments = null;
+               
                             MailSetting.UserFullName = cUser.FirstName + " " + cUser.LastName;
                             MailSetting.HomeSite = _config.GetSection("HomeSite").Value;
                             
@@ -802,6 +921,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 MailSettingForUser.ToEmail= listMailTo;
                                 MailSettingForUser.TicketFrom= ticketRequestFrom;
                                 MailSettingForUser.AttachmentsString = LFile;
+                                MailSettingForUser.CCMail = listCcTo;
                                 MailSettingForUser.ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTicket.Id +"&open=true";
                                 _mailUtil.SendEmailPostCommentAsync(MailSettingForUser);
                              
@@ -844,6 +964,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 MailSettingForUser.ToEmail= listMailTo;
                                 MailSettingForUser.TicketFrom= ticketRequestFrom;
                                 MailSettingForUser.AttachmentsString = LFile;
+                                MailSettingForUser.CCMail = listCcTo;
                                 MailSettingForUser.ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTicket.Id +"&open=true";
                                 _mailUtil.SendEmailPostCommentAsync(MailSettingForUser);
 
@@ -934,6 +1055,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 MailSettingForUser.ToEmail= listMailTo;
                                 MailSettingForUser.TicketFrom= ticketRequestFrom;
                                 MailSettingForUser.AttachmentsString = LFile;
+                                MailSettingForUser.CCMail = listCcTo;
                                 MailSettingForUser.ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTicket.Id +"&open=true";
                                 _mailUtil.SendEmailPostCommentAsync(MailSettingForUser);
                
@@ -977,6 +1099,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 MailSettingForUser.ToEmail= listMailTo;
                                 MailSettingForUser.TicketFrom= ticketRequestFrom;
                                 MailSettingForUser.AttachmentsString = LFile;
+                                MailSettingForUser.CCMail = listCcTo;
                                 MailSettingForUser.ButtonLink = _config.GetSection("HomeSite").Value + "admin/ticket?tid="+ cTicket.Id +"&open=true";
                                 _mailUtil.SendEmailPostCommentAsync(MailSettingForUser);
 

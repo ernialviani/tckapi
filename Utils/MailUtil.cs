@@ -348,10 +348,7 @@ namespace TicketingApi.Utils
                 
                 throw;
             }
-          
        }
-
-
 
         public async Task SendEmailVerificationCodeAsync(MailType mailType)
         {

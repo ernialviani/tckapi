@@ -126,7 +126,7 @@ namespace TicketingApi.Controllers.v1.Users
                         });
 
         
-             IQueryable filtered = null;
+            IQueryable filtered = null;
             if(int.Parse(Role) == 2){
                 var Depts  = _context.UserDepts.Where(w => w.UserId == cUser.Id).ToList();
                 List<string> ListDepts = new List<string>();
