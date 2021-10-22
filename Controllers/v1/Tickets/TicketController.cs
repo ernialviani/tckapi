@@ -81,7 +81,9 @@ namespace TicketingApi.Controllers.v1.Tickets
         [Authorize]
         public IActionResult GetTickets([FromHeader] string Authorization, [FromQuery]int u, [FromQuery]int r)
         {
-          var allTicket = _context.Tickets.AsNoTracking()
+            try
+            {
+                  var allTicket = _context.Tickets.AsNoTracking()
                         .Include(t => t.Senders)
                         .Include(t => t.Status)
                         .Include(t => t.TicketDetails).ThenInclude(s => s.Users)
@@ -122,62 +124,117 @@ namespace TicketingApi.Controllers.v1.Tickets
                         }),
                         e.Status, e.Apps, e.Modules, e.TicketType,
                        // RequestFrom = e.TicketType == "E" ? "" : "",
-                     //   new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, LoginStatus = e.Senders.LoginStatus } :
-                     //   new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, LoginStatus = true },
+                       //   new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, LoginStatus = e.Senders.LoginStatus } :
+                       //   new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, LoginStatus = true },
                         Users = e.UserId == null ? null : new { Id = e.Users.Id, Email = e.Users.Email, FirstName = e.Users.FirstName, LastName = e.Users.LastName, Image = e.Users.Image, Color=e.Users.Color },
                         Senders = e.SenderId == null ? null : new { Id = e.Senders.Id, Email = e.Senders.Email, FirstName = e.Senders.FirstName, LastName = e.Senders.LastName, Image = e.Senders.Image, Color=e.Senders.Color },
                         Medias = e.Medias == null ? null : e.Medias.Select(s => new { s.Id, s.FileName, s.FileType, s.RelId, s.RelType }).Where(w => w.RelId == e.Id && w.RelType == "T")
                     });
 
-            IOrderedQueryable filtered = null;
-            if(r == 1){ //get all for superadmin
-                 filtered = allTicket.OrderByDescending(e => e.Id);
-            }
-            else if(u > 0 ){
-                List<User> imOnTeam = new List<User>();
-                List<string> teamMebers = new List<string>();
-                List<string> teams = new List<string>();
-                
-                var activeUser = _context.Users.AsNoTracking().Where(w=>w.Id == u).FirstOrDefault();
-                
-                var asTeamMember = _context.TeamMembers.AsNoTracking().Where(w => w.UserId == activeUser.Id).ToList();
-                var asTeamMng = _context.Teams.AsNoTracking().Where(w => w.ManagerId == activeUser.Id).ToList();
-
-                foreach (var team in asTeamMember)
-                {
-                    if(!teams.Contains(team.TeamId.ToString())){
-                        teams.Add(team.TeamId.ToString());
+                    IOrderedQueryable filtered = null;
+                    if(r == RoleType.intAdmin){ //get all for superadmin
+                        filtered = allTicket.OrderByDescending(e => e.Id);
                     }
-                }
+                    else if(r == RoleType.intLeader){
+                        var activeUser = _context.Users.AsNoTracking()
+                                          .Include(i => i.UserDepts)
+                                          .Where(w => w.Id == u ).FirstOrDefault();
+                        var listUserInDept = _context.Users.AsNoTracking()
+                                               .Include(i => i.UserDepts)
+                                               .Where(w => w.UserDepts.Any(a => a.DepartmentId.Equals(activeUser.UserDepts))).ToList();
+                        filtered = allTicket.Where(w => 
+                                        w.TicketAssigns.Any(a => a.UserId == u) || 
+                                        w.CreatedBy == activeUser.Email || 
+                                        listUserInDept.Any(a => 
+                                          a.Email.Equals(w.CreatedBy)
+                                        )
+                                   ).OrderByDescending(e => e.Id);
 
-                foreach (var team in asTeamMng)
-                {
-                    if(!teams.Contains(team.Id.ToString())){
-                        teams.Add(team.Id.ToString());
                     }
-                }
-                var breakTeams = _context.Teams.AsNoTracking()
-                            .Include(i => i.TeamMembers).ThenInclude(ti => ti.Users)
-                            .Include(i => i.Manager)
-                            .AsEnumerable()
-                            .Where(w => teams.Any( a => a.Contains(w.Id.ToString() ) ) ).ToList();
-                
-                foreach (var team in breakTeams)
-                {
-                    imOnTeam.Add(team.Manager);
-                    foreach (var member in team.TeamMembers)
-                    {
-                        imOnTeam.Add(member.Users);
+                    else if(r == RoleType.intManager){
+                        List<User> imOnTeam = new List<User>();
+                        var activeUser = _context.Users.AsNoTracking().Where(w=>w.Id == u).FirstOrDefault();
+                        var asTeamMng = _context.Teams.AsNoTracking()
+                                        .Include(i => i.TeamMembers).ThenInclude(ti => ti.Users)
+                                        .Where(w => w.ManagerId == activeUser.Id).ToList();
+                    
+                        foreach (var team in asTeamMng)
+                        {
+                            foreach (var member in team.TeamMembers)
+                            {
+                                imOnTeam.Add(member.Users);
+                            }
+                        }
+                        filtered = allTicket.Where(w => 
+                                        w.TicketAssigns.Any(a => a.UserId == u) || 
+                                        w.CreatedBy == activeUser.Email || 
+                                        imOnTeam.Any(a => 
+                                           a.Email.Equals(w.CreatedBy)
+                                        )
+                                    ).OrderByDescending(e => e.Id);
                     }
-                }
+                    else if(r == RoleType.intUser){
+                        var activeUser = _context.Users.AsNoTracking().Where(w => w.Id == u ).FirstOrDefault();
+                        filtered = allTicket.Where(w => 
+                                    w.TicketAssigns.Any(a => a.UserId == u) || 
+                                    w.CreatedBy == activeUser.Email
+                                  ).OrderByDescending(e => e.Id);
+                    }
+                    // else if(u > 0 ){
+                    //     List<User> imOnTeam = new List<User>();
+                    //     List<string> teamMebers = new List<string>();
+                    //     List<string> teams = new List<string>();
+                        
+                    //     var activeUser = _context.Users.AsNoTracking().Where(w=>w.Id == u).FirstOrDefault();
+                        
+                    //     var asTeamMember = _context.TeamMembers.AsNoTracking().Where(w => w.UserId == activeUser.Id).ToList();
+                    //     var asTeamMng = _context.Teams.AsNoTracking().Where(w => w.ManagerId == activeUser.Id).ToList();
 
-                filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u) || w.CreatedBy == activeUser.Email || imOnTeam.Any(a => a.Email == w.CreatedBy)).OrderByDescending(e => e.Id);
+                    //     foreach (var team in asTeamMember)
+                    //     {
+                    //         if(!teams.Contains(team.TeamId.ToString())){
+                    //             teams.Add(team.TeamId.ToString());
+                    //         }
+                    //     }
+
+                    //     foreach (var team in asTeamMng)
+                    //     {
+                    //         if(!teams.Contains(team.Id.ToString())){
+                    //             teams.Add(team.Id.ToString());
+                    //         }
+                    //     }
+                    //     var breakTeams = _context.Teams.AsNoTracking()
+                    //                 .Include(i => i.TeamMembers).ThenInclude(ti => ti.Users)
+                    //                 .Include(i => i.Manager)
+                    //                 .AsEnumerable()
+                    //                 .Where(w => teams.Any( a => a.Contains(w.Id.ToString() ) ) ).ToList();
+                        
+                    //     foreach (var team in breakTeams)
+                    //     {
+                    //         imOnTeam.Add(team.Manager);
+                    //         foreach (var member in team.TeamMembers)
+                    //         {
+                    //             imOnTeam.Add(member.Users);
+                    //         }
+                    //     }
+
+                    //     filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u) || w.CreatedBy == activeUser.Email || imOnTeam.Any(a => a.Email.Equals(w.CreatedBy))).OrderByDescending(e => e.Id);
+                    // }
+                    else{
+                        var activeUser = _context.Users.AsNoTracking().Where(w => w.Id == u ).FirstOrDefault();
+                        filtered = allTicket.Where(w => 
+                            w.TicketAssigns.Any(a => a.UserId == u) || 
+                            w.CreatedBy == activeUser.Email
+                        ).OrderByDescending(e => e.Id);
+                    }
+                    
+                    return Ok(filtered);
             }
-            else{
-                filtered = allTicket.OrderByDescending(e => e.Id);
+            catch (System.Exception e)
+            {
+                return BadRequest(e);
             }
-            
-           return Ok(filtered);
+         
         }
 
         [HttpGet("{id}")]
