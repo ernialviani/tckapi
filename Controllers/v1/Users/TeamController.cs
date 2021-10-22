@@ -137,7 +137,6 @@ namespace TicketingApi.Controllers.v1.Users
                 filtered = allTeam.Where(w => w.Deleted == false && (w.CreateBy == Email || w.ManagerId == cUser.Id || teams.Contains(w.Id.ToString()) ) );
             }
           
-
            return Ok(filtered);
         }
 
