@@ -1,7 +1,0 @@
-C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\obj\Debug\net5.0\ticketing-api.csproj.AssemblyReference.cache
-C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\obj\Debug\net5.0\ticketing-api.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\obj\Debug\net5.0\ticketing-api.AssemblyInfoInputs.cache
-C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\obj\Debug\net5.0\ticketing-api.AssemblyInfo.cs
-C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\obj\Debug\net5.0\ticketing-api.csproj.CoreCompileInputs.cache
-C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\obj\Debug\net5.0\ticketing-api.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\programmer3\Documents\Vicky\ticketing\ticketing-app\dotnetapi\ticketing-api\obj\Debug\net5.0\ticketing-api.MvcApplicationPartsAssemblyInfo.cache
