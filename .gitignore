@@ -10,6 +10,9 @@ bin/
 obj/
 obj/*
 /obj/
+bin
+obj
+packages
 
 
 ## Ignore Visual Studio temporary files, build results, and
