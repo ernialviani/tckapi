@@ -168,7 +168,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                         filtered = allTicket.Where(w => 
                                         w.TicketAssigns.Any(a => a.UserId == u) || 
                                         w.CreatedBy == activeUser.Email || 
-                                        imOnTeam.Any(a => 
+                                        imOnTeam.AsEnumerable().Any(a => 
                                            a.Email.Equals(w.CreatedBy)
                                         )
                                     ).OrderByDescending(e => e.Id);

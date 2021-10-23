@@ -2653,11 +2653,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "X:\\TICKETING\\backend\\TicketingApi.csproj",
+      "projectUniqueName": "x:\\TICKETING\\backend\\TicketingApi.csproj",
       "projectName": "TicketingApi",
-      "projectPath": "X:\\TICKETING\\backend\\TicketingApi.csproj",
+      "projectPath": "x:\\TICKETING\\backend\\TicketingApi.csproj",
       "packagesPath": "C:\\Users\\programmer3\\.nuget\\packages\\",
-      "outputPath": "X:\\TICKETING\\backend\\obj\\",
+      "outputPath": "x:\\TICKETING\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
