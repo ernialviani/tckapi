@@ -138,17 +138,28 @@ namespace TicketingApi.Controllers.v1.Tickets
                     else if(r == RoleType.intLeader){
                         var activeUser = _context.Users.AsNoTracking()
                                           .Include(i => i.UserDepts)
-                                          .Where(w => w.Id == u ).FirstOrDefault();
+                                          .Where(w => w.Id == u )
+                                          .FirstOrDefault();
+                        List<int> activeUserDepts = new List<int>();
+                        foreach (var d in activeUser.UserDepts)
+                        {
+                            activeUserDepts.Add(d.Id);
+                        }
                         var listUserInDept = _context.Users.AsNoTracking()
                                                .Include(i => i.UserDepts)
-                                               .Where(w => w.UserDepts.Any(a => a.DepartmentId.Equals(activeUser.UserDepts))).ToList();
-                        filtered = allTicket.Where(w => 
+                                               .Where(w => 
+                                                w.UserDepts.Any(a =>  activeUserDepts.Contains(a.DepartmentId))
+                                              ).ToList();
+
+                        var ordered = allTicket.OrderByDescending(e => e.Id).AsEnumerable();
+                        var hasil = ordered.Where(w => 
                                         w.TicketAssigns.Any(a => a.UserId == u) || 
                                         w.CreatedBy == activeUser.Email || 
-                                        listUserInDept.Any(a => 
-                                          a.Email.Equals(w.CreatedBy)
+                                        listUserInDept.AsEnumerable().Any(a => 
+                                           a.Email.Equals(w.CreatedBy)
                                         )
-                                   ).OrderByDescending(e => e.Id);
+                                    );
+                        return Ok(hasil);
 
                     }
                     else if(r == RoleType.intManager){
@@ -165,13 +176,15 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 imOnTeam.Add(member.Users);
                             }
                         }
-                        filtered = allTicket.Where(w => 
+                        var ordered = allTicket.OrderByDescending(e => e.Id).AsEnumerable();
+                        var hasil = ordered.Where(w => 
                                         w.TicketAssigns.Any(a => a.UserId == u) || 
                                         w.CreatedBy == activeUser.Email || 
                                         imOnTeam.AsEnumerable().Any(a => 
                                            a.Email.Equals(w.CreatedBy)
                                         )
-                                    ).OrderByDescending(e => e.Id);
+                                    );
+                        return Ok(hasil);
                     }
                     else if(r == RoleType.intUser){
                         var activeUser = _context.Users.AsNoTracking().Where(w => w.Id == u ).FirstOrDefault();
@@ -180,46 +193,6 @@ namespace TicketingApi.Controllers.v1.Tickets
                                     w.CreatedBy == activeUser.Email
                                   ).OrderByDescending(e => e.Id);
                     }
-                    // else if(u > 0 ){
-                    //     List<User> imOnTeam = new List<User>();
-                    //     List<string> teamMebers = new List<string>();
-                    //     List<string> teams = new List<string>();
-                        
-                    //     var activeUser = _context.Users.AsNoTracking().Where(w=>w.Id == u).FirstOrDefault();
-                        
-                    //     var asTeamMember = _context.TeamMembers.AsNoTracking().Where(w => w.UserId == activeUser.Id).ToList();
-                    //     var asTeamMng = _context.Teams.AsNoTracking().Where(w => w.ManagerId == activeUser.Id).ToList();
-
-                    //     foreach (var team in asTeamMember)
-                    //     {
-                    //         if(!teams.Contains(team.TeamId.ToString())){
-                    //             teams.Add(team.TeamId.ToString());
-                    //         }
-                    //     }
-
-                    //     foreach (var team in asTeamMng)
-                    //     {
-                    //         if(!teams.Contains(team.Id.ToString())){
-                    //             teams.Add(team.Id.ToString());
-                    //         }
-                    //     }
-                    //     var breakTeams = _context.Teams.AsNoTracking()
-                    //                 .Include(i => i.TeamMembers).ThenInclude(ti => ti.Users)
-                    //                 .Include(i => i.Manager)
-                    //                 .AsEnumerable()
-                    //                 .Where(w => teams.Any( a => a.Contains(w.Id.ToString() ) ) ).ToList();
-                        
-                    //     foreach (var team in breakTeams)
-                    //     {
-                    //         imOnTeam.Add(team.Manager);
-                    //         foreach (var member in team.TeamMembers)
-                    //         {
-                    //             imOnTeam.Add(member.Users);
-                    //         }
-                    //     }
-
-                    //     filtered = allTicket.Where(w => w.TicketAssigns.Any(a => a.UserId == u) || w.CreatedBy == activeUser.Email || imOnTeam.Any(a => a.Email.Equals(w.CreatedBy))).OrderByDescending(e => e.Id);
-                    // }
                     else{
                         var activeUser = _context.Users.AsNoTracking().Where(w => w.Id == u ).FirstOrDefault();
                         filtered = allTicket.Where(w => 
@@ -471,7 +444,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                  List<string> listMailTo = new List<string>();
                  List<string> listCcTo = new List<string>();
 
-                //mail cc to  team manager & team members )
+                //mail cc to  team manager & team members 
                 var createdByUser = _context.Users.AsNoTracking().Where(w => w.Email == request.CreatedBy).FirstOrDefault();
                 if(createdByUser != null){
                     var groupTeam = _context.TeamMembers.Where(w => w.UserId == createdByUser.Id).ToList();
@@ -698,7 +671,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                     else if(cTicket.TicketType == "I"){
                         if(cTicket.CreatedBy != requestUser.Email){
                             td.UserId = requestUser.Id;
-                            if(cTicket.StatId < 3){ //auto update state form open to in progress: input mba anik 27/09/2021
+                            if(cTicket.StatId < 3){ //auto update state from open to in progress: input mba anik 27/09/2021
                                 cTicket.StatId = 3;
                             }
                         }
@@ -743,6 +716,9 @@ namespace TicketingApi.Controllers.v1.Tickets
                             listMailTo.Add(ticketRequestFrom);
                             listRecipNotif.Add(fUser);
                         }
+                        else{
+                         
+                        }
                     }
                     else if(cTicket.TicketType == "E"){
                         var fSender = _context.Senders.Where(w => w.Id == cTicket.SenderId).FirstOrDefault();
@@ -760,7 +736,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                                 TicketNumber = cTicket.TicketNumber,
                                 CreatedBy= fSender.Email,
                                 SecurityCode = sCode,
-                                ExpiredAt = DateTime.Now.AddDays(1).ToString()
+                                ExpiredAt = DateTime.Now.AddDays(30).ToString()
                             });
 
                             btnLink = "mytickets?tcid="+ AncDecUtil.Encrypt(jsonString, "EPSYLONHOME2021$", true);
