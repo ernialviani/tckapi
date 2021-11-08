@@ -152,14 +152,14 @@ namespace TicketingApi.Controllers.v1.Tickets
                                               ).ToList();
 
                         var ordered = allTicket.OrderByDescending(e => e.Id).AsEnumerable();
-                        var hasil = ordered.Where(w => 
+                        var res = ordered.Where(w => 
                                         w.TicketAssigns.Any(a => a.UserId == u) || 
                                         w.CreatedBy == activeUser.Email || 
                                         listUserInDept.AsEnumerable().Any(a => 
                                            a.Email.Equals(w.CreatedBy)
                                         )
                                     );
-                        return Ok(hasil);
+                        return Ok(res);
 
                     }
                     else if(r == RoleType.intManager){
@@ -177,14 +177,14 @@ namespace TicketingApi.Controllers.v1.Tickets
                             }
                         }
                         var ordered = allTicket.OrderByDescending(e => e.Id).AsEnumerable();
-                        var hasil = ordered.Where(w => 
+                        var res = ordered.Where(w => 
                                         w.TicketAssigns.Any(a => a.UserId == u) || 
                                         w.CreatedBy == activeUser.Email || 
                                         imOnTeam.AsEnumerable().Any(a => 
                                            a.Email.Equals(w.CreatedBy)
                                         )
                                     );
-                        return Ok(hasil);
+                        return Ok(res);
                     }
                     else if(r == RoleType.intUser){
                         var activeUser = _context.Users.AsNoTracking().Where(w => w.Id == u ).FirstOrDefault();
@@ -194,11 +194,17 @@ namespace TicketingApi.Controllers.v1.Tickets
                                   ).OrderByDescending(e => e.Id);
                     }
                     else{
-                        var activeUser = _context.Users.AsNoTracking().Where(w => w.Id == u ).FirstOrDefault();
-                        filtered = allTicket.Where(w => 
-                            w.TicketAssigns.Any(a => a.UserId == u) || 
-                            w.CreatedBy == activeUser.Email
-                        ).OrderByDescending(e => e.Id);
+                       if(u > 0){
+                           var activeUser = _context.Users.AsNoTracking().Where(w => w.Id == u ).FirstOrDefault();
+                            filtered = allTicket.Where(w => 
+                                w.TicketAssigns.Any(a => a.UserId == u) || 
+                                w.CreatedBy == activeUser.Email
+                            ).OrderByDescending(e => e.Id);
+                       }
+                       else{
+                            filtered = allTicket.OrderByDescending(e => e.Id);
+                       }
+                     
                     }
                     
                     return Ok(filtered);
@@ -717,7 +723,7 @@ namespace TicketingApi.Controllers.v1.Tickets
                             listRecipNotif.Add(fUser);
                         }
                         else{
-                         
+                         //todo if team need mail post comment
                         }
                     }
                     else if(cTicket.TicketType == "E"){
