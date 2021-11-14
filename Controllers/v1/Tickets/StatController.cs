@@ -86,7 +86,7 @@ namespace TicketingApi.Controllers.v1.Tickets
         {
             try
             {
-                 var appExist =  _context.Stats .Where(e => e.Id == id) .FirstOrDefault();
+                var appExist =  _context.Stats .Where(e => e.Id == id) .FirstOrDefault();
                 
                 if (appExist == null) { return NotFound("Stat Not Found !"); }
 
